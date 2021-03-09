@@ -1,0 +1,39 @@
+{
+  "mongo_host": {
+    "description": "Mongo hostname",
+    "value": ""
+  },
+  "mongo_port": {
+    "description": "Mongo port",
+    "value": "27017"
+  },
+  "mongo_username": {
+    "description": "Mongo user name",
+    "value": ""
+  },
+  "mongo_password": {
+    "description": "Mongo password",
+    "value": ""
+  },
+  "mongo_auth_db": {
+    "description": "Mongo authentication db",
+    "value": ""
+  },
+  "tracker_api_key": {
+    "description": "Tracker API Key",
+    "value": ""
+  },
+  "tracker_player_name": {
+    "description": "Tracker Player Name",
+    "value": ""
+  },
+  "tracker_platform": {
+    "description": "Tracker Platform",
+    "choices": [
+      "xbl",
+      "psn",
+      "origin"
+    ],
+    "value": "origin"
+  }
+}
