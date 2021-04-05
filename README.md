@@ -5,7 +5,7 @@ This is a flask website you can host.  It will allow you to query the apexlegend
 See: https://github.com/johnsturgeon/apex-legends-tracker/wiki for more information
 
 ## Prerequisites
-- [Tracker GG API Key](https://tracker.gg/developers/docs/getting-started)
+- [Apex Legends API Key](https://apexlegendsapi.com)
 - Mongo database 
     - Create Database: aqex_legends
     - Create a user in the `apex_legends` database to read / write the db.
