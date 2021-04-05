@@ -1,11 +1,10 @@
 """ Mongo Database Wrapper for the apex-legends Player object """
-from apex_legends.domain import Player
-from apex_legends.domain import Session
+from apex_legends_api import ALPlayer
 
 
 class PlayerDB:
     """Instantiate this class and pass it an apex_legends Player object """
-    def __init__(self, player: Player):
+    def __init__(self, player: ALPlayer):
         self.player = player
         self.user_name = player.username
         assert hasattr(player, 'matchesplayed')
