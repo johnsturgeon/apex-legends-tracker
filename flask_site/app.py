@@ -1,4 +1,4 @@
-from flask import Flask
+""" Flask application for Apex Legends API Tracker """
 from flask import Flask, render_template
 from apex_legends_api import ApexLegendsAPI, ALPlayer, ALPlatform
 
@@ -9,6 +9,7 @@ player: ALPlayer = apex_api.get_player(name='GoshDarnedHero', platform=ALPlatfor
 
 @app.route('/')
 def hello_world():
+    """ Simple bootstrapped HELLO route """
     return render_template('index.html', player=player)
 
 
