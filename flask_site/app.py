@@ -6,7 +6,6 @@ app = Flask(__name__, template_folder='templates')
 apex_api: ApexLegendsAPI = ApexLegendsAPI(api_key='Mr9btAmjuEw9wmFQcoPW')
 player: ALPlayer = apex_api.get_player(name='GoshDarnedHero', platform=ALPlatform.PC)
 
-
 @app.route('/')
 def hello_world():
     """ Simple bootstrapped HELLO route """
