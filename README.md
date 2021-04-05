@@ -1,5 +1,8 @@
 # apex-legends-tracker
-Python library for storing apex legends tracker data in a database for data analysis
+This is a flask website you can host.  It will allow you to query the apexlegendsapi.com
+(provided you get a key), and save data for analysis, and fun in your own MongoDB.
+
+See: https://github.com/johnsturgeon/apex-legends-tracker/wiki for more information
 
 ## Prerequisites
 - [Tracker GG API Key](https://tracker.gg/developers/docs/getting-started)
@@ -7,6 +10,7 @@ Python library for storing apex legends tracker data in a database for data anal
     - Create Database: aqex_legends
     - Create a user in the `apex_legends` database to read / write the db.
     - Create empty collections: player, player_events (these will be populated on first run)
+      (You won't have to do this once #16 has been implemented)
 - Python 3.6 or greater    
 
 ## Setup
