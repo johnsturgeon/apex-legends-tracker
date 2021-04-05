@@ -1,0 +1,23 @@
+body {
+    background-image: url(background.png);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    font-family: "PT Sans Narrow", sans-serif;
+    font-size: larger;
+    color: wheat;
+}
+
+.container {
+    display: flex; /* or inline-flex */
+    justify-content: center;
+    margin: 25pt;
+}
+.item {
+    background: rgba(84, 39, 39, 0.6);
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 220px;
+    padding: 20px;
+}
