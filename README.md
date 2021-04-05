@@ -18,7 +18,7 @@ See: https://github.com/johnsturgeon/apex-legends-tracker/wiki for more informat
 - cd into `apex-legends-tracker` directory
 - create a python3 virtual environment in folder called `env`
 - activate the virtual environment and `pip install requirements.txt`
-- run the script 'setup.py' (while still in the virtual environment)
+- run the script 'configure.py' (while still in the virtual environment)
    - You will be prompted for configuration values
   
 ## Running
