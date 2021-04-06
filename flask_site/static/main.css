@@ -21,3 +21,7 @@ body {
     flex-basis: 220px;
     padding: 20px;
 }
+.legend_icon {
+    width: 64px;
+    height: 64px;
+}

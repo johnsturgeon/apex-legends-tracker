@@ -13,5 +13,9 @@ def hello_world():
     return render_template('index.html', player=player)
 
 
+@app.route('/matches')
+def matches():
+    """ List of matches """
+    return render_template('matches.html', player=player)
 if __name__ == '__main__':
     app.run()
