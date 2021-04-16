@@ -1,5 +1,5 @@
 # Files specific for this project
-conf/settings.json
+flask_site/settings.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
