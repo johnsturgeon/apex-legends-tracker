@@ -1,8 +1,10 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    <title>Friends of the Apex Legends API</title>
-</head>
+        <title>Friends of the Apex Legends API</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script></head>
 <body>
 <div class="container">
     <div class="item">
@@ -21,10 +23,19 @@
         {% endfor %}
     </div>
 </div>
-<div class="legend_container">
-    {% for legend in player.all_legends %}
-        <div class="legend_item"><img class="legend_icon" src="{{ legend.img_assets.icon }}"></div>
-    {%  endfor %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="chart" id="spline">
+            </div>
+        </div>
+    </div>
 </div>
 </body>
+<script>
+    var graphs = {{ plot | safe }};
+    Plotly.setPlotConfig({displayModeBar: false});
+    Plotly.newPlot('spline',graphs,{});
+</script>
+
 </html>

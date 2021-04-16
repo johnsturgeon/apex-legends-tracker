@@ -7,7 +7,7 @@ from distutils.sysconfig import get_python_lib
 from rich.prompt import Prompt
 from rich.console import Console
 # noinspection Pylint
-from include import common_init
+from flask_site import common_init
 
 
 def main():
