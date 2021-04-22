@@ -35,7 +35,7 @@ class PlayerData:
                 y_array.append(int((damage_day[key] / game_day[key])))
         return x_array, y_array
 
-    def days_played(self, only_games: bool = True) -> list[]:
+    def days_played(self, only_games: bool = True) -> list:
         """ returns a list of days (format 'YYYY-MM-DD') that the player actually PLAYED a game """
         dict_of_days: dict = dict()
         event: GameEvent
