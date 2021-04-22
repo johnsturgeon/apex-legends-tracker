@@ -7,9 +7,11 @@ import os
 from distutils.sysconfig import get_python_lib
 from rich.prompt import Prompt
 from rich.console import Console
-# noinspection Pylint
+
 sys.path.append('flask_site')
-import common_init
+# pylint: disable=C0413
+# pylint: disable=E0401
+import common_init  # noqa C0413 E0401
 
 
 def main():
