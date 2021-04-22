@@ -16,10 +16,11 @@ See: https://github.com/johnsturgeon/apex-legends-tracker/wiki for more informat
 - upgrade pip `pip install --upgrade pip`
 - activate the virtual environment and `pip install -r requirements.txt`
 - if you plan on doing development work, you should run `pip install dev_requirements.txt` as well
-- run the configuration script `config_setup/configure.py` (while still in the virtual environment)
+- run the configuration script `python config_setup/configure.py` (while still in the virtual environment)
    - You will be prompted for configuration values
+
+## Running
 - after entering prompts you can run the flask site:
   - `cd flask_site`
   - `flask run`
-## Running
 
