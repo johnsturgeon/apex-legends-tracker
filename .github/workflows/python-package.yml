@@ -38,6 +38,3 @@ jobs:
       run: |
         # lint the module, and the tests
         pylint --disable=unsubscriptable-object config_setup flask_site tests
-    - name: test
-      run: |
-        pytest --cov=flask_site -v
