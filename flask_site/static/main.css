@@ -11,17 +11,39 @@ body {
 
 .container {
     display: flex; /* or inline-flex */
+    flex-wrap: wrap;
     justify-content: center;
     margin: 25pt;
+    overflow:hidden;
+}
+
+.small_margin {
+    margin: 6pt;
 }
 .item {
+    flex-grow: 1;
     background: rgba(84, 39, 39, 0.6);
-    flex-grow: 0;
-    flex-shrink: 0;
-    flex-basis: 220px;
-    padding: 20px;
+    padding:12pt;
+}
+
+.small_padding {
+    padding: 6pt;
+}
+
+.no_padding {
+    padding: 0;
+}
+
+.break {
+    flex-basis: 100%;
+    height: 0;
 }
 .legend_icon {
     width: 64px;
     height: 64px;
+}
+
+.shadow {
+    box-shadow: 3px 3px 12pt -3pt #111;
+    border-radius: 12px;
 }

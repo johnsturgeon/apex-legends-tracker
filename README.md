@@ -6,11 +6,6 @@ See: https://github.com/johnsturgeon/apex-legends-tracker/wiki for more informat
 
 ## Prerequisites
 - [Apex Legends API Key](https://apexlegendsapi.com)
-- Mongo database 
-    - Create Database: aqex_legends
-    - Create a user in the `apex_legends` database to read / write the db.
-    - Create empty collections: player, player_events (these will be populated on first run)
-      (You won't have to do this once #16 has been implemented)
 - Python 3.6 or greater    
 
 ## Setup
@@ -20,6 +15,7 @@ See: https://github.com/johnsturgeon/apex-legends-tracker/wiki for more informat
 - activate the virtual environment and `pip install requirements.txt`
 - run the script 'configure.py' (while still in the virtual environment)
    - You will be prompted for configuration values
+- if you plan on doing development work, you should run `pip install dev_requirements.txt` as well
   
 ## Running
 

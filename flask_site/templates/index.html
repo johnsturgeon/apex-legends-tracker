@@ -1,41 +1,14 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-        <title>Friends of the Apex Legends API</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script></head>
+    <meta charset="UTF-8">
+    <title>Landing Page</title>
+</head>
 <body>
-<div class="container">
-    <div class="item">
-        <div>{{ player.global_info.name }}</div>
-        <div>Level: {{ player.global_info.level }}</div>
-        <div>
-            <progress
-                    class="progress_bar"
-                    value="{{ player.global_info.to_next_level_percent }}"
-                    max="100">
-            </progress>
-        </div>
-        <div>Selected Legend: {{ player.selected_legend.legend_name }}</div>
-        {% for tracker in player.selected_legend.data_trackers %}
-        <div>{{ tracker.name }}: {{ tracker.value }}</div>
-        {% endfor %}
-    </div>
-</div>
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="chart" id="spline">
-            </div>
-        </div>
-    </div>
-</div>
+<ul>
+    {% for player in players %}
+    <li><a href="{{ url_for('days', player_name=player["name"] ) }}">{{ player["name"] }}</a></li>
+    {% endfor %}
+</ul>
 </body>
-<script>
-    var graphs = {{ plot | safe }};
-    Plotly.setPlotConfig({displayModeBar: false});
-    Plotly.newPlot('spline',graphs,{});
-</script>
-
 </html>

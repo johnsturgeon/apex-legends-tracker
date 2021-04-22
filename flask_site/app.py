@@ -1,95 +1,56 @@
 """ Flask application for Apex Legends API Tracker """
-import plotly.graph_objects as go
-import plotly.utils as ut
-import json
-import numpy as np
 from flask import Flask, render_template
-from apex_legends_api import ApexLegendsAPI, ALPlayer, ALPlatform
-from apex_legends_api.al_base import ALEventType
-from apex_legends_api.al_domain import DataTracker, GameEvent
-import arrow
-
+from apex_legends_api import ApexLegendsAPI, ALPlayer, ALPlatform, ALAction
+import flask_site.graphing as graphing
+from flask_site.apex_stats import PlayerData
+from flask_site.common_init import get_settings
 app = Flask(__name__, template_folder='templates')
-apex_api: ApexLegendsAPI = ApexLegendsAPI(api_key='Mr9btAmjuEw9wmFQcoPW')
-player1: ALPlayer = apex_api.get_player(name='TTVKn0cktane', platform=ALPlatform.XBOX)
-player2: ALPlayer = apex_api.get_player(name='TTV H0l0rage', platform=ALPlatform.XBOX)
+settings = get_settings()
+api_key = settings['tracker_api_key'].get('value')
+apex_api: ApexLegendsAPI = ApexLegendsAPI(api_key=api_key)
 
 
 @app.route('/')
-def hello_world():
-    """ Simple bootstrapped HELLO route """
+def index():
+    """ Default route """
+    return render_template('index.html', players=get_players())
+
+
+@app.route('/days/<player_name>')
+def days(player_name='GoshDarnedHero'):
+    """ List of player matches and some detail / day """
+    platform = get_platform_for_player(player_name)
+    player: ALPlayer = apex_api.get_player(name=player_name, platform=platform)
+    player_data: PlayerData = PlayerData(player)
+    return render_template('days.html', player=player, player_data=player_data)
+
+
+@app.route('/profile/<player_name>/<category>')
+def profile(player_name=None, category="damage"):
+    """ Simple player profile page """
     # line = create_plot()
-    bar = create_bar(player1, player2)
-    return render_template('index.html', player=player1, plot=bar)
+    if player_name:
+        platform = get_platform_for_player(player_name)
+        player1: ALPlayer = apex_api.get_player(name=player_name, platform=platform)
+        bar_plot = graphing.create_bar(player1, category)
+        return render_template('profile.html', player=player1, plot=bar_plot)
+
+    return "Not Found"
 
 
-def create_bar(player_one, player_two):
-    p1_damage_day: dict = dict()
-    p1_game_day: dict = dict()
-    p2_damage_day: dict = dict()
-    p2_game_day: dict = dict()
-    for match in player_one.events:
-        if match.event_type == ALEventType.GAME:
-            match.__class__ = GameEvent
-            day_key = str(arrow.get(match.timestamp).to('US/Pacific').floor('day'))
-            if day_key not in p1_damage_day:
-                p1_damage_day[day_key] = 0
-                p1_game_day[day_key] = 0
-            tracker: DataTracker
-            for tracker in match.game_data_trackers:
-                if tracker.key == 'damage' or tracker.key == 'specialEvent_damage':
-                    p1_damage_day[day_key] += int(tracker.value)
-                    p1_game_day[day_key] += 1
-
-    for match in player_two.events:
-        if match.event_type == ALEventType.GAME:
-            match.__class__ = GameEvent
-            day_key = str(arrow.get(match.timestamp).to('US/Pacific').floor('day'))
-            if day_key not in p2_damage_day:
-                p2_damage_day[day_key] = 0
-                p2_game_day[day_key] = 0
-            tracker: DataTracker
-            for tracker in match.game_data_trackers:
-                if tracker.key == 'damage' or tracker.key == 'specialEvent_damage':
-                    p2_damage_day[day_key] += int(tracker.value)
-                    p2_game_day[day_key] += 1
-    p1_x_array: list = list()
-    p1_y_array: list = list()
-    p2_x_array: list = list()
-    p2_y_array: list = list()
-    for key in p1_damage_day:
-        if p1_damage_day[key] > 0:
-            time = arrow.get(key)
-            p1_x_array.append(time.format('YYYY-MM-DD'))
-            p1_y_array.append(int((p1_damage_day[key] / p1_game_day[key])))
-    for key in p2_damage_day:
-        if p2_damage_day[key] > 0:
-            time = arrow.get(key)
-            p2_x_array.append(time.format('YYYY-MM-DD'))
-            p2_y_array.append(int((p2_damage_day[key] / p2_game_day[key])))
-
-    trace1 = go.Bar(x=p1_x_array, y=p1_y_array, name=player1.global_info.name)
-    trace2 = go.Bar(x=p2_x_array, y=p2_y_array, name=player2.global_info.name)
-    data = [trace1, trace2]
-    fig = go.Figure(data=data)
-    fig.update_layout(barmode='group', title="Average Damage / game", template="plotly_dark", legend=dict(font_size=16))
-    return json.dumps(fig, cls=ut.PlotlyJSONEncoder)
+def get_platform_for_player(player: str) -> ALPlatform:
+    """ Helper method that returns the platform from the given player """
+    players = get_players()
+    platform = ALPlatform.PC
+    for tracked_player in players:
+        if tracked_player["name"] == player:
+            platform = ALPlatform(value=tracked_player["platform"])
+    return platform
 
 
-def create_plot():
-
-    x = np.array([1, 2, 3, 4, 5])
-    y = np.array([1, 3, 2, 3, 1])
-
-    fig = go.Figure()
-    # noinspection PyTypeChecker
-    fig.add_trace(go.Scatter(x=x, y=y + 5, name="spline",
-                             text=["tweak line smoothness<br>with 'smoothing' in line object"],
-                             hoverinfo='text+name',
-                             line_shape='spline'))
-    fig.update_traces(hoverinfo='text+name', mode='lines+markers')
-    fig.update_layout(template="plotly_dark", legend=dict(y=0.5, traceorder='reversed', font_size=16))
-    return json.dumps(fig, cls=ut.PlotlyJSONEncoder)
+def get_players() -> list[dict]:
+    """ Helper method that returns a list of players being tracked """
+    return apex_api.events('GoshDarnedHero', ALPlatform.PC, ALAction.INFO)[0]["data"]
 
 
 if __name__ == '__main__':

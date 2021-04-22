@@ -1,0 +1,34 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <title>Friends of the Apex Legends API</title>
+</head>
+<body>
+<div class="container">
+    <div class="item">
+        <div>{{ player.global_info.name }}</div>
+        <div>Level: {{ player.global_info.level }}</div>
+        <div>
+            <progress
+                    class="progress_bar"
+                    value="{{ player.global_info.to_next_level_percent }}"
+                    max="100">
+            </progress>
+        </div>
+        <div>Selected Legend: {{ player.selected_legend.name }}</div>
+        {% for day in player_data.days_played()%}
+        <div class="container small_margin shadow">
+            <div class="item small_padding">{{ day }}</div>
+            <div class="break no_padding"></div>
+            <div class="item">Games Played: {{ player_data.games_played(day) | length }}</div>
+            <div class="item">Kills: {{ player_data.category_total(day, 'kills') }}<br><i>{{ player_data.category_rolling_average(day, 'kills', 7) | round(2) }} / game</i></div>
+            <div class="item">Wins: {{ player_data.category_total(day, 'wins') }}</div>
+            <div class="item">
+                Damage: {{ player_data.category_total(day, 'damage') }}<br><i>{{ player_data.category_day_average(day, 'damage') | round(0) | int }} / game</i>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
