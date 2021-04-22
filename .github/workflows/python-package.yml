@@ -37,7 +37,7 @@ jobs:
     - name: Lint with pylint
       run: |
         # lint the module, and the tests
-        pylint --disable=unsubscriptable-object apex_legends_tracker tests
+        pylint --disable=unsubscriptable-object config_setup flask_site tests
     - name: test
       run: |
         pytest tests
