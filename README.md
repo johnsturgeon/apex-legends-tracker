@@ -6,7 +6,7 @@ See: https://github.com/johnsturgeon/apex-legends-tracker/wiki for more informat
 
 ## Prerequisites
 - [Apex Legends API Key](https://apexlegendsapi.com)
-- Python 3.6 or greater    
+- Python 3.9 or greater    
 
 ## Setup
 - check out this repository
