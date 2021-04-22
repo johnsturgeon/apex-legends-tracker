@@ -50,7 +50,10 @@ def get_platform_for_player(player: str) -> ALPlatform:
 
 def get_players() -> list[dict]:
     """ Helper method that returns a list of players being tracked """
-    return apex_api.events('GoshDarnedHero', ALPlatform.PC, ALAction.INFO)[0]["data"]
+    first_event = apex_api.events('GoshDarnedHero', ALPlatform.PC, ALAction.INFO)[0]
+    if not isinstance(first_event, dict):
+        return list({})
+    return first_event["data"]
 
 
 if __name__ == '__main__':
