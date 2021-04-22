@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: 3.9
 
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest pylint pytest requests-mock
+        python -m pip install flake8 pytest pylint pytest requests-mock pytest-cov
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -40,4 +40,4 @@ jobs:
         pylint --disable=unsubscriptable-object config_setup flask_site tests
     - name: test
       run: |
-        pytest tests
+        pytest --cov=flask_site -v
