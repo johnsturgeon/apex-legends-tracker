@@ -1,30 +1,14 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    <title>Friends of the Apex Legends API</title>
+    <meta charset="UTF-8">
+    <title>Landing Page</title>
 </head>
 <body>
-<div class="container">
-    <div class="item">
-        <div>{{ player.global_info.name }}</div>
-        <div>Level: {{ player.global_info.level }}</div>
-        <div>
-            <progress
-                    class="progress_bar"
-                    value="{{ player.global_info.to_next_level_percent }}"
-                    max="100">
-            </progress>
-        </div>
-        <div>Selected Legend: {{ player.selected_legend.legend_name }}</div>
-        {% for tracker in player.selected_legend.data_trackers %}
-        <div>{{ tracker.name }}: {{ tracker.value }}</div>
-        {% endfor %}
-    </div>
-</div>
-<div class="legend_container">
-    {% for legend in player.all_legends %}
-        <div class="legend_item"><div class="legend_item"><img src="{{ legend.img_assets.banner }}"></div>
-    {%  endfor %}
-</div>
+<ul>
+    {% for player in players %}
+    <li><a href="{{ url_for('days', player_name=player["name"] ) }}">{{ player["name"] }}</a></li>
+    {% endfor %}
+</ul>
 </body>
 </html>

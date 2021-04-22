@@ -18,7 +18,11 @@ def get_settings():
     # if there is no user settings file, then we should copy the template file
     # to create the settings file
     if not os.path.isfile(settings_file):
-        shutil.copyfile(config_filepath() + '/settings_template.json', settings_file)
+        if not os.path.isdir(config_filepath()):
+            os.mkdir(config_filepath())
+        shutil.copyfile(
+            config_filepath() + '/../config_setup/settings_template.json', settings_file
+        )
     with open(settings_file) as config_file:
         app_settings = json.load(config_file)
     return app_settings

@@ -3,11 +3,15 @@ Run after checkout to set the project up, read the project README for more detai
 """
 import shutil
 import sys
+import os
 from distutils.sysconfig import get_python_lib
 from rich.prompt import Prompt
 from rich.console import Console
-# noinspection Pylint
-from include import common_init
+
+sys.path.append('flask_site')
+# pylint: disable=C0413
+# pylint: disable=E0401
+import common_init  # noqa C0413 E0401
 
 
 def main():
@@ -17,9 +21,12 @@ def main():
     message = """This file will set up the apex legends tracker.
 [blue]NOTE:[/blue] You can re-run this to change any of the configuration settings.\n\n"""
     console.print(message)
+    console.print("0. making the conf folder")
+    if not os.path.isdir("conf"):
+        os.mkdir('conf')
     # Copy the `additional_paths.pth` file to the site-packages folder
     console.print("1. [italic pale_green3]Moving paths file into site packages -->")
-    source_file_path = common_init.config_filepath() + '/additional_paths.pth'
+    source_file_path = common_init.config_filepath() + '/../config_setup/additional_paths.pth'
     shutil.copyfile(source_file_path, get_python_lib() + '/additional_paths.pth')
     console.print("[b green]Done!\n")
 
