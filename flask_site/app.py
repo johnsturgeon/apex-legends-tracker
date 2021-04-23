@@ -1,10 +1,10 @@
 """ Flask application for Apex Legends API Tracker """
 import os
+from dotenv import load_dotenv
 from flask import Flask, render_template
 from apex_legends_api import ApexLegendsAPI, ALPlayer, ALPlatform, ALAction
 import flask_site.graphing as graphing
 from flask_site.apex_stats import PlayerData
-from dotenv import load_dotenv
 
 load_dotenv()
 app = Flask(__name__, template_folder='templates')
