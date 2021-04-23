@@ -5,3 +5,4 @@ numpy
 arrow~=1.0.3
 apex-legends-api~=1.3.4
 gunicorn~=20.1.0
+python-dotenv~=0.17.0
