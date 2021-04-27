@@ -5,8 +5,8 @@ from requests import exceptions
 
 while True:
     try:
-        # print("Looking for Player Data to save:")
-        # player_data.save_player_data()
+        print("Looking for Player Data to save:")
+        player_data.save_player_data()
         print("Looking for Event Data to save:")
         player_data.save_event_data()
         SECONDS = 0

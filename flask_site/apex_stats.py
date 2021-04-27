@@ -54,7 +54,7 @@ class PlayerData:
             if not is_game and only_games:
                 continue
             day_key = str(
-                arrow.get(event.timestamp).to('local').format('YYYY-MM-DD')
+                arrow.get(event.timestamp).to('US/Pacific').format('YYYY-MM-DD')
             )
             dict_of_days[day_key] = ""
         if only_games:
