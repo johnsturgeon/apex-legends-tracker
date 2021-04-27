@@ -7,7 +7,7 @@
 <body>
 <ul>
     {% for player in players %}
-    <li><a href="{{ url_for('days', player_name=player["name"] ) }}">{{ player["name"] }}</a></li>
+    <li><a href="{{ url_for('days', player_uid=player["uid"] ) }}">{{ player["uid"] }}</a></li>
     {% endfor %}
 </ul>
 </body>
