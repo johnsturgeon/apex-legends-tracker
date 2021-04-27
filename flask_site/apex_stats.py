@@ -10,6 +10,9 @@ class PlayerData:
     """ A wrapper class for a player's stats """
     def __init__(self, player: ALPlayer):
         self.player = player
+        self._games_played: dict = {}
+        self._days_played_only_games: dict = {}
+        self._days_played: dict = {}
 
     def data_for_category_day_average(self, tracker_category: str) -> Tuple[list, list]:
         """ Creates a bar trace for a plotly bar graph """
@@ -37,7 +40,14 @@ class PlayerData:
 
     def days_played(self, only_games: bool = True) -> list:
         """ returns a list of days (format 'YYYY-MM-DD') that the player actually PLAYED a game """
-        dict_of_days: dict = dict()
+        if only_games:
+            dict_of_days = self._days_played_only_games
+        else:
+            dict_of_days = self._days_played
+
+        if dict_of_days:
+            return dict_of_days
+
         event: GameEvent
         for event in self.player.events:
             is_game: bool = event.event_type == ALEventType.GAME
@@ -47,11 +57,17 @@ class PlayerData:
                 arrow.get(event.timestamp).to('local').format('YYYY-MM-DD')
             )
             dict_of_days[day_key] = ""
-
-        return list(dict_of_days.keys())
+        if only_games:
+            self._days_played_only_games = dict_of_days
+        else:
+            self._days_played = dict_of_days
+        return list(sorted(dict_of_days.keys(), reverse=True))
 
     def games_played(self, day: str) -> list[GameEvent]:
         """ Return the list of games played for a given day """
+        if day in self._games_played:
+            return self._games_played[day]
+
         games: list[GameEvent] = list()
         for match in self.player.events:
             if match.event_type == ALEventType.GAME:
@@ -61,6 +77,7 @@ class PlayerData:
                 )
                 if day_key == day:
                     games.append(match)
+        self._games_played[day] = games
         return games
 
     def category_total(self, day: str, category: str) -> int:

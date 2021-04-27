@@ -37,4 +37,4 @@ jobs:
     - name: Lint with pylint
       run: |
         # lint the module, and the tests
-        pylint --disable=unsubscriptable-object flask_site tests
+        pylint --rcfile=.pylintrc --disable=unsubscriptable-object,too-few-public-methods bin flask_site tests

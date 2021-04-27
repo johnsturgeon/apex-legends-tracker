@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import plotly.utils as ut
 import numpy as np
 from apex_legends_api import ALPlayer
-from flask_site.apex_stats import PlayerData
+from apex_stats import PlayerData
 
 
 def create_bar_trace(player: ALPlayer, category: str) -> go.Bar:

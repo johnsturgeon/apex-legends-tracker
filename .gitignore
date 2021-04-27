@@ -1,5 +1,6 @@
 # Files specific for this project
 conf/settings.json
+flask_profiler.sql
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
