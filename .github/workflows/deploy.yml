@@ -42,18 +42,14 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           pass: ${{ secrets.REMOTE_PASSWORD }}
-
-      - name: Rsync over requirements file
-        uses: up9cloud/action-rsync@master
-        env:
-          HOST: ${{ secrets.REMOTE_HOST }}
-          KEY: ${{ secrets.SERVER_SSH_KEY }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}/requirements.txt
-
-          VERBOSE: true
-          USER: ${{ secrets.REMOTE_USER }}
-          ARGS: -avz --delete --exclude tmp --exclude public
-          SOURCE: ./requirements.txt
+      - name: SCP over requirements file
+        uses: siva1024/scp-deployer@latest
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "requirements.txt"
+          target: ${{ secrets.REMOTE_TARGET }}/requirements.txt
 
       - name: SSH - Re-Create virtual environment
         uses: fifsky/ssh-action@master
