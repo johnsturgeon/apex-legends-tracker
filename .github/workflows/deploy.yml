@@ -64,7 +64,10 @@ jobs:
         with:
           command: |
             cd ${{ secrets.REMOTE_TARGET }}
-            python3 -m venv env
+            virtualenv -p `which python` env
+            source env/bin/activate
+            pip install -r requirements.txt
+            rm requirements.txt
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
