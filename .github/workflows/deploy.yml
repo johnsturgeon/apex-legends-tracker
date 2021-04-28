@@ -59,11 +59,12 @@ jobs:
           ARGS: -avz --delete --exclude tmp --exclude public
           SOURCE: ./requirements.txt
 
-      - name: SSH - Create .env file
+      - name: SSH - Create virtual env
         uses: fifsky/ssh-action@master
         with:
           command: |
-            pwd
+            cd ${{ secrets.REMOTE_TARGET }}
+            python3 -m venv env
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
