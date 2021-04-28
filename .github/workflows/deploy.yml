@@ -59,13 +59,21 @@ jobs:
           ARGS: -avz --delete --exclude tmp --exclude public
           SOURCE: ./requirements.txt
 
-      - name: SSH - Re-Create virtual environment
+      - name: SSH - Create .env file
         uses: fifsky/ssh-action@master
         with:
           command: |
-            pwd
+            cat << EOF > ${{ secrets.REMOTE_TARGET }}/.env
+            APEX_LEGENDS_API_KEY=${{ secrets.APEX_LEGENDS_API_KEY }}
+            DEFAULT_PLAYER_NAME=${{ secrets.DEFAULT_PLAYER_NAME }}
+            MONGO_HOST=${{ secrets.MONGO_HOST }}
+            MONGO_PORT=${{ secrets.MONGO_PORT }}
+            MONGO_DB=${{ secrets.MONGO_DB }}
+            MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}
+            MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            EOF
           host: ${{ secrets.REMOTE_HOST }}
-          user: ${{ secrets.RENOTE_USER }}
+          user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
 
       - name: Rsync flask site to production
