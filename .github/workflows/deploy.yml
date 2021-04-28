@@ -30,6 +30,29 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
+      - name: SSH - Put the site in maintenance mode
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            touch ${{ secrets.REMOTE_TARGET }}/maintenance.txt
+            touch tmp/restart.txt
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: SSH - Delete current site
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.REMOTE_TARTET }}
+            rm -rf env
+            rm -rf flask_site
+            rm -rf .env
+            rm -rf passenger_wsgi.py
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
       - name: SSH - Create .env file
         uses: fifsky/ssh-action@master
         with:
@@ -59,6 +82,18 @@ jobs:
           ARGS: -avz --delete --exclude tmp --exclude public
           SOURCE: ./requirements.txt
 
+      - name: Rsync over passenger
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz --delete --exclude tmp --exclude public
+          SOURCE: ./requirements.txt
+
       - name: SSH - Create virtual env
         uses: fifsky/ssh-action@master
         with:
@@ -66,6 +101,7 @@ jobs:
             cd ${{ secrets.REMOTE_TARGET }}
             virtualenv -p `which python3` env
             source env/bin/activate
+            pip install --upgrade pip
             pip install -r requirements.txt
             rm requirements.txt
           host: ${{ secrets.REMOTE_HOST }}
@@ -85,4 +121,7 @@ jobs:
           SOURCE: ./flask_site/
           POST_SCRIPT: |
             echo Restarting Passenger
-            touch ${{ secrets.REMOTE_TARGET }}/flask_site/tmp/restart.txt
+            cd ${{ secrets.REMOTE_TARTET }}
+            rm maintenance.txt
+            touch tmp/restart.txt
+
