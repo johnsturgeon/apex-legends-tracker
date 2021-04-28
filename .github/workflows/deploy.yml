@@ -1,8 +1,13 @@
 name: Deploy Flask Site
 
+#on:
+#  workflow_dispatch:
 on:
-  workflow_dispatch:
-
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
 jobs:
   build:
     name: Run my own lint action
@@ -41,7 +46,7 @@ jobs:
             EOF
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
-          pass: ${{ secrets.REMOTE_PASSWORD }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
 
       - name: Rsync over requirements file
         uses: up9cloud/action-rsync@master
@@ -59,7 +64,7 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd ${{ secrets.PROD_WEB_SERVER_HOME }}
+            cd ${{ secrets.REMOTE_TARGET }}
             rm -rf env
             python3 -m venv env
             source env/bin/activate
@@ -69,7 +74,7 @@ jobs:
             # rm requirements.txt
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.RENOTE_USER }}
-          pass: ${{ secrets.REMOTE_PASSWORD }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
 
       - name: Rsync flask site to production
         uses: up9cloud/action-rsync@master
