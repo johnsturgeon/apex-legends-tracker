@@ -9,7 +9,7 @@ on:
     branches: [ main ]
 jobs:
   build:
-    name: Run my own lint action
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Check Out Repository
@@ -22,7 +22,7 @@ jobs:
         uses: ./.github/actions/lint
 
   deploy:
-    name: Deploy to production
+    name: Deploy (production)
     needs: build
     runs-on: ubuntu-latest
     environment: Production
@@ -64,9 +64,7 @@ jobs:
         with:
           command: |
             cd ${{ secrets.REMOTE_TARGET }}
-            pwd > dir.txt
-            pwd
-            virtualenv -p `which python` env
+            virtualenv -p `which python3` env
             source env/bin/activate
             pip install -r requirements.txt
             rm requirements.txt
