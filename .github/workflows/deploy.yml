@@ -41,15 +41,8 @@ jobs:
           USER: ${{ secrets.REMOTE_USER }}
           ARGS: -avz
           SOURCE: ./maintenance_wsgi.py
-
-      - name: SSH - Restart in maintenance mode
-        uses: fifsky/ssh-action@master
-        with:
-          command: |
+          POST_SCRIPT: |
             touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
-          host: ${{ secrets.REMOTE_HOST }}
-          user: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
 
       - name: SSH - Create .env file
         uses: fifsky/ssh-action@master
@@ -118,14 +111,5 @@ jobs:
           USER: ${{ secrets.REMOTE_USER }}
           ARGS: -avz
           SOURCE: ./passenger_wsgi.py
-
-      - name: SSH - Restart in maintenance mode
-        uses: fifsky/ssh-action@master
-        with:
-          command: |
+          POST_SCRIPT: |
             touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
-          host: ${{ secrets.REMOTE_HOST }}
-          user: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-
-

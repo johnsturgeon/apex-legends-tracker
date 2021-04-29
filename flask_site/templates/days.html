@@ -21,7 +21,7 @@
             <div class="item small_padding">{{ day }}</div>
             <div class="break no_padding"></div>
             <div class="item">Games Played: {{ player_data.games_played(day) | length }}</div>
-            <div class="item">Kills: {{ player_data.category_total(day, 'kills') }}<br><i>{{ player_data.category_rolling_average(day, 'kills', 7) | round(2) }} / game</i></div>
+            <div class="item">Kills: {{ player_data.category_total(day, 'kills') }}<br><i>{{ player_data.category_day_average(day, 'kills') | round(2) }} / game</i></div>
             <div class="item">Wins: {{ player_data.category_total(day, 'wins') }}</div>
             <div class="item">
                 Damage: {{ player_data.category_total(day, 'damage') }}<br><i>{{ player_data.category_day_average(day, 'damage') | round(0) | int }} / game</i>
