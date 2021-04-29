@@ -35,12 +35,12 @@ jobs:
         env:
           HOST: ${{ secrets.REMOTE_HOST }}
           KEY: ${{ secrets.SERVER_SSH_KEY }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}/maintenance_wsgi.py
+          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
 
           VERBOSE: true
           USER: ${{ secrets.REMOTE_USER }}
           ARGS: -avz
-          SOURCE: ./passenger_wsgi.py
+          SOURCE: ./maintenance_wsgi.py
 
       - name: SSH - Restart in maintenance mode
         uses: fifsky/ssh-action@master
@@ -79,18 +79,6 @@ jobs:
           USER: ${{ secrets.REMOTE_USER }}
           ARGS: -avz
           SOURCE: ./requirements.txt
-
-      - name: Rsync over passenger
-        uses: up9cloud/action-rsync@master
-        env:
-          HOST: ${{ secrets.REMOTE_HOST }}
-          KEY: ${{ secrets.SERVER_SSH_KEY }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
-
-          VERBOSE: true
-          USER: ${{ secrets.REMOTE_USER }}
-          ARGS: -avz
-          SOURCE: ./passenger_wsgi.py
 
       - name: SSH - Create virtual env
         uses: fifsky/ssh-action@master
