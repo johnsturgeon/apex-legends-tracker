@@ -34,7 +34,9 @@ class ApexDBHelper:
         :parameter uid: UID of the player
         :return: a single player or None if no player is found
         """
-        basic_player_stats: dict = self.basic_player_collection.find_one({"global.uid": uid})
+        basic_player_stats: dict = self.basic_player_collection.find_one(
+            {"global.uid": uid}, sort=[("global.internalUpdateCount", -1)]
+        )
         event_info: list = list(self.event_collection.find({'uid': str(uid)}))
         return ALPlayer(basic_player_stats_data=basic_player_stats, events=event_info)
 
