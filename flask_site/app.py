@@ -1,7 +1,7 @@
 """ Flask application for Apex Legends API Tracker """
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
 from flask_profile import Profiler
 from apex_legends_api import ALPlayer
 from apex_api_helper import ApexAPIHelper
@@ -22,6 +22,19 @@ app.config["flask_profiler"] = {
     },
     "profile_dir": "/Users/johnsturgeon/Code/apex-legends-tracker/log"
 }
+
+
+@app.before_request
+def before_request():
+    """ This runs before every single request to check for maintenance mode """
+    if os.path.exists("maintenance"):
+        abort(503)
+
+
+@app.errorhandler(503)
+def under_maintenance(_):
+    """ Render the default maintenance page """
+    return render_template('503.html'), 503
 
 
 @app.route('/')
