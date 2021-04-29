@@ -27,6 +27,14 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
+      - name: SSH - Enter maintenance mode
+        uses: fifsky/ssh-action@master
+        with:
+          command: touch ${{ secrets.REMOTE_TARGET }}/flask_site/maintenance
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
       - name: Rsync over maintenance passenger file
         uses: up9cloud/action-rsync@master
         env:
@@ -109,4 +117,5 @@ jobs:
           ARGS: -avz
           SOURCE: ./passenger_wsgi.py
           POST_SCRIPT: |
+            rm ${{ secrets.REMOTE_TARGET }}/flask_site/maintenance
             touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
