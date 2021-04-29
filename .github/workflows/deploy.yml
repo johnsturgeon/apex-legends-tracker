@@ -30,13 +30,23 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: SSH - Put the site in maintenance mode
+      - name: Rsync over maintenance passenger file
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/maintenance_wsgi.py
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz
+          SOURCE: ./passenger_wsgi.py
+
+      - name: SSH - Restart in maintenance mode
         uses: fifsky/ssh-action@master
         with:
           command: |
-            cd ${{ secrets.REMOTE_TARGET }}
-            touch maintenance.txt
-            touch tmp/restart.txt
+            touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
@@ -108,9 +118,26 @@ jobs:
           USER: ${{ secrets.REMOTE_USER }}
           ARGS: -avz --delete
           SOURCE: ./flask_site/
-          POST_SCRIPT: |
-            echo Restarting Passenger
-            cd ${{ secrets.REMOTE_TARGET }}
-            rm maintenance.txt
-            touch tmp/restart.txt
+
+      - name: Rsync over production passenger file
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz
+          SOURCE: ./passenger_wsgi.py
+
+      - name: SSH - Restart in maintenance mode
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
 
