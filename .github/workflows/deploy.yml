@@ -30,7 +30,7 @@ jobs:
       - name: SSH - Enter maintenance mode
         uses: fifsky/ssh-action@master
         with:
-          command: touch ${{ secrets.REMOTE_TARGET }}/flask_site/maintenance
+          command: touch ${{ secrets.REMOTE_TARGET }}/maintenance
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
@@ -103,5 +103,5 @@ jobs:
           ARGS: -avz
           SOURCE: ./passenger_wsgi.py
           POST_SCRIPT: |
-            rm ${{ secrets.REMOTE_TARGET }}/flask_site/maintenance
+            rm ${{ secrets.REMOTE_TARGET }}/maintenance
             touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
