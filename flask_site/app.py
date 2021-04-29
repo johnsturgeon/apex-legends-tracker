@@ -32,7 +32,8 @@ def before_request():
 
 
 @app.errorhandler(503)
-def under_maintenance(e):
+def under_maintenance(_):
+    """ Render the default maintenance page """
     return render_template('503.html'), 503
 
 
