@@ -34,7 +34,8 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            touch ${{ secrets.REMOTE_TARGET }}/maintenance.txt
+            cd ${{ secrets.REMOTE_TARGET }}
+            touch maintenance.txt
             touch tmp/restart.txt
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
