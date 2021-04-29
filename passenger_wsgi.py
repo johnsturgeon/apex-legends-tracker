@@ -1,5 +1,4 @@
 """ Passenger WSGI is a wrapper for the app to be deployed in a WSGI environment """
-# pylint: skip-file
 import sys
 import os
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -8,6 +7,4 @@ INTERP = APP_ROOT + "/env/bin/python"
 if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 sys.path.insert(0, APP_ROOT + '/flask_site/')
-from app import app as application
-if application:
-    pass
+from app import app as application  # noqa E402
