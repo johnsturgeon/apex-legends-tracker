@@ -35,20 +35,6 @@ jobs:
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
 
-      - name: Rsync over maintenance passenger file
-        uses: up9cloud/action-rsync@master
-        env:
-          HOST: ${{ secrets.REMOTE_HOST }}
-          KEY: ${{ secrets.SERVER_SSH_KEY }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
-
-          VERBOSE: true
-          USER: ${{ secrets.REMOTE_USER }}
-          ARGS: -avz
-          SOURCE: ./maintenance_wsgi.py
-          POST_SCRIPT: |
-            touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
-
       - name: SSH - Create .env file
         uses: fifsky/ssh-action@master
         with:
