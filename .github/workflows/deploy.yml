@@ -109,7 +109,7 @@ jobs:
           SOURCE: ./flask_site/
           POST_SCRIPT: |
             echo Restarting Passenger
-            cd ${{ secrets.REMOTE_TARTET }}
+            cd ${{ secrets.REMOTE_TARGET }}
             rm maintenance.txt
             touch tmp/restart.txt
 
