@@ -15,7 +15,6 @@ api_key = os.getenv('APEX_LEGENDS_API_KEY')
 default_player = os.getenv('DEFAULT_PLAYER_NAME')
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
-
 Profiler(app)
 app.config["flask_profiler"] = {
     "storage": {

@@ -1,34 +1,115 @@
-name: Deploy Flask Site to Production
+name: Deploy Flask Site
 
 #on:
-#  release:
-#    types: [created]
-
+#  workflow_dispatch:
 on:
-  workflow_dispatch:
-
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 jobs:
+  build:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out Repository
+        uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
+      - name: Lint Check
+        uses: ./.github/actions/lint
+
   deploy:
+    name: Deploy (production)
+    needs: build
     runs-on: ubuntu-latest
     environment: Production
-
     steps:
-      - uses: actions/checkout@v1
-      - name: Install Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '10.x'
-      - name: Install npm dependencies
-        run: npm install
-      - name: Run build task
-        run: npm run build --if-present
-      - name: Deploy to Server
-        uses: easingthemes/ssh-deploy@v2.1.5
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Rsync over maintenance passenger file
+        uses: up9cloud/action-rsync@master
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          ARGS: "-rltgoDzvO --delete"
-          SOURCE: "flask_site/"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}
-          EXCLUDE: ""
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz
+          SOURCE: ./maintenance_wsgi.py
+          POST_SCRIPT: |
+            touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
+
+      - name: SSH - Create .env file
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cat << EOF > ${{ secrets.REMOTE_TARGET }}/.env
+            APEX_LEGENDS_API_KEY=${{ secrets.APEX_LEGENDS_API_KEY }}
+            DEFAULT_PLAYER_NAME=${{ secrets.DEFAULT_PLAYER_NAME }}
+            MONGO_HOST=${{ secrets.MONGO_HOST }}
+            MONGO_PORT=${{ secrets.MONGO_PORT }}
+            MONGO_DB=${{ secrets.MONGO_DB }}
+            MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}
+            MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            EOF
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Rsync over requirements file
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/requirements.txt
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz
+          SOURCE: ./requirements.txt
+
+      - name: SSH - Create virtual env
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd ${{ secrets.REMOTE_TARGET }}
+            rm -rf env
+            virtualenv -p `which python3` env
+            source env/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements.txt
+            rm requirements.txt
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Rsync flask site to production
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/flask_site/
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz --delete
+          SOURCE: ./flask_site/
+
+      - name: Rsync over production passenger file
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz
+          SOURCE: ./passenger_wsgi.py
+          POST_SCRIPT: |
+            touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt

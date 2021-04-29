@@ -18,8 +18,7 @@ class ApexDBHelper:
             username=os.getenv('MONGO_USERNAME'),
             password=os.getenv('MONGO_PASSWORD'),
             authSource=os.getenv('MONGO_DB'),
-            authMechanism='SCRAM-SHA-256',
-            tls=True
+            authMechanism='SCRAM-SHA-256'
         )
         self.database: Database = self.client.apex_legends
         self.basic_player_collection: Collection = self.database.basic_player
