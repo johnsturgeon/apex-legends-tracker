@@ -3,7 +3,7 @@
 
 def application(_, start_response):
     """ default route if we're in maintenance mode"""
-    start_response('200 OK', [('Content-type', 'text/plain')])
+    start_response('200 OK', [('Content-type', 'text/html')])
     return ["""
     <!DOCTYPE html>
      <html>
@@ -26,7 +26,7 @@ def application(_, start_response):
         <p>
             We apologize for the inconvenience, but we're performing some maintenance.
             You can contact me at
-            <a href="mailto:john.sturgeon@me.com">john.sturgeon@me.com</a>.
+            <a href="mailto:goshdarnedhero@icloud.com">goshdarnedhero@icloud.com</a>.
             We'll be back up soon!
         </p>
         <p>&mdash; (You can play some Apex Legends while you wait!)</p>
