@@ -62,7 +62,7 @@
                     {% set legend_wins=player_data.category_total(day, 'wins', legend) -%}
                     {% set legend_damage=player_data.category_total(day, 'damage', legend)  -%}
                     <div class="item" style="flex-shrink: 0;flex-grow: 0">
-                    <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}" src="{{ url_for('static', filename='images/'+legend+'_icon.svg') }}">
+                    <img class="legend_thumb" alt="{{ legend | lower }} icon" title="{{ legend }}" src="{{ url_for('static', filename='images/'+legend+'_icon.svg') }}">
                     </div>
                     {{ progress_container("Games", legend_games, games_played) }}
                     {{ progress_container("Kills", legend_kills, kills) }}
