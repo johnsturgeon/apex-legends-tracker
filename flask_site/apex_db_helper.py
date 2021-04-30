@@ -92,3 +92,12 @@ class ApexDBHelper:
                 return player['name']
 
         return "NotFound"
+
+    def get_legend_icon(self, legend_name: str) -> str:
+        """ Return the icon of a legend """
+        basic_player_stats: dict = self.basic_player_collection.find_one(
+            {}, sort=[("global.internalUpdateCount", -1)]
+        )
+        if not legend_name:
+            print("YIKES")
+        return basic_player_stats['legends']['all'][legend_name]['ImgAssets']['icon']

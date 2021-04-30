@@ -1,3 +1,28 @@
+{% macro progress_container(label, count, total) -%}
+    {% if total > 0 %}
+        {% set percent=(count/total)*100 %}
+    {% else %}
+        {% set percent=0 %}
+    {% endif %}
+    <div class="item">
+        <div style="display:inline">
+            {{ label }}
+        </div>
+        <div style="float:right;display:inline">
+            {{ count }}/{{ total }}
+        </div>
+        {{ progress_bar(percent) }}
+    </div>
+
+{% endmacro -%}
+{% macro progress_bar(percent) -%}
+<div class="progress-container">
+    <div class="progress-background"></div>
+    <div class="progress-bar" style="width:{{ percent }}%"></div>
+</div>
+{% endmacro %}
+
+{%  set global_info=player.global_info %}
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
@@ -6,25 +31,45 @@
 <body>
 <div class="container">
     <div class="item">
-        <div>{{ player.global_info.name }}</div>
-        <div>Level: {{ player.global_info.level }}</div>
-        <div>
-            <progress
-                    class="progress_bar"
-                    value="{{ player.global_info.to_next_level_percent }}"
-                    max="100">
-            </progress>
-        </div>
+        <div>{{ global_info.name }}</div>
+        <div>Level: {{ global_info.level }}</div>
+        {{ progress_bar(global_info.to_next_level_percent) }}
         <div>Selected Legend: {{ player.selected_legend.name }}</div>
         {% for day in player_data.days_played()%}
         <div class="container small_margin shadow">
-            <div class="item small_padding">{{ day }}</div>
+            <div class="container header">
+                <div class="item small_padding">{{ day }}</div>
+            </div>
             <div class="break no_padding"></div>
-            <div class="item">Games Played: {{ player_data.games_played(day) | length }}</div>
-            <div class="item">Kills: {{ player_data.category_total(day, 'kills') }}<br><i>{{ player_data.category_day_average(day, 'kills') | round(2) }} / game</i></div>
-            <div class="item">Wins: {{ player_data.category_total(day, 'wins') }}</div>
+            {% set games_played=player_data.games_played(day) | length -%}
+            {% set kills=player_data.category_total(day, 'kills') -%}
+            {% set avg_kills=player_data.category_day_average(day, 'kills') | round(2) -%}
+            {% set wins=player_data.category_total(day, 'wins') -%}
+            {% set damage=player_data.category_total(day, 'damage') -%}
+            {% set avg_damage=player_data.category_day_average(day, 'damage') | round(0) | int -%}
+            <div class="item">Games Played: {{ games_played }}</div>
+            <div class="item">Kills: {{ kills }}<br><i>{{ avg_kills }} / game</i></div>
+            <div class="item">Wins: {{ wins }}</div>
             <div class="item">
-                Damage: {{ player_data.category_total(day, 'damage') }}<br><i>{{ player_data.category_day_average(day, 'damage') | round(0) | int }} / game</i>
+                Damage: {{ damage }}<br><i>{{ avg_damage }} / game</i>
+            </div>
+            <div class="break no_padding"></div>
+            <div class="container footer">
+                <div class="break no_padding"></div>
+                {% for legend in player_data.get_legends_played(day) %}
+                    {% set legend_games=player_data.games_played(day, legend) | length -%}
+                    {% set legend_kills=player_data.category_total(day, 'kills', legend) -%}
+                    {% set legend_wins=player_data.category_total(day, 'wins', legend) -%}
+                    {% set legend_damage=player_data.category_total(day, 'damage', legend)  -%}
+                    <div class="item" style="flex-shrink: 0;flex-grow: 0">
+                    <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}" src="{{ url_for('static', filename='images/'+legend+'_icon.svg') }}">
+                    </div>
+                    {{ progress_container("Games", legend_games, games_played) }}
+                    {{ progress_container("Kills", legend_kills, kills) }}
+                    {{ progress_container("Wins", legend_wins, wins) }}
+                    {{ progress_container("Damage", legend_damage, damage) }}
+                    <div class="break no_padding"></div>
+                {% endfor %}
             </div>
         </div>
         {% endfor %}
