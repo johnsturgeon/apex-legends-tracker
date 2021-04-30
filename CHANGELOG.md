@@ -3,12 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [Unreleased]
+
+## [0.3.0] - 2021-04-30
+### Added
+- Finished [Project to implement game day legend badges](https://github.com/johnsturgeon/apex-legends-tracker/projects/3)
+- Add summary data next to thumbnail (Issue #38) 
+- Add a small list of thumbnails for each legend played across the top (Issue #39)
+- Added a small progress bar indicating percent of the stat for that day
 ### Fixed
 - Small tweak to the deployment script to change where the maintenance file goes
-### Added
-- Working on [Project to implement game day legend badges](https://github.com/johnsturgeon/apex-legends-tracker/projects/3)
-- Issue #38
 
 ## [0.2.1] - 2021-04-29
 ### Fixed
