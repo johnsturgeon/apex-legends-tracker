@@ -14,12 +14,16 @@ class PlayerData:
         self._days_played_only_games: dict = {}
         self._days_played: dict = {}
 
-    def data_for_category_day_average(self, tracker_category: str) -> Tuple[list, list]:
+    def data_for_category_day_average(
+            self,
+            tracker_category: str,
+            legend: str = ""
+    ) -> Tuple[list, list]:
         """ Creates a bar trace for a plotly bar graph """
         damage_day: dict = dict()
         game_day: dict = dict()
         for day in self.days_played():
-            for game in self.games_played(day=day):
+            for game in self.games_played(day=day, legend=legend):
                 if day not in damage_day:
                     damage_day[day] = 0
                     game_day[day] = 0
@@ -63,28 +67,36 @@ class PlayerData:
             self._days_played = dict_of_days
         return list(sorted(dict_of_days.keys(), reverse=True))
 
-    def games_played(self, day: str) -> list[GameEvent]:
+    def games_played(self, day: str, legend: str = "") -> list[GameEvent]:
         """ Return the list of games played for a given day """
+        unfiltered_games: list[GameEvent] = list()
+        filtered_games: list[GameEvent] = list()
         if day in self._games_played:
-            return self._games_played[day]
+            unfiltered_games = self._games_played[day]
+        else:
+            for match in self.player.events:
+                if match.event_type == ALEventType.GAME:
+                    match.__class__ = GameEvent
+                    day_key = str(
+                        arrow.get(match.timestamp).to('local').format('YYYY-MM-DD')
+                    )
+                    if day_key == day:
+                        unfiltered_games.append(match)
+            self._games_played[day] = unfiltered_games
 
-        games: list[GameEvent] = list()
-        for match in self.player.events:
-            if match.event_type == ALEventType.GAME:
-                match.__class__ = GameEvent
-                day_key = str(
-                    arrow.get(match.timestamp).to('local').format('YYYY-MM-DD')
-                )
-                if day_key == day:
-                    games.append(match)
-        self._games_played[day] = games
-        return games
+        if legend:
+            for game in unfiltered_games:
+                if game.legend_played == legend:
+                    filtered_games.append(game)
+        else:
+            filtered_games = unfiltered_games
+        return filtered_games
 
-    def category_total(self, day: str, category: str) -> int:
+    def category_total(self, day: str, category: str, legend: str = "") -> int:
         """ Return the total for a given category on a given day """
         total = 0
         game: GameEvent
-        for game in self.games_played(day):
+        for game in self.games_played(day, legend):
             tracker: DataTracker
             for tracker in game.game_data_trackers:
                 if tracker.category == category:
@@ -93,12 +105,12 @@ class PlayerData:
                     print(tracker.category)
         return total
 
-    def category_day_average(self, day: str, category: str) -> float:
+    def category_day_average(self, day: str, category: str, legend: str = "") -> float:
         """ Return the average for a given category on a given day """
         avg: float = 0.0
-        games_played = len(self.games_played(day))
+        games_played = len(self.games_played(day, legend))
         if games_played:
-            avg = self.category_total(day, category) / len(self.games_played(day))
+            avg = self.category_total(day, category, legend) / len(self.games_played(day, legend))
         return avg
 
     def category_rolling_average(self, day: str, category: str, rolling_days: int) -> float:
@@ -119,3 +131,16 @@ class PlayerData:
                 rolling_total += self.category_day_average(day, category)
 
         return rolling_total / rolling_days
+
+    def get_legends_played(self, day: str) -> list:
+        """ Returns a list of legends played for a given day """
+        legends: dict = {}
+        game: GameEvent
+        for game in self.games_played(day):
+            print("Legend: "+game.legend_played)
+            if not game.legend_played:
+                continue
+
+            legends[game.legend_played] = ""
+
+        return list(legends.keys())

@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Small tweak to the deployment script to change where the maintenance file goes
+### Added
+- Working on [Project to implement game day legend badges](https://github.com/johnsturgeon/apex-legends-tracker/projects/3)
+- Issue #38
 
 ## [0.2.1] - 2021-04-29
 ### Fixed

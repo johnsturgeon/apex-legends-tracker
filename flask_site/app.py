@@ -48,7 +48,12 @@ def days(player_uid: int):
     """ List of player matches and some detail / day """
     player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
     player_data: PlayerData = PlayerData(player)
-    return render_template('days.html', player=player, player_data=player_data)
+    return render_template(
+        'days.html',
+        player=player,
+        player_data=player_data,
+        db_helper=apex_db_helper
+    )
 
 
 @app.route('/profile/<player_uid>/<category>')
