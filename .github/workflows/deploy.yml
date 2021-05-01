@@ -91,6 +91,18 @@ jobs:
           ARGS: -avz --delete
           SOURCE: ./flask_site/
 
+      - name: Rsync bin to production
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/bin/
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz --delete
+          SOURCE: ./bin/
+
       - name: Rsync over production passenger file
         uses: up9cloud/action-rsync@master
         env:

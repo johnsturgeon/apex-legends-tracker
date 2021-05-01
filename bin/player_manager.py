@@ -47,10 +47,8 @@ def save_event_data(refresh_from_api: bool = False):
             apex_db_helper.save_event_data(event_data=event_data)
 
 
-def add_player_by_name(player_name: str):
+def add_player_by_name(player_name: str, platform: ALPlatform):
     """ adds a player to the API for tracking, then refresh the DB with that player """
-    if player_name:
-        pass
-    # get uid
-    # add uid to list
-    # save player data refresh from api
+    uid = apex_api_helper.api.nametouid(player=player_name, platform=platform)
+    apex_api_helper.api.add_player_by_uid(uid, platform)
+    save_player_data(refresh_from_api=True)
