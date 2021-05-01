@@ -36,7 +36,9 @@ def save_event_data(refresh_from_api: bool = False):
     for player in list_of_players:
         try:
             event_data_list = apex_api_helper.api.events_by_uid(
-                uid=player['uid'], platform=ALPlatform(value=player['platform']), action=ALAction.GET
+                uid=player['uid'],
+                platform=ALPlatform(value=player['platform']),
+                action=ALAction.GET
             )
         except ALHTTPExceptionFromResponse:
             print(f"Player: {player} not found")
