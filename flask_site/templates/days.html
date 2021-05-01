@@ -1,27 +1,4 @@
-{% macro progress_container(label, count, total) -%}
-    {% if total > 0 %}
-        {% set percent=(count/total)*100 %}
-    {% else %}
-        {% set percent=0 %}
-    {% endif %}
-    <div class="item">
-        <div style="display:inline">
-            {{ label }}
-        </div>
-        <div style="float:right;display:inline">
-            {{ count }}/{{ total }}
-        </div>
-        {{ progress_bar(percent) }}
-    </div>
-
-{% endmacro -%}
-{% macro progress_bar(percent) -%}
-<div class="progress-container">
-    <div class="progress-background"></div>
-    <div class="progress-bar" style="width:{{ percent }}%"></div>
-</div>
-{% endmacro %}
-
+{%  import 'macros.html' as macros %}
 {%  set global_info=player.global_info %}
 <html lang="en">
 <head>
@@ -33,7 +10,7 @@
     <div class="item">
         <div>{{ global_info.name }}</div>
         <div>Level: {{ global_info.level }}</div>
-        {{ progress_bar(global_info.to_next_level_percent) }}
+        {{ macros.progress_bar(global_info.to_next_level_percent) }}
         <div>Selected Legend: {{ player.selected_legend.name }}</div>
         {% for day in player_data.days_played()%}
         <div class="container small_margin shadow">
@@ -65,10 +42,10 @@
                     <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
                          src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
                     </div>
-                    {{ progress_container("Games", legend_games, games_played) }}
-                    {{ progress_container("Kills", legend_kills, kills) }}
-                    {{ progress_container("Wins", legend_wins, wins) }}
-                    {{ progress_container("Damage", legend_damage, damage) }}
+                    {{ macros.progress_container("Games", legend_games, games_played) }}
+                    {{ macros.progress_container("Kills", legend_kills, kills) }}
+                    {{ macros.progress_container("Wins", legend_wins, wins) }}
+                    {{ macros.progress_container("Damage", legend_damage, damage) }}
                     <div class="break no_padding"></div>
                 {% endfor %}
             </div>
