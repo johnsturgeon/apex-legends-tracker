@@ -1,14 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Landing Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <title>Friends of the Apex Legends API</title>
 </head>
 <body>
+<div class="container">
+    <div class="item">
+    </div>
+    <div class="item">
+        <div class="container small_margin shadow">
+            <div class="container no_margin">
+                {% for player in players %}
+                    <div class="item small_padding">
+                        <a href="{{ url_for('days', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br>
+                    </div>
+                    <div class="break no_padding"></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="item">
+    </div>
+</div>
 <ul>
-    {% for player in players %}
-    <li><a href="{{ url_for('days', player_uid=player["uid"] ) }}">{{ player["name"] }}</a></li>
-    {% endfor %}
 </ul>
 </body>
 </html>

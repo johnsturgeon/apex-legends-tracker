@@ -1,0 +1,24 @@
+{% macro progress_container(label, count, total) -%}
+    {% if total > 0 %}
+        {% set percent=(count/total)*100 %}
+    {% else %}
+        {% set percent=0 %}
+    {% endif %}
+    <div class="item">
+        <div style="display:inline">
+            {{ label }}
+        </div>
+        <div style="float:right;display:inline">
+            {{ count }}/{{ total }}
+        </div>
+        {{ progress_bar(percent) }}
+    </div>
+
+{% endmacro -%}
+{% macro progress_bar(percent) -%}
+    <div class="progress-container">
+        <div class="progress-background"></div>
+        <div class="progress-bar" style="width:{{ percent }}%"></div>
+    </div>
+{% endmacro %}
+

@@ -9,6 +9,16 @@ body {
     color: wheat;
 }
 
+a {
+    color: wheat;
+}
+
+/* index */
+
+.home_player_list {
+    flex: 0 0 220px;
+}
+
 .container {
     display: flex; /* or inline-flex */
     flex-wrap: wrap;
@@ -56,6 +66,10 @@ body {
     border-top: solid 1px;
     font-weight: lighter;
     font-size: 12pt;
+}
+
+.no_margin {
+    margin: 0;
 }
 
 .small_margin {
