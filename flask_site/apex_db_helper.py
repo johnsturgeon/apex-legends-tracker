@@ -69,14 +69,9 @@ class ApexDBHelper:
         uid = player_data['global']['uid']
         internal_update_count = player_data['global']['internalUpdateCount']
         key = {"global.uid": uid, "global.internalUpdateCount": internal_update_count}
-        print(
-            f"{arrow.now().format()}: Inserting updated record for {player_data['global']['name']}"
-        )
-        result = self.basic_player_collection.update_one(
+        self.basic_player_collection.update_one(
             filter=key, update={"$set": player_data}, upsert=True
         )
-        if result:
-            pass
 
     def save_player_data(self, player_data: dict):
         """ Saves player record """
@@ -87,9 +82,7 @@ class ApexDBHelper:
             'platform': player_data['platform'],
             'active': player_data['active']
         }
-        result = self.player_collection.update_one(filter=key, update={"$set": data}, upsert=True)
-        if result:
-            pass
+        self.player_collection.update_one(filter=key, update={"$set": data}, upsert=True)
 
     def save_event_data(self, event_data: dict):
         """ Saves any 'new' event data record """
