@@ -17,7 +17,7 @@ class ApexAPIHelper:  # noqa R0903
         player_list = self.api.events('GoshDarnedHero', ALPlatform.PC, ALAction.INFO)
         for player in player_list[0]['data']:
             player_dict[player['uid']] = {
-                'uid': player['uid'],
+                'uid': int(player['uid']),
                 'name': '',
                 'platform': player['platform']
             }
