@@ -132,7 +132,7 @@ jobs:
             cd ${{ secrets.REMOTE_TARGET }}
             source env/bin/activate
             export PYTHONPATH=${{ secrets.REMOTE_TARGET}}/flask_site
-            nohup python ${{ secrets.REMOTE_TARGET}}/bin/save_api_data_to_db.py 2>&1 > ${{ secrets.REMOTE_TARGET}}/logs/save_api_data.log &
+            nohup python ${{ secrets.REMOTE_TARGET}}/bin/save_api_data_to_db.py 2>&1 &
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
