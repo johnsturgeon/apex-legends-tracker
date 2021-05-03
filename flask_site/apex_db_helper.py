@@ -1,5 +1,7 @@
 """ Helper module for """
 import os
+import arrow
+import pymongo
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.database import Database
@@ -23,6 +25,8 @@ class ApexDBHelper:
         self.database: Database = self.client.apex_legends
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: Collection = self.database.event
+        self.player_collection: Collection = self.database.player
+        self._latest_event_timestamp: int = 0
 
     def get_player_by_uid(self, uid: int) -> ALPlayer:
         """
@@ -40,29 +44,52 @@ class ApexDBHelper:
         event_info: list = list(self.event_collection.find({'uid': str(uid)}))
         return ALPlayer(basic_player_stats_data=basic_player_stats, events=event_info)
 
-    def get_tracked_players(self) -> list:
+    def get_tracked_players(self, active_only=False) -> list[dict]:
         """ Return a list of dictionaries containing each player's data"""
         player_dict: dict = dict()
-        for player in self.basic_player_collection.find():
-            glob = player['global']
-            player_dict[glob['uid']] = {
-                'uid': glob['uid'],
-                'name': glob['name'],
-                'platform': glob['platform']
-            }
+        for player in self.player_collection.find():
+            if not active_only or player['active']:
+                basic_player = self.basic_player_collection.find_one(
+                    filter={'global.uid': player['uid']},
+                    sort=[("global.internalUpdateCount", pymongo.DESCENDING)]
+                )
+                glob = basic_player['global']
+                realtime = basic_player['realtime']
+                player_dict[glob['uid']] = {
+                    'uid': int(glob['uid']),
+                    'name': glob['name'],
+                    'platform': glob['platform'],
+                    'is_online': realtime['isOnline']
+                }
 
         return list(player_dict.values())
 
-    def save_player_data(self, player_data: dict):
-        """ Saves a player_data record if it's changed """
+    def save_basic_player_data(self, player_data: dict):
+        """ Saves a player_data record into `basic_player` if it's changed """
         uid = player_data['global']['uid']
         internal_update_count = player_data['global']['internalUpdateCount']
-        db_data = self.basic_player_collection.find_one(
-            {"global.uid": uid, "global.internalUpdateCount": internal_update_count}
+        key = {"global.uid": uid, "global.internalUpdateCount": internal_update_count}
+        print(
+            f"{arrow.now().format()}: Inserting updated record for {player_data['global']['name']}"
         )
-        if not db_data:
-            print(f"Inserting updated record for {player_data['global']['name']}")
-            self.basic_player_collection.insert_one(player_data)
+        result = self.basic_player_collection.update_one(
+            filter=key, update={"$set": player_data}, upsert=True
+        )
+        if result:
+            pass
+
+    def save_player_data(self, player_data: dict):
+        """ Saves player record """
+        assert isinstance(player_data['uid'], int)
+        key = {'uid': player_data['uid']}
+        data = {
+            'player_name': player_data['name'],
+            'platform': player_data['platform'],
+            'active': player_data['active']
+        }
+        result = self.player_collection.update_one(filter=key, update={"$set": data}, upsert=True)
+        if result:
+            pass
 
     def save_event_data(self, event_data: dict):
         """ Saves any 'new' event data record """
@@ -73,7 +100,7 @@ class ApexDBHelper:
             {"uid": uid, "timestamp": timestamp, "eventType": event_type}
         )
         if not db_data:
-            print(f"Adding event for {event_data['player']}")
+            print(f"{arrow.now().format()}: Adding event for {event_data['player']}")
             self.event_collection.insert_one(event_data)
 
     def get_platform_for_player_uid(self, player_uid: str) -> ALPlatform:
@@ -101,3 +128,10 @@ class ApexDBHelper:
         if not legend_name:
             print("YIKES")
         return basic_player_stats['legends']['all'][legend_name]['ImgAssets']['icon']
+
+    def get_latest_event_timestamp(self) -> int:
+        """ returns the latest timestamp in the db """
+        if not self._latest_event_timestamp:
+            newest_record = self.event_collection.find_one(sort=[("timestamp", pymongo.DESCENDING)])
+            self._latest_event_timestamp = newest_record['timestamp']
+        return self._latest_event_timestamp
