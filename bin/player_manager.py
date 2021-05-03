@@ -1,5 +1,4 @@
 """ methods for retrieving and saving player data """
-import arrow
 from threading import Thread
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper

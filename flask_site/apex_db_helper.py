@@ -135,4 +135,3 @@ class ApexDBHelper:
             newest_record = self.event_collection.find_one(sort=[("timestamp", pymongo.DESCENDING)])
             self._latest_event_timestamp = newest_record['timestamp']
         return self._latest_event_timestamp
-
