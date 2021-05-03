@@ -6,6 +6,7 @@ from apex_legends_api import ALPlatform, ALAction, ALHTTPExceptionFromResponse
 
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
+log = apex_db_helper.logger
 
 
 def save_player_data(refresh_from_api: bool = False):
@@ -38,7 +39,7 @@ def save_one_player_data(player: dict):
             player['uid'], ALPlatform(value=player['platform']), skip_tracker_rank=True
         )
     except ALHTTPExceptionFromResponse:
-        print(f"Player: {player} not found")
+        log.warning("Player: %s not found", player)
         return
     else:
         assert isinstance(basic_player_data_list, list)
@@ -56,7 +57,7 @@ def save_one_player_event_data(player: dict):
             action=ALAction.GET
         )
     except ALHTTPExceptionFromResponse:
-        print(f"Player: {player} not found")
+        log.warning("Player: %s not found", player)
         return
     else:
         for event_data in event_data_list:

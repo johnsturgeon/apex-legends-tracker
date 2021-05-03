@@ -1,6 +1,8 @@
 """ Helper module for """
 import os
-import arrow
+import logging
+import datetime
+from logging import Logger
 import pymongo
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -9,6 +11,27 @@ from pymongo.collection import Collection
 from apex_legends_api import ALPlayer, ALPlatform
 
 load_dotenv()
+
+
+class LogHandler(logging.Handler):
+    """
+    A logging handler that will record messages to a capped MongoDB collection.
+    """
+    def __init__(self, client):
+        """ Initialize the logger """
+        level = getattr(logging, os.getenv('LOG_LEVEL'))
+        logging.Handler.__init__(self, level)
+        database: Database = client.apex_legends
+        self.log_collection: Collection = database.get_collection(os.getenv('LOG_COLLECTION'))
+
+    def emit(self, record):
+        """ Override of the logger method """
+        self.log_collection.insert_one({
+            'when': datetime.datetime.now(),
+            'log_level': record.levelno,
+            'level_name': record.levelname,
+            'message': record.msg % record.args
+        })
 
 
 class ApexDBHelper:
@@ -26,6 +49,10 @@ class ApexDBHelper:
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: Collection = self.database.event
         self.player_collection: Collection = self.database.player
+        logger: Logger = logging.getLogger('apex_logger')
+        logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
+        logger.addHandler(LogHandler(self.client))
+        self.logger = logger
         self._latest_event_timestamp: int = 0
 
     def get_player_by_uid(self, uid: int) -> ALPlayer:
@@ -93,7 +120,8 @@ class ApexDBHelper:
             {"uid": uid, "timestamp": timestamp, "eventType": event_type}
         )
         if not db_data:
-            print(f"{arrow.now().format()}: Adding event for {event_data['player']}")
+            self.logger.info(
+                "Adding event for %s", event_data['player'])
             self.event_collection.insert_one(event_data)
 
     def get_platform_for_player_uid(self, player_uid: str) -> ALPlatform:
@@ -119,7 +147,8 @@ class ApexDBHelper:
             {}, sort=[("global.internalUpdateCount", -1)]
         )
         if not legend_name:
-            print("YIKES")
+            self.logger.critical("YIKES, should have a legend")
+
         return basic_player_stats['legends']['all'][legend_name]['ImgAssets']['icon']
 
     def get_latest_event_timestamp(self) -> int:
