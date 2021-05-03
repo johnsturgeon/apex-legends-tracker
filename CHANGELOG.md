@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.8] - 2021-05-03
+### Fixed
+- Fixed script to output errors to log file
+
 ## [0.3.7] - 2021-05-03
 ### Fixed
 - Fixed the logging so that it all goes to a mongo DB (makes it a lot easier to watch logs)
