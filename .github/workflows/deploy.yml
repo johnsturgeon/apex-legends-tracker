@@ -52,6 +52,8 @@ jobs:
             MONGO_DB=${{ secrets.MONGO_DB }}
             MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}
             MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            LOG_LEVEL=${{ secrets.LOG_LEVEL }}
+            LOG_COLLECTION=${{ secrets.LOG_COLLECTION }}
             EOF
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
