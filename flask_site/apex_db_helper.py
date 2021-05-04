@@ -51,7 +51,8 @@ class ApexDBHelper:
         self.player_collection: Collection = self.database.player
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
-        logger.addHandler(LogHandler(self.client))
+        if not logger.handlers:
+            logger.addHandler(LogHandler(self.client))
         self.logger = logger
         self._latest_event_timestamp: int = 0
 
