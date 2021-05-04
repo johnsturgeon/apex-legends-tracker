@@ -1,3 +1,8 @@
+{% import 'macros.html' as macros %}
+{% set max_games = db_helper.get_max_category_for_day('games', day) %}
+{% set max_avg_kills = db_helper.get_max_category_avg_for_day('kills', day) | round(2) %}
+{% set max_avg_damage = db_helper.get_max_category_avg_for_day('damage', day) | round(0) | int %}
+{% set max_wins = db_helper.get_max_category_for_day('wins', day) %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,20 +12,26 @@
 <body>
 <div class="container">
     <div class="item">
-    </div>
-    <div class="item">
         <div class="container small_margin shadow">
             <div class="container no_margin">
+                <div class="break no_padding"></div>
                 {% for player in players %}
-                    <div class="item small_padding">
+                    {% set player_data = player_data_dict[player['name']] %}
+                    {% set games_played=player_data.games_played(day) | length -%}
+                    {% set kill_avg=player_data.category_day_average(day, 'kills') | round(2) -%}
+                    {% set wins=player_data.category_total(day, 'wins') -%}
+                    {% set damage=player_data.category_day_average(day, 'damage') | round(0) | int -%}
+                    <div class="item">
                         <a href="{{ url_for('days', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br>
                     </div>
+                    {{ macros.progress_container("Games", games_played, max_games, show_total=False) }}
+                    {{ macros.progress_container("Wins", wins, max_wins, highlight_max=True, show_total=False) }}
+                    {{ macros.progress_container("Kills", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
+                    {{ macros.progress_container("Damage", damage, max_avg_damage, highlight_max=True, show_total=False) }}
                     <div class="break no_padding"></div>
                 {% endfor %}
             </div>
         </div>
-    </div>
-    <div class="item">
     </div>
 </div>
 <ul>

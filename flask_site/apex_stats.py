@@ -95,6 +95,9 @@ class PlayerData:
     def category_total(self, day: str, category: str, legend: str = "") -> int:
         """ Return the total for a given category on a given day """
         total = 0
+        if category == 'games':
+            return len(self.games_played(day))
+
         game: GameEvent
         for game in self.games_played(day, legend):
             tracker: DataTracker

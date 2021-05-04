@@ -1,5 +1,7 @@
 """ Flask application for Apex Legends API Tracker """
 import os
+
+import arrow
 from dotenv import load_dotenv
 from flask import Flask, render_template, abort
 from flask_profile import Profiler
@@ -40,7 +42,18 @@ def under_maintenance(_):
 @app.route('/')
 def index():
     """ Default route """
-    return render_template('index.html', players=apex_db_helper.get_tracked_players())
+    tracked_players = apex_db_helper.get_tracked_players()
+    player_data_dict: dict = {}
+    for player in tracked_players:
+        db_player: ALPlayer = apex_db_helper.get_player_by_uid(player['uid'])
+        player_data_dict[player['name']] = PlayerData(db_player)
+    return render_template(
+        'index.html',
+        day=arrow.now().format("YYYY-MM-DD"),
+        players=apex_db_helper.get_tracked_players(),
+        player_data_dict=player_data_dict,
+        db_helper=apex_db_helper
+    )
 
 
 @app.route('/days/<int:player_uid>')

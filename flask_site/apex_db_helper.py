@@ -9,6 +9,7 @@ from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer, ALPlatform
+from apex_stats import PlayerData
 
 load_dotenv()
 
@@ -158,3 +159,24 @@ class ApexDBHelper:
             newest_record = self.event_collection.find_one(sort=[("timestamp", pymongo.DESCENDING)])
             self._latest_event_timestamp = newest_record['timestamp']
         return self._latest_event_timestamp
+
+    def get_max_category_for_day(self, category: str, day: str) -> int:
+        """ Returns the maximum category total for the day """
+        max_category: int = 0
+        for player in self.get_tracked_players():
+            al_player: ALPlayer = self.get_player_by_uid(player['uid'])
+            player_data: PlayerData = PlayerData(al_player)
+            max_category = max(max_category, player_data.category_total(day, category))
+        return max_category
+
+    def get_max_category_avg_for_day(self, category: str, day: str) -> float:
+        """ Returns the maximum category average for the day """
+        max_avg_category: float = 0.0
+        for player in self.get_tracked_players():
+            al_player: ALPlayer = self.get_player_by_uid(player['uid'])
+            player_data: PlayerData = PlayerData(al_player)
+            max_avg_category = max(
+                max_avg_category, player_data.category_day_average(day, category)
+            )
+        return max_avg_category
+
