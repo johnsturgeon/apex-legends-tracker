@@ -26,8 +26,8 @@
                     </div>
                     {{ macros.progress_container("Games", games_played, max_games, show_total=False) }}
                     {{ macros.progress_container("Wins", wins, max_wins, highlight_max=True, show_total=False) }}
-                    {{ macros.progress_container("Kills", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
-                    {{ macros.progress_container("Damage", damage, max_avg_damage, highlight_max=True, show_total=False) }}
+                    {{ macros.progress_container("Kill Ratio", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
+                    {{ macros.progress_container("Damage / Game", damage, max_avg_damage, highlight_max=True, show_total=False) }}
                     <div class="break no_padding"></div>
                 {% endfor %}
             </div>
