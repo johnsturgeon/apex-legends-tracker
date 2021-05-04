@@ -93,6 +93,5 @@ def update_player_collection():
         apex_db_helper.save_player_data(player)
 
 
-
 if __name__ == "__main__":
     update_player_collection()
