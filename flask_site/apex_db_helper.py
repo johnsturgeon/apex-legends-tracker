@@ -179,4 +179,3 @@ class ApexDBHelper:
                 max_avg_category, player_data.category_day_average(day, category)
             )
         return max_avg_category
-
