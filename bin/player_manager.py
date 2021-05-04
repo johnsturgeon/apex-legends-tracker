@@ -82,8 +82,13 @@ def is_anyone_online() -> bool:
 
 
 def update_player_collection():
-    """ Updated the player collection """
-    for player in apex_db_helper.get_tracked_players(active_only=True):
+    """
+    This method will go get all the players that have 'events' in
+    the event list
+    Returns:
+
+    """
+    for player in apex_api_helper.get_tracked_players():
         player['active'] = True
         apex_db_helper.save_player_data(player)
 
