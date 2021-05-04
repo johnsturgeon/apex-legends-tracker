@@ -45,17 +45,20 @@ def save_one_player_data(player: dict):
         assert isinstance(basic_player_data_list, list)
         assert len(basic_player_data_list) == 1
         player_data = basic_player_data_list[0]
+        log.debug("Saving Basic Player Data: %s", player_data)
         apex_db_helper.save_basic_player_data(player_data=player_data)
 
 
 def save_one_player_event_data(player: dict):
     """ saves just one player's event data """
     try:
+        log.debug("Getting events by UID for player: %s: ", player)
         event_data_list = apex_api_helper.api.events_by_uid(
             uid=player['uid'],
             platform=ALPlatform(value=player['platform']),
             action=ALAction.GET
         )
+        log.debug("Got events by UID for player %s ", player)
     except ALHTTPExceptionFromResponse:
         log.warning("Player: %s not found", player)
         return
@@ -63,6 +66,7 @@ def save_one_player_event_data(player: dict):
         for event_data in event_data_list:
             latest_timestamp = apex_db_helper.get_latest_event_timestamp()
             if event_data['timestamp'] > latest_timestamp:
+                log.debug("Saving Player %s Data: %s", player, event_data)
                 apex_db_helper.save_event_data(event_data=event_data)
 
 

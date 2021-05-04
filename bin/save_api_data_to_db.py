@@ -10,6 +10,7 @@ def save_player_data(loop_delay: int):
     """ Saves the player data record """
     try:
         player_manager.save_player_data()
+        log.debug("Starting loop delay: %s seconds", str(LOOP_DELAY))
         time.sleep(loop_delay)
     except exceptions.ConnectionError as error_message:
         log.error(error_message)
@@ -32,7 +33,6 @@ if __name__ == "__main__":
         save_player_data(LOOP_DELAY)
 
         LOOP_DELAY = MIN_LOOP_DELAY if player_manager.is_anyone_online() else MAX_LOOP_DELAY
-        log.debug("Loop delay: %s seconds", str(LOOP_DELAY))
         if PREVIOUS_LOOP_DELAY != LOOP_DELAY:
             log.info("Changing Loop delay to %s", str(LOOP_DELAY))
         PREVIOUS_LOOP_DELAY = LOOP_DELAY
