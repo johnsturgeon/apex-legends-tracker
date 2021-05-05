@@ -12,6 +12,7 @@ import graphing
 from apex_stats import PlayerData
 
 load_dotenv()
+load_dotenv('common.env')
 app = Flask(__name__, template_folder='templates')
 api_key = os.getenv('APEX_LEGENDS_API_KEY')
 default_player = os.getenv('DEFAULT_PLAYER_NAME')
@@ -79,6 +80,12 @@ def profile(player_uid=None, category="damage"):
         return render_template('profile.html', player=player1, plot=bar_plot)
 
     return "Not Found"
+
+
+@app.template_filter('append_version_number')
+def append_version_number(value):
+    """Jinja filter returns the current version """
+    return f"{value}: {os.getenv('VERSION')}"
 
 
 if __name__ == '__main__':

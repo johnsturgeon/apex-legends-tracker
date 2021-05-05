@@ -28,3 +28,9 @@
         {{ count }}{% if total and show_total %}/{{ total }}{% endif %}
     </div>
 {% endmacro %}
+
+{% macro version() %}
+    <div class="version">
+        {{ "Version: " | append_version_number }}
+    </div>
+{% endmacro %}

@@ -13,6 +13,12 @@ a {
     color: wheat;
 }
 
+/* shared */
+.version {
+    font-weight: lighter;
+    font-size: 12pt;
+    padding-left: 25pt;
+}
 /* index */
 
 .home_player_list {

@@ -59,6 +59,18 @@ jobs:
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
 
+      - name: Rsync over common env file
+        uses: up9cloud/action-rsync@master
+        env:
+          HOST: ${{ secrets.REMOTE_HOST }}
+          KEY: ${{ secrets.SERVER_SSH_KEY }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}/common.env
+
+          VERBOSE: true
+          USER: ${{ secrets.REMOTE_USER }}
+          ARGS: -avz
+          SOURCE: ./common.env
+
       - name: Rsync over requirements file
         uses: up9cloud/action-rsync@master
         env:
