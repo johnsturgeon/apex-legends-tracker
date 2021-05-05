@@ -87,7 +87,7 @@ def profile(player_uid=None, category="damage"):
 @app.template_filter('append_version_number')
 def append_version_number(value):
     """Jinja filter returns the current version """
-    return f"{value}: {os.getenv('VERSION')}"
+    return f"{value}{os.getenv('VERSION')}"
 
 
 if __name__ == '__main__':
