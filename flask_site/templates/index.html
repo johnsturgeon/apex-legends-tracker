@@ -7,10 +7,15 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
     <title>Friends of the Apex Legends API</title>
 </head>
 <body>
 <div class="container">
+    <div class="item">
+        <a href="#" id="litepicker">Choose Date</a> (currently: {{ day }})
+    </div>
+    <div class="break no_padding"></div>
     <div class="item">
         <div class="container small_margin shadow">
             <div class="container no_margin">
@@ -42,5 +47,15 @@
 {{ macros.version() }}
 <ul>
 </ul>
+<script>
+    const picker = new Litepicker({
+        element: document.getElementById('litepicker'),
+        highlightedDays: ['{{ day }}'],
+        maxDate: new Date()
+    });
+    picker.on('selected', (date1) => {
+        window.location.href='/' + date1.format('YYYY-MM-DD')
+    });
+</script>
 </body>
 </html>

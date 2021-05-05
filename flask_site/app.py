@@ -40,8 +40,9 @@ def under_maintenance(_):
     return render_template('503.html'), 503
 
 
-@app.route('/')
-def index():
+@app.route('/', defaults={'day': arrow.now().format("YYYY-MM-DD")})
+@app.route('/<string:day>')
+def index(day: str = arrow.now().format('YYYY-MM-DD')):
     """ Default route """
     tracked_players = apex_db_helper.get_tracked_players()
     player_data_dict: dict = {}
@@ -50,7 +51,8 @@ def index():
         player_data_dict[player['name']] = PlayerData(db_player)
     return render_template(
         'index.html',
-        day=arrow.now().format("YYYY-MM-DD"),
+        day=day,
+        arrow=arrow,
         players=apex_db_helper.get_tracked_players(),
         player_data_dict=player_data_dict,
         db_helper=apex_db_helper
