@@ -25,6 +25,20 @@ a {
     flex: 0 0 220px;
 }
 
+.online {
+    overflow: hidden;
+    background: rgba(181, 181, 181, 0.13) !important;
+    border: solid 5px rgba(84, 39, 39, 0);
+    border-radius: 8pt;
+    margin-left:-5px;
+}
+
+.online_small_font {
+    vertical-align: middle;
+    font-family: "Arial", serif;
+    font-size: 9pt
+}
+
 .container {
     display: flex; /* or inline-flex */
     flex-wrap: wrap;
