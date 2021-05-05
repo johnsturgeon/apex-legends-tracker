@@ -22,7 +22,12 @@
                     {% set wins=player_data.category_total(day, 'wins') -%}
                     {% set damage=player_data.category_day_average(day, 'damage') | round(0) | int -%}
                     <div class="item">
-                        <a href="{{ url_for('days', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br>
+                        <div class="{% if player_data.is_online() %}online{% endif %}" style="display: flex; justify-content: space-between">
+                            <span><a href="{{ url_for('days', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                            <span class="{% if player_data.is_online() %}online_small_font{% endif %}">
+                                {% if player_data.is_online() %}online{% endif %}
+                            </span>
+                        </div>
                     </div>
                     {{ macros.progress_container("Games", games_played, max_games, show_total=False) }}
                     {{ macros.progress_container("Wins", wins, max_wins, highlight_max=True, show_total=False) }}

@@ -147,3 +147,7 @@ class PlayerData:
             legends[game.legend_played] = ""
 
         return list(legends.keys())
+
+    def is_online(self) -> bool:
+        """ Returns True if the player is online"""
+        return self.player.realtime_info.is_online
