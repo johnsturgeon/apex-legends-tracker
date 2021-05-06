@@ -40,10 +40,12 @@ def under_maintenance(_):
     return render_template('503.html'), 503
 
 
-@app.route('/', defaults={'day': arrow.now().format("YYYY-MM-DD")})
+@app.route('/', defaults={'day': None})
 @app.route('/<string:day>')
-def index(day: str = arrow.now().format('YYYY-MM-DD')):
+def index(day):
     """ Default route """
+    if not day:
+        day=arrow.now().format("YYYY-MM-DD")
     tracked_players = apex_db_helper.get_tracked_players()
     player_data_dict: dict = {}
     for player in tracked_players:
