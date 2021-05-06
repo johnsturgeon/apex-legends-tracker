@@ -64,10 +64,8 @@ def save_one_player_event_data(player: dict):
         return
     else:
         for event_data in event_data_list:
-            latest_timestamp = apex_db_helper.get_latest_event_timestamp()
-            if event_data['timestamp'] > latest_timestamp:
-                log.debug("Saving Player %s Data: %s", player, event_data)
-                apex_db_helper.save_event_data(event_data=event_data)
+            log.debug("Saving Player %s Data: %s", player, event_data)
+            apex_db_helper.save_event_data(event_data=event_data)
 
 
 def add_player_by_name(player_name: str, platform: ALPlatform):

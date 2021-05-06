@@ -45,7 +45,7 @@ def under_maintenance(_):
 def index(day):
     """ Default route """
     if not day:
-        day=arrow.now().format("YYYY-MM-DD")
+        day = arrow.now().format("YYYY-MM-DD")
     tracked_players = apex_db_helper.get_tracked_players()
     player_data_dict: dict = {}
     for player in tracked_players:
