@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.7]
 ### Added
-- Added a startup script for easier deployment and management
+- Added startup / shutdown scripts for easier deployment and management
 
 ## [0.4.6] - 2021-05-09
 ### Changed

@@ -34,8 +34,9 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            touch ${{ secrets.REMOTE_TARGET }}/maintenance
-            kill $(ps aux | grep 'save_api_data_to_db' | grep -v grep | awk '{print $2}') || true
+            cd ${{ secrets.REMOTE_TARGET }}
+            touch maintenance
+            bin/stop_tracker.sh
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
