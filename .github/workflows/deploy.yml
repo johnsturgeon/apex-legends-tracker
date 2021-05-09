@@ -34,8 +34,9 @@ jobs:
         uses: fifsky/ssh-action@master
         with:
           command: |
-            touch ${{ secrets.REMOTE_TARGET }}/maintenance
-            kill $(ps aux | grep 'save_api_data_to_db' | grep -v grep | awk '{print $2}') || true
+            cd ${{ secrets.REMOTE_TARGET }}
+            touch maintenance
+            bin/stop_tracker.sh
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
@@ -142,9 +143,7 @@ jobs:
         with:
           command: |
             cd ${{ secrets.REMOTE_TARGET }}
-            source env/bin/activate
-            export PYTHONPATH=${{ secrets.REMOTE_TARGET}}/flask_site
-            nohup python ${{ secrets.REMOTE_TARGET}}/bin/save_api_data_to_db.py > nohup.out 2> nohup.err < /dev/null &
+            bin/start_tracker.sh
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
