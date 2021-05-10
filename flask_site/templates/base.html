@@ -1,0 +1,44 @@
+{% import 'macros.html' as macros %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?{{ "" | append_version_number }}">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>{{ page_title }}</title>
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+</head>
+<body>
+<div class="container">
+    {% if not hide_header %}
+        <div class="item">
+            <div class="shadow_container no_margin">
+                <div class="item header_label">
+                    <span class="header_item first_header_item">
+                        Other {{ player_name }} pages:
+                    </span>
+                    <span class="header_item first_header_item">
+                        <a href="{{ url_for('days', player_uid=player_uid) }}">Day by Day Totals</a>
+                    </span>
+                    <span class="header_item">
+                        <a href="{{ url_for('profile', player_uid=player_uid) }}">Profile Page</a>
+                    </span>
+                </div>
+                <div class="item header_label last_header_label" style="text-align: right">
+                    <span class="header_item last_header_item">
+                        <a href="{{ url_for('index') }}">Home Page</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% block content %} {% endblock %}
+</div>
+{{ macros.version() }}
+</body>
+</html>

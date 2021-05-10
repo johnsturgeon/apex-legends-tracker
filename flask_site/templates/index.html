@@ -1,23 +1,26 @@
-{% import 'macros.html' as macros %}
+{% extends 'base.html' %}
+{% set hide_header=True %}
+{% set page_title="Friends of the Apex Legends API: Home Page" %}
 {% set max_games = db_helper.get_max_category_for_day('games', day) %}
 {% set max_avg_kills = db_helper.get_max_category_avg_for_day('kills', day) | round(2) %}
 {% set max_avg_damage = db_helper.get_max_category_avg_for_day('damage', day) | round(0) | int %}
 {% set max_wins = db_helper.get_max_category_for_day('wins', day) %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?{{ "" | append_version_number }}">
+{% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
-    <title>Friends of the Apex Legends API</title>
-</head>
-<body>
-<div class="container">
     <div class="item">
-        <a href="#" id="litepicker">Choose Date</a> (currently: {{ day }})
-    </div>
-    <div class="break no_padding"></div>
-    <div class="item">
-        <div class="container small_margin shadow">
+        <div class="shadow_container no_margin">
+            <div class="item header_label">
+                <span class="header_item first_header_item">
+                    <a href="#" id="date_picker">Choose Date</a> (currently: {{ day }})
+                </span>
+            </div>
+            <div class="item header_label last_header_label" style="text-align: right">
+            <span class="header_item last_header_item">
+                <a href="https://github.com/johnsturgeon/apex-legends-tracker/blob/main/CHANGELOG.md" target="_blank">What's New</a>
+            </span>
+            </div>
+        </div>
+        <div class="shadow_container">
             <div class="container no_margin">
                 <div class="break no_padding"></div>
                 {% for player in players %}
@@ -28,7 +31,7 @@
                     {% set damage=player_data.category_day_average(day, 'damage') | round(0) | int -%}
                     <div class="item">
                         <div class="{% if player_data.is_online() %}online{% endif %}" style="display: flex; justify-content: space-between">
-                            <span><a href="{{ url_for('days', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                            <span><a href="{{ url_for('profile', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
                             <span class="{% if player_data.is_online() %}online_small_font{% endif %}">
                                 {% if player_data.is_online() %}online{% endif %}
                             </span>
@@ -36,26 +39,21 @@
                     </div>
                     {{ macros.progress_container("Games", games_played, max_games, show_total=False) }}
                     {{ macros.progress_container("Wins", wins, max_wins, highlight_max=True, show_total=False) }}
-                    {{ macros.progress_container("Kill Ratio", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
-                    {{ macros.progress_container("Damage / Game", damage, max_avg_damage, highlight_max=True, show_total=False) }}
+                    {{ macros.progress_container("Kill/g", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
+                    {{ macros.progress_container("Damage/g", damage, max_avg_damage, highlight_max=True, show_total=False) }}
                     <div class="break no_padding"></div>
                 {% endfor %}
             </div>
         </div>
     </div>
-</div>
-{{ macros.version() }}
-<ul>
-</ul>
-<script>
-    const picker = new Litepicker({
-        element: document.getElementById('litepicker'),
-        highlightedDays: ['{{ day }}'],
-        maxDate: new Date()
-    });
-    picker.on('selected', (date1) => {
-        window.location.href='/' + date1.format('YYYY-MM-DD')
-    });
-</script>
-</body>
-</html>
+    <script>
+        const picker = new Litepicker({
+            element: document.getElementById('date_picker'),
+            highlightedDays: ['{{ day }}'],
+            maxDate: new Date()
+        });
+        picker.on('selected', (date1) => {
+            window.location.href='/' + date1.format('YYYY-MM-DD')
+        });
+    </script>
+{% endblock %}

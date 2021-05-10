@@ -3,11 +3,11 @@ import os
 
 import arrow
 from dotenv import load_dotenv
-from flask import Flask, render_template, abort
+from flask import Flask, render_template, abort, jsonify, request
 from flask_profile import Profiler
 from apex_legends_api import ALPlayer
 from apex_api_helper import ApexAPIHelper
-from apex_db_helper import ApexDBHelper
+from apex_db_helper import ApexDBHelper, TrackerDataState
 import graphing
 from apex_stats import PlayerData
 
@@ -18,13 +18,13 @@ api_key = os.getenv('APEX_LEGENDS_API_KEY')
 default_player = os.getenv('DEFAULT_PLAYER_NAME')
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
-Profiler(app)
-app.config["flask_profiler"] = {
-    "storage": {
-        "engine": "mongodb",
-    },
-    "profile_dir": "/Users/johnsturgeon/Code/apex-legends-tracker/log"
-}
+# Profiler(app)
+# app.config["flask_profiler"] = {
+#     "storage": {
+#         "engine": "mongodb",
+#     },
+#     "profile_dir": "/Users/johnsturgeon/Code/apex-legends-tracker/log"
+# }
 
 
 @app.before_request
@@ -74,16 +74,59 @@ def days(player_uid: int):
     )
 
 
-@app.route('/profile/<player_uid>/<category>')
-def profile(player_uid=None, category="damage"):
+@app.route('/profile/<int:player_uid>')
+def profile(player_uid):
     """ Simple player profile page """
     # line = create_plot()
     if player_uid:
-        player1: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
-        bar_plot = graphing.create_bar(player1, category)
-        return render_template('profile.html', player=player1, plot=bar_plot)
+        player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
+        player_data: PlayerData = PlayerData(player)
+        bar_plot = graphing.create_bar(player, 'damage')
+        return render_template(
+            'profile.html',
+            player_data=player_data,
+            plot=bar_plot,
+            db_helper=apex_db_helper
+        )
 
     return "Not Found"
+
+
+@app.route('/profile/<int:player_uid>/<tracker_key>')
+def tracker_detail(player_uid, tracker_key):
+    """ Display a page for one tracker and all the detail we have for it.   """
+    player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
+    player_data: PlayerData = PlayerData(player)
+    return render_template(
+        'tracker_detail.html',
+        player_data=player_data,
+        tracker_key=tracker_key,
+        db_helper=apex_db_helper
+    )
+
+
+# http://127.0.0.1:5000/_get_tracker_data?player_uid=2533274947905327&tracker_key=wins
+# Json functions
+@app.route('/_get_tracker_data')
+def get_tracker_data():
+    """ Ajax query to get player data """
+    player_uid = request.args.get('player_uid', 0, type=int)
+    tracker_key = request.args.get('tracker_key', 0, type=str)
+    # legend_name = request.args.get('legend_name', 0, type=str)
+    player_totals = apex_db_helper.get_player_totals(
+        uid=player_uid, tracker_keys=[tracker_key], active_legends_only=True
+    )
+    tracker_totals = player_totals[tracker_key]
+    # total = tracker_totals['total']
+    # count = tracker_totals[legend_name]['total']
+    # legend_state: TrackerDataState = tracker_totals[legend_name]['tracker_state']
+    # global_state: TrackerDataState = tracker_totals['tracker_state']
+    response = {
+        'tracker_key': tracker_key,
+        'tracker_totals': tracker_totals,
+    }
+    json_response = jsonify(response)
+    return json_response
 
 
 @app.template_filter('append_version_number')
