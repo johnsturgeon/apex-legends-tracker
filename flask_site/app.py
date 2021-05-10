@@ -7,7 +7,7 @@ from flask import Flask, render_template, abort, jsonify, request
 from flask_profile import Profiler
 from apex_legends_api import ALPlayer
 from apex_api_helper import ApexAPIHelper
-from apex_db_helper import ApexDBHelper, TrackerDataState
+from apex_db_helper import ApexDBHelper
 import graphing
 from apex_stats import PlayerData
 
@@ -18,13 +18,13 @@ api_key = os.getenv('APEX_LEGENDS_API_KEY')
 default_player = os.getenv('DEFAULT_PLAYER_NAME')
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
-# Profiler(app)
-# app.config["flask_profiler"] = {
-#     "storage": {
-#         "engine": "mongodb",
-#     },
-#     "profile_dir": "/Users/johnsturgeon/Code/apex-legends-tracker/log"
-# }
+Profiler(app)
+app.config["flask_profiler"] = {
+    "storage": {
+        "engine": "mongodb",
+    },
+    "profile_dir": "/Users/johnsturgeon/Code/apex-legends-tracker/log"
+}
 
 
 @app.before_request

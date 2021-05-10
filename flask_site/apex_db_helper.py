@@ -3,7 +3,6 @@ import os
 import logging
 import datetime
 from enum import Enum
-from collections import OrderedDict
 from logging import Logger
 import pymongo
 from dotenv import load_dotenv
@@ -264,6 +263,7 @@ class ApexDBHelper:
         return {'name': legend_name, 'total': total, 'tracker_state': tracker_state}
 
     def get_inactive_legends(self, uid: int) -> list:
+        """ Returns a list of the 'inactive' legends' """
         inactive_legends: list = []
         player = self.get_player_by_uid(uid)
         for legend in player.all_legends:
@@ -309,7 +309,9 @@ class ApexDBHelper:
             for legend in player.all_legends:
                 one_legend_total_dict = self.get_totals_for_legend(uid, legend.name, tracker_key)
                 key_totals_dict['total'] += one_legend_total_dict['total']
-                inactive_legend = one_legend_total_dict['tracker_state'] == TrackerDataState.NEVER_PLAYED
+                inactive_legend = one_legend_total_dict[
+                                      'tracker_state'
+                                  ] == TrackerDataState.NEVER_PLAYED
                 if not inactive_legend:
                     key_totals_dict['tracker_state'] = min(
                         key_totals_dict['tracker_state'], one_legend_total_dict['tracker_state']
