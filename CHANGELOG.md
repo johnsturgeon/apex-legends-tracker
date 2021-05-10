@@ -1,10 +1,28 @@
 # Changelog
-All notable changes to this project will be documented in this file.
+Welcome to the 'Apex Legends Tracker' changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.7]
+## [0.5.0] - 2021-05-10
+This is a pretty big release, I'm adding a kind of 'profile' stats page where you can see your
+tracker totals for the trackers that are currently tracked.  Also provided is a new `tracker_detail`
+page where you can go through your legends and enable trackers and get them up-to-date.
+
+### Added
+- Added `profile` page
+  - Page will show you some basic tracker stats and a 'preview' of a damage tracking chart (more to come)
+  - Click on a tracker to see all the legend by legend detail of the tracker
+- Added `tracker detail` page
+  - Tracker detail page is where you manage your tracker data.  This is a special new page that will walk you through the process of making sure your trackers are up to date
+- Added a navigation header (not very good right now, super manual)
+
+### Changed
+- Moved the 'day by day' page to a link off the main page
+- Clicking on a player from the leaderboard will bring you to their profile page, and not the day-by-day page an more
+
+
+## [0.4.7] - 2021-05-09
 ### Added
 - Added startup / shutdown scripts for easier deployment and management
 

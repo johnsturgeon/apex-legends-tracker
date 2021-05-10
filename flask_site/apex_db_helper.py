@@ -2,6 +2,7 @@
 import os
 import logging
 import datetime
+from enum import Enum
 from logging import Logger
 import pymongo
 from dotenv import load_dotenv
@@ -12,6 +13,39 @@ from apex_legends_api import ALPlayer, ALPlatform
 from apex_stats import PlayerData
 
 load_dotenv()
+
+
+class TrackerDataState(str, Enum):
+    """ Sets the confidence level of the tracker data """
+    NEVER_PLAYED = -2
+    MISSING = -1
+    OLD = 0
+    CURRENT = 1
+
+    def __lt__(self, other):
+        if self.__class__ is other.__class__:
+            value = int(self.value)
+            return value < int(other.value)
+        return NotImplemented
+
+    def __eq__(self, other):
+        if self.__class__ is other.__class__:
+            value = int(self.value)
+            return value == int(other.value)
+        return NotImplemented
+
+    def __gt__(self, other):
+        if self.__class__ is other.__class__:
+            value = int(self.value)
+            return value > int(other.value)
+        return NotImplemented
+
+    def serialize(self):
+        """ return json representation """
+        return {
+            'name': self.name,
+            'value': self.value
+        }
 
 
 class LogHandler(logging.Handler):
@@ -179,3 +213,129 @@ class ApexDBHelper:
                 max_avg_category, player_data.category_day_average(day, category)
             )
         return max_avg_category
+
+    def get_totals_for_legend(self, uid: int, legend_name: str, tracker_key: str) -> dict:
+        """
+        Returns the totals for a legend's tracker
+        Args:
+            uid (int): UID of the user to search
+            legend_name (str): Legend name (i.e. Bangalore)
+            tracker_key (str): Tracker key (i.e. `('kills', 'wins')`
+
+        Returns:
+            dict: Dictionary of results for legend
+
+        Notes:
+            `{ 'name': "Bangalor", 'total': 100,'tracker_statue': 1, 0, -1}`
+
+            TrackerDataState: 1 = Confident, 0 = Not sure, -1 = Missing
+        """
+        total = 0
+        tracker_state = TrackerDataState.NEVER_PLAYED
+        key_search_set: set = {tracker_key, 'specialEvent_' + tracker_key}
+        most_recently_selected = self.basic_player_collection.find_one(
+            filter={"legends.selected.LegendName": legend_name, "global.uid": uid},
+            sort=[("global.internalUpdateCount", pymongo.DESCENDING)]
+        )
+        if most_recently_selected:
+            trackers = most_recently_selected['legends']['selected']['data']
+            for tracker in trackers:
+                tracker_key = tracker['key']
+                if tracker_key in key_search_set:
+                    total = tracker['value']
+                    tracker_state = TrackerDataState.CURRENT
+                    break
+        if tracker_state < TrackerDataState.CURRENT:
+            most_recent_record = self.basic_player_collection.find_one(
+                filter={"global.uid": uid},
+                sort=[("global.internalUpdateCount", pymongo.DESCENDING)]
+            )
+            trackers = most_recent_record['legends']['all'][legend_name].get('data')
+            if trackers:
+                tracker_state = TrackerDataState.MISSING
+                for tracker in trackers:
+                    tracker_key = tracker['key']
+                    if tracker_key in key_search_set:
+                        total = tracker['value']
+                        tracker_state = TrackerDataState.OLD
+                        break
+
+        return {'name': legend_name, 'total': total, 'tracker_state': tracker_state}
+
+    def get_inactive_legends(self, uid: int) -> list:
+        """ Returns a list of the 'inactive' legends' """
+        inactive_legends: list = []
+        player = self.get_player_by_uid(uid)
+        for legend in player.all_legends:
+            most_recent_record = self.basic_player_collection.find_one(
+                filter={"global.uid": uid},
+                sort=[("global.internalUpdateCount", pymongo.DESCENDING)]
+            )
+            seen = most_recent_record['legends']['all'][legend].get('data')
+            if not seen:
+                inactive_legends.append(legend.name)
+        return inactive_legends
+
+    def get_player_totals(self, uid: int, tracker_keys: list, active_legends_only=False) -> dict:
+        """
+        Returns a list of legends and their totals
+
+        Notes:
+            TrackerDataState is based on 'worst case' state, so if *any*
+            TrackerDataState is MISSING then we set the overall state to MISSING
+
+        Examples:
+            {
+             'wins': {
+                'total': 100,
+                'tracker_state: 1, 0, -1,
+                'legends': [{
+                    'legend_name': 'Bangalore',
+                    'total': 40,
+                    'tracker_state: 1
+                    },
+                    ]
+                }
+            }
+        """
+        legend_totals_dict = {}
+        player = self.get_player_by_uid(uid)
+        for tracker_key in tracker_keys:
+            legend_totals_dict[tracker_key] = {}
+            key_totals_dict = legend_totals_dict[tracker_key]
+            key_totals_dict['total'] = 0
+            key_totals_dict['tracker_state'] = TrackerDataState.CURRENT
+            key_totals_dict['legends']: list = []
+            for legend in player.all_legends:
+                one_legend_total_dict = self.get_totals_for_legend(uid, legend.name, tracker_key)
+                key_totals_dict['total'] += one_legend_total_dict['total']
+                inactive_legend = one_legend_total_dict[
+                                      'tracker_state'
+                                  ] == TrackerDataState.NEVER_PLAYED
+                if not inactive_legend:
+                    key_totals_dict['tracker_state'] = min(
+                        key_totals_dict['tracker_state'], one_legend_total_dict['tracker_state']
+                    )
+                if inactive_legend and active_legends_only:
+                    continue
+                key_totals_dict['legends'].append(one_legend_total_dict)
+
+        return legend_totals_dict
+
+
+if __name__ == "__main__":
+
+    helper = ApexDBHelper()
+    PLAYER_UID: int = 1000132741950
+    results = helper.get_totals_for_legend(
+        PLAYER_UID, 'Bloodhound', 'damage'
+    )
+    print(results['total'])
+    print(results['tracker_state'])
+
+    Totals = helper.get_player_totals(
+        PLAYER_UID, ['games_played']
+    )
+    print(Totals)
+    InactiveLegends = helper.get_inactive_legends(PLAYER_UID)
+    print(InactiveLegends)

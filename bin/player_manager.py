@@ -36,7 +36,7 @@ def save_one_player_data(player: dict):
     """ Saves one player's data if it has been updated """
     try:
         basic_player_data_list = apex_api_helper.api.basic_player_stats_by_uid(
-            player['uid'], ALPlatform(value=player['platform']), skip_tracker_rank=True
+            player['uid'], ALPlatform(value=player['platform'])
         )
     except ALHTTPExceptionFromResponse:
         log.warning("Player: %s not found", player)
@@ -96,4 +96,4 @@ def update_player_collection():
 
 
 if __name__ == "__main__":
-    update_player_collection()
+    save_player_data(refresh_from_api=True)

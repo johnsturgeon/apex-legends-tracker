@@ -1,40 +1,84 @@
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-        <title>Friends of the Apex Legends API</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script></head>
-<body>
-<div class="container">
-    <div class="item">
-        <div>{{ player.global_info.name }}</div>
-        <div>Level: {{ player.global_info.level }}</div>
-        <div>
-            <progress
-                    class="progress_bar"
-                    value="{{ player.global_info.to_next_level_percent }}"
-                    max="100">
-            </progress>
-        </div>
-        <div>Selected Legend: {{ player.selected_legend.name }}</div>
-        {% for tracker in player.selected_legend.data_trackers %}
-        <div>{{ tracker.name }}: {{ tracker.value }}</div>
-        {% endfor %}
-    </div>
-</div>
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="chart" id="spline">
+{% extends 'base.html' %}
+{% set page_title="Friends of the Apex Legends API: Profile Page" %}
+{% set player = player_data.player %}
+{% set player_uid = player.global_info.uid %}
+{% set player_name = player.global_info.name %}
+{% set player_totals = db_helper.get_player_totals(
+                      player_uid,
+                      ['games_played', 'wins', 'kills', 'damage'],
+                      active_legends_only=True)  -%}
+
+{% block content %}
+    <div class="player_profile_container">
+        <div class="player_profile_card shadow_container">
+            <div class="item player_profile_name">{{ player.global_info.name }}<br />
+                <span class="player_profile_selected_legend">Selected Legend: {{ player.selected_legend.name }}</span>
+            </div>
+            <div class="profile_header_container">
+                <div id="games_detail" class="profile_header_item" style="cursor:pointer">
+                    LIFETIME<br />
+                    GAMES<br />
+                    <span class="profile_header_total">{{ player_totals['games_played']['total'] }}</span>
+                </div>
+                <div class="profile_header_item header_divider_line"></div>
+                <div class="profile_header_item">
+                    LEVEL<br />
+                    <span class="profile_header_total">{{ player.global_info.level }}</span>
+                </div>
+                <div class="profile_header_item header_divider_line"></div>
+                <div id="wins_detail" class="profile_header_item" style="cursor:pointer">
+                    LIFETIME<br />
+                    WINS<br />
+                    <span class="profile_header_total">{{ player_totals['wins']['total'] }}</span>
+                </div>
+            </div>
+            <div class="profile_stat_outer_container">
+                <div id="damage_detail" class="circle_item" style="cursor:pointer">
+                    {% set damage = player_totals['damage'] %}
+                    {{ macros.circle_total('damage', damage['total'], 'HIGHEST <br>AVG') }}
+                </div>
+                <div id="kills_detail" class="circle_item" style="cursor:pointer">
+                    {% set kills = player_totals['kills'] %}
+                    {{ macros.circle_total('kills', kills['total'], 'HIGHEST <br>AVG') }}
+                </div>
+            </div>
+            <div class="profile_page_bottom_note_container">
+                <div class="item center-text">
+                    * If a stat doesn't look correct, click on it, and you will be taken to a page that scans your stats and figures out what's wrong.
+                </div>
             </div>
         </div>
+{#        <div class="container">#}
+{#            {% for tracker_total in player_data.lifetime_total_for_trackers() %}#}
+{#                {{ macros.circle_total(tracker_total) }}#}
+{#            {% endfor %}#}
+{#        </div>#}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart" id="spline">
+                    </div>
+                </div>
+            </div>
+            <script>
+                let graphs = {{ plot | safe }};
+                Plotly.setPlotConfig({displayModeBar: false});
+                Plotly.newPlot('spline',graphs,{});
+            </script>
+            <script>
+                $('#games_detail').click(function(){
+                    window.location = '/profile/{{ player_uid }}/games_played'
+                });
+                $('#wins_detail').click(function(){
+                    window.location = '/profile/{{ player_uid }}/wins'
+                });
+                $('#damage_detail').click(function(){
+                    window.location = '/profile/{{ player_uid }}/damage'
+                });
+                $('#kills_detail').click(function(){
+                    window.location = '/profile/{{ player_uid }}/kills'
+                });
+            </script>
+        </div>
     </div>
-</div>
-</body>
-<script>
-    var graphs = {{ plot | safe }};
-    Plotly.setPlotConfig({displayModeBar: false});
-    Plotly.newPlot('spline',graphs,{});
-</script>
-</html>
+{% endblock %}

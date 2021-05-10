@@ -13,6 +13,168 @@ a {
     color: wheat;
 }
 
+.header_label {
+    font-size: 14pt;
+}
+
+.header_item {
+    padding-left: 5pt;
+    padding-right: 5pt;
+    border-left: solid 1pt wheat;;
+}
+
+.first_header_item {
+    padding-left: 10pt;
+    border-left: 0;
+}
+
+.last_header_item {
+    padding-right: 20pt;
+    border-left:0;
+}
+
+.last_header_label {
+    text-align: right;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.shadow_container {
+    box-shadow: 3px 3px 12pt -3pt #111;
+    border-radius: 12px;
+    margin: 6pt;
+}
+
+/* player profile page */
+.player_profile_container {
+    flex-basis: 100%;
+    justify-content: left;
+    background: rgba(84, 39, 39, 0.6);
+}
+
+.player_profile_card {
+    flex-direction: column;
+    justify-content: left;
+}
+
+.player_profile_card > .item{
+    padding: 4pt 12pt;
+}
+
+.player_profile_name {
+    font-size: 24pt;
+    text-align: center;
+}
+
+.player_profile_selected_legend {
+    font-size: 14pt;
+}
+
+.profile_total_stat_item {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+
+.profile_stat_inner_container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.profile_stat_outer_container .item {
+    background-color: transparent;
+}
+.profile_stat_outer_container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: rgba(84, 39, 39, 0.6);
+    overflow:hidden;
+}
+
+.profile_header_container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    background: rgba(84, 39, 39, 0.6);
+    overflow:hidden;
+    padding-left: 25pt;
+    padding-right: 25pt;
+}
+
+.profile_header_item {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 12pt;
+    text-align: center;
+    flex-grow: 0;
+    flex-basis: 0;
+}
+
+.profile_header_total {
+    font-size: 24pt !important;
+}
+
+
+.header_divider_line {
+    border-left: solid 0.5pt wheat;
+    margin-top: 5pt;
+    margin-bottom: 10pt;
+}
+/* Profile tracker totals */
+.circle_base {
+    border-radius: 50%;
+    position: absolute;
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.circle_container {
+    width: 180pt;
+    height: 180pt;
+    position: relative;
+}
+
+.circle_item {
+    flex: 0 0 180pt;
+}
+
+.circle_inner {
+    width: 90%;
+    height: 90%;
+    border: 3pt solid wheat;
+}
+
+.circle_outer {
+    width: 100%;
+    height: 100%;
+    border: 1pt solid wheat;
+}
+
+.circle_text {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.circle_total_label, .circle_total_subtext {
+    font-size: 12pt;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 400;
+}
+
+.circle_total_subtext {
+    font-size: 11pt;
+}
+
+.circle_total, .profile_header_total {
+    font-size: 32pt;
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 700;
+}
 /* shared */
 .version {
     font-weight: lighter;
@@ -39,12 +201,24 @@ a {
     font-size: 9pt
 }
 
-.container {
+.container, .shadow_container {
     display: flex; /* or inline-flex */
     flex-wrap: wrap;
     justify-content: center;
     margin: 25pt;
     overflow:hidden;
+}
+
+.progress-bar-tracker-state-old {
+    opacity: 0.4;
+}
+
+.progress-bar-tracker-state-missing {
+    color: red;
+    opacity: 0.6;
+}
+.progress-bar-tracker-state-current {
+
 }
 
 .progress-container {
@@ -92,10 +266,6 @@ a {
     margin: 0;
 }
 
-.small_margin {
-    margin: 6pt;
-}
-
 .item {
     flex-grow: 1;
     background: rgba(84, 39, 39, 0.6);
@@ -122,8 +292,4 @@ a {
 .break {
     flex-basis: 100%;
     height: 0;
-}
-.shadow {
-    box-shadow: 3px 3px 12pt -3pt #111;
-    border-radius: 12px;
 }

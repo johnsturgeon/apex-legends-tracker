@@ -2,7 +2,7 @@
 from typing import Tuple
 import arrow
 from apex_legends_api import ALPlayer
-from apex_legends_api.al_domain import DataTracker, GameEvent
+from apex_legends_api.al_domain import DataTracker, GameEvent, Legend
 from apex_legends_api.al_base import ALEventType
 
 
@@ -29,7 +29,6 @@ class PlayerData:
                     game_day[day] = 0
                 tracker: DataTracker
                 for tracker in game.game_data_trackers:
-                    print(tracker.category)
                     if tracker.category == tracker_category:
                         damage_day[day] += int(tracker.value)
                         game_day[day] += 1
@@ -105,7 +104,7 @@ class PlayerData:
                 if tracker.category == category:
                     total += tracker.value
                 elif 'season' in tracker.category:
-                    print(tracker.category)
+                    ...
         return total
 
     def category_day_average(self, day: str, category: str, legend: str = "") -> float:
@@ -140,7 +139,6 @@ class PlayerData:
         legends: dict = {}
         game: GameEvent
         for game in self.games_played(day):
-            print("Legend: "+game.legend_played)
             if not game.legend_played:
                 continue
 
@@ -151,3 +149,47 @@ class PlayerData:
     def is_online(self) -> bool:
         """ Returns True if the player is online"""
         return self.player.realtime_info.is_online
+
+    def lifetime_total_for_trackers(self) -> list:
+        """
+        Returns the lifetime total for each tracker in a dict
+        """
+        tracker_totals: dict = {}
+        legend: Legend
+        for legend in self.player.all_legends:
+            tracker: DataTracker
+            for tracker in legend.data_trackers:
+                if tracker.key not in tracker_totals:
+                    tracker_totals[tracker.key] = {
+                        'tracker_name': tracker.name,
+                        'tracker_key': tracker.key,
+                        'tracker_category': tracker.category,
+                        'lifetime_total': tracker.value,
+                        'legends': [legend.name]
+                    }
+                else:
+                    tracker_totals[tracker.key]['lifetime_total'] += tracker.value
+                    if legend.name not in tracker_totals[tracker.key]['legends']:
+                        tracker_totals[tracker.key]['legends'].append(legend.name)
+
+        return list(tracker_totals.values())
+
+    def lifetime_total_for_categories(self) -> list:
+        """
+        Returns the lifetime total for each tracker in a dict
+        """
+        category_totals: dict = {}
+        for tracker in self.lifetime_total_for_trackers():
+            category_key = tracker['tracker_category']
+            if category_key not in category_totals:
+                category_totals[category_key] = {
+                    'category_name': category_key.capitalize(),
+                    'category_key': category_key,
+                    'category_lifetime_total': tracker['lifetime_total']
+                }
+            else:
+                category_totals[
+                    category_key
+                ]['category_lifetime_total'] += tracker['lifetime_total']
+
+        return list(category_totals.values())
