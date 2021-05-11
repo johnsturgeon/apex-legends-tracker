@@ -1,8 +1,7 @@
 """ Flask application for Apex Legends API Tracker """
 import os
-
-import arrow
 from datetime import datetime
+import arrow
 from dotenv import load_dotenv
 from flask import Flask, render_template, abort, jsonify, request
 from flask_profile import Profiler
