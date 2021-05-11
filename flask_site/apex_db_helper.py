@@ -3,7 +3,6 @@ import os
 import logging
 import datetime
 from enum import Enum
-from typing import List
 from logging import Logger
 import pymongo
 import arrow
@@ -13,7 +12,6 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer, ALPlatform
 from apex_legends_api.al_domain import GameEvent, DataTracker
-from apex_stats import PlayerData
 
 load_dotenv()
 
@@ -305,8 +303,8 @@ class ApexDBHelper:
 
         return legend_totals_dict
 
-
-class ApexDBGameEvent(GameEvent):
+# pylint disable=too-few-public-methods
+class ApexDBGameEvent(GameEvent):  # noqa R0903
     """ Class for wrapping a game event """
     def __init__(self, event_dict: dict):
         super().__init__(event_dict)
@@ -400,9 +398,9 @@ class ApexDBGameHelper:
         return max_average
 
 
-if __name__ == "__main__":
-
-    helper = ApexDBHelper()
+# if __name__ == "__main__":
+#     pass
+    # helper = ApexDBHelper()
     # PLAYER_UID: int = 1000132741950
     # results = helper.get_totals_for_legend(
     #     PLAYER_UID, 'Bloodhound', 'damage'
@@ -416,8 +414,8 @@ if __name__ == "__main__":
     # print(Totals)
     # InactiveLegends = helper.get_inactive_legends(PLAYER_UID)
     # print(InactiveLegends)
-    today = arrow.now().to('US/Pacific')
-    starting_timestamp = today.floor('day').int_timestamp
-    ending_timestamp = today.shift(days=+1).floor('day').int_timestamp
-    game_helper = ApexDBGameHelper(helper, starting_timestamp, ending_timestamp)
-    print(game_helper)
+    # today = arrow.now().to('US/Pacific')
+    # starting_timestamp = today.floor('day').int_timestamp
+    # ending_timestamp = today.shift(days=+1).floor('day').int_timestamp
+    # game_helper = ApexDBGameHelper(helper, starting_timestamp, ending_timestamp)
+    # print(game_helper)
