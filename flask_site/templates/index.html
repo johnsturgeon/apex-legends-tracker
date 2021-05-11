@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% set hide_header=True %}
 {% set page_title="Friends of the Apex Legends API: Home Page" %}
-{% set max_games = db_helper.get_max_category_for_day('games', day) %}
-{% set max_avg_kills = db_helper.get_max_category_avg_for_day('kills', day) | round(2) %}
-{% set max_avg_damage = db_helper.get_max_category_avg_for_day('damage', day) | round(0) | int %}
-{% set max_wins = db_helper.get_max_category_for_day('wins', day) %}
+{% set max_games = game_helper.max_category('games') %}
+{% set max_avg_kills = game_helper.max_category_average('kills') | round(2) %}
+{% set max_avg_damage = game_helper.max_category_average('damage') | round(0) | int %}
+{% set max_wins = game_helper.max_category_average('wins') %}
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
     <div class="item">
@@ -23,17 +23,18 @@
         <div class="shadow_container">
             <div class="container no_margin">
                 <div class="break no_padding"></div>
-                {% for player in players %}
-                    {% set player_data = player_data_dict[player['name']] %}
-                    {% set games_played=player_data.games_played(day) | length -%}
-                    {% set kill_avg=player_data.category_day_average(day, 'kills') | round(2) -%}
-                    {% set wins=player_data.category_total(day, 'wins') -%}
-                    {% set damage=player_data.category_day_average(day, 'damage') | round(0) | int -%}
+                {% for player in game_helper.tracked_players %}
+                    {% set uid = player['uid'] %}
+                    {% set is_online = player['is_online'] %}
+                    {% set games_played = game_helper.num_games_played_for_player(uid) %}
+                    {% set kill_avg = game_helper.category_average_for_player(uid, 'kills') | round(2) %}
+                    {% set wins = game_helper.category_total_for_player(uid, 'wins') %}
+                    {% set damage = game_helper.category_average_for_player(uid, 'damage') | round(0) | int -%}
                     <div class="item">
-                        <div class="{% if player_data.is_online() %}online{% endif %}" style="display: flex; justify-content: space-between">
+                        <div class="{% if is_online %}online{% endif %}" style="display: flex; justify-content: space-between">
                             <span><a href="{{ url_for('profile', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
-                            <span class="{% if player_data.is_online() %}online_small_font{% endif %}">
-                                {% if player_data.is_online() %}online{% endif %}
+                            <span class="{% if is_online %}online_small_font{% endif %}">
+                                {% if is_online %}online{% endif %}
                             </span>
                         </div>
                     </div>

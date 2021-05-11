@@ -5,12 +5,13 @@ import datetime
 from enum import Enum
 from logging import Logger
 import pymongo
+import arrow
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer, ALPlatform
-from apex_stats import PlayerData
+from apex_legends_api.al_domain import GameEvent, DataTracker
 
 load_dotenv()
 
@@ -194,26 +195,6 @@ class ApexDBHelper:
             self._latest_event_timestamp = newest_record['timestamp']
         return self._latest_event_timestamp
 
-    def get_max_category_for_day(self, category: str, day: str) -> int:
-        """ Returns the maximum category total for the day """
-        max_category: int = 0
-        for player in self.get_tracked_players():
-            al_player: ALPlayer = self.get_player_by_uid(player['uid'])
-            player_data: PlayerData = PlayerData(al_player)
-            max_category = max(max_category, player_data.category_total(day, category))
-        return max_category
-
-    def get_max_category_avg_for_day(self, category: str, day: str) -> float:
-        """ Returns the maximum category average for the day """
-        max_avg_category: float = 0.0
-        for player in self.get_tracked_players():
-            al_player: ALPlayer = self.get_player_by_uid(player['uid'])
-            player_data: PlayerData = PlayerData(al_player)
-            max_avg_category = max(
-                max_avg_category, player_data.category_day_average(day, category)
-            )
-        return max_avg_category
-
     def get_totals_for_legend(self, uid: int, legend_name: str, tracker_key: str) -> dict:
         """
         Returns the totals for a legend's tracker
@@ -322,20 +303,119 @@ class ApexDBHelper:
 
         return legend_totals_dict
 
+# pylint disable=too-few-public-methods
+class ApexDBGameEvent(GameEvent):  # noqa R0903
+    """ Class for wrapping a game event """
+    def __init__(self, event_dict: dict):
+        super().__init__(event_dict)
+        self.day = arrow.get(self.timestamp).to('US/Pacific').format('YYYY-MM-DD')
 
-if __name__ == "__main__":
 
-    helper = ApexDBHelper()
-    PLAYER_UID: int = 1000132741950
-    results = helper.get_totals_for_legend(
-        PLAYER_UID, 'Bloodhound', 'damage'
-    )
-    print(results['total'])
-    print(results['tracker_state'])
+class ApexDBGameHelper:
+    """ Class for performing stats on a set of games """
+    def __init__(self, db_helper: ApexDBHelper, start_timestamp, end_timestamp):
+        game_list: list = list(
+            db_helper.event_collection.find(
+                {
+                    "timestamp": {
+                        "$gte": start_timestamp,
+                        "$lte": end_timestamp
+                    },
+                    "eventType": "Game"
+                }
+            )
+        )
+        self._game_list_by_uid: dict = {}
+        self._category_totals_by_uid: dict = {}
+        self.tracked_players = db_helper.get_tracked_players()
+        for game in game_list:
+            game_event: GameEvent = ApexDBGameEvent(game)
+            uid: int = int(game_event.uid)
+            if uid not in self._game_list_by_uid:
+                self._game_list_by_uid[uid]: list = []
+            self._game_list_by_uid[uid].append(game_event)
+            if uid not in self._category_totals_by_uid:
+                self._category_totals_by_uid[uid]: dict = {}
+            tracker: DataTracker
+            for tracker in game_event.game_data_trackers:
+                if tracker.category not in self._category_totals_by_uid[uid]:
+                    self._category_totals_by_uid[uid][tracker.category] = 0
+                self._category_totals_by_uid[uid][tracker.category] += tracker.value
+        # games are a special category, so let's just make it up here
+        for uid in self._game_list_by_uid:
+            self._category_totals_by_uid[uid]['games'] = len(self._game_list_by_uid[uid])
 
-    Totals = helper.get_player_totals(
-        PLAYER_UID, ['games_played']
-    )
-    print(Totals)
-    InactiveLegends = helper.get_inactive_legends(PLAYER_UID)
-    print(InactiveLegends)
+    def num_games_played_for_player(self, uid: int) -> int:
+        """ re"""
+        games = self._game_list_by_uid.get(uid)
+        if games:
+            return len(games)
+        return 0
+
+    def category_total_for_player(self, uid: int, category: str) -> int:
+        """ returns the category total for each player"""
+        total = 0
+        player = self._category_totals_by_uid.get(uid)
+        if player:
+            category_total = self._category_totals_by_uid[uid].get(category)
+            if category_total:
+                total = self._category_totals_by_uid[uid][category]
+        return total
+
+    def category_average_for_player(self, uid: int, category: str) -> float:
+        """ Returns the average for the category for a given player """
+        average = 0.0
+        total = self.category_total_for_player(uid, category)
+        if total and self._game_list_by_uid.get(uid):
+            average = total / len(self._game_list_by_uid.get(uid))
+
+        return average
+
+    def max_category(self, category: str) -> int:
+        """ Returns the maximum category total for the day """
+        max_category: int = 0
+        for player in self.tracked_players:
+            uid = player['uid']
+            max_category = max(max_category, self.category_total_for_player(uid, category))
+
+        return max_category
+
+    def category_total(self, category: str):
+        """ Returns the total for a given category"""
+        category_total: int = 0
+        for player in self.tracked_players:
+            category_total += self.category_total_for_player(uid=player['uid'], category=category)
+        return category_total
+
+    def max_category_average(self, category: str) -> float:
+        """ Return the maximum category average for set of games """
+        max_average = 0.0
+        for player in self.tracked_players:
+            max_average = max(
+                max_average,
+                self.category_average_for_player(player['uid'], category)
+            )
+        return max_average
+
+
+# if __name__ == "__main__":
+#     pass
+    # helper = ApexDBHelper()
+    # PLAYER_UID: int = 1000132741950
+    # results = helper.get_totals_for_legend(
+    #     PLAYER_UID, 'Bloodhound', 'damage'
+    # )
+    # print(results['total'])
+    # print(results['tracker_state'])
+    #
+    # Totals = helper.get_player_totals(
+    #     PLAYER_UID, ['games_played']
+    # )
+    # print(Totals)
+    # InactiveLegends = helper.get_inactive_legends(PLAYER_UID)
+    # print(InactiveLegends)
+    # today = arrow.now().to('US/Pacific')
+    # starting_timestamp = today.floor('day').int_timestamp
+    # ending_timestamp = today.shift(days=+1).floor('day').int_timestamp
+    # game_helper = ApexDBGameHelper(helper, starting_timestamp, ending_timestamp)
+    # print(game_helper)

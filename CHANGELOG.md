@@ -4,6 +4,10 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2021-05-11
+### Changed
+- Performance improvement!  Front page now loads significantly faster, I'll be working on more performance improvements over time
+
 ## [0.5.0] - 2021-05-10
 This is a pretty big release, I'm adding a kind of 'profile' stats page where you can see your
 tracker totals for the trackers that are currently tracked.  Also provided is a new `tracker_detail`
