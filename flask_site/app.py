@@ -1,6 +1,6 @@
 """ Flask application for Apex Legends API Tracker """
 import os
-
+from datetime import datetime
 import arrow
 from dotenv import load_dotenv
 from flask import Flask, render_template, abort, jsonify, request
@@ -42,13 +42,16 @@ def under_maintenance(_):
 
 @app.route('/', defaults={'day': None})
 @app.route('/<string:day>')
-def index(day):
+def index(day: str):
     """ Default route """
     if day:
-        date_to_use = arrow.get(day).to('US/Pacific')
+        date_parts = day.split("-")
+        date_to_use = arrow.get(
+            datetime(int(date_parts[0]), int(date_parts[1]), int(date_parts[2])),
+            'US/Pacific'
+        )
     else:
-        date_to_use = arrow.now().to('US/Pacific')
-        day = arrow.now().format("YYYY-MM-DD")
+        date_to_use = arrow.now('US/Pacific')
     starting_timestamp = date_to_use.floor('day').int_timestamp
     ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
     game_helper = ApexDBGameHelper(apex_db_helper, starting_timestamp, ending_timestamp)
