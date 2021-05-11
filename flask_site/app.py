@@ -7,7 +7,7 @@ from flask import Flask, render_template, abort, jsonify, request
 from flask_profile import Profiler
 from apex_legends_api import ALPlayer
 from apex_api_helper import ApexAPIHelper
-from apex_db_helper import ApexDBHelper
+from apex_db_helper import ApexDBHelper, ApexDBGameHelper
 import graphing
 from apex_stats import PlayerData
 
@@ -44,20 +44,18 @@ def under_maintenance(_):
 @app.route('/<string:day>')
 def index(day):
     """ Default route """
-    if not day:
+    if day:
+        date_to_use = arrow.get(day).to('US/Pacific')
+    else:
+        date_to_use = arrow.now().to('US/Pacific')
         day = arrow.now().format("YYYY-MM-DD")
-    tracked_players = apex_db_helper.get_tracked_players()
-    player_data_dict: dict = {}
-    for player in tracked_players:
-        db_player: ALPlayer = apex_db_helper.get_player_by_uid(player['uid'])
-        player_data_dict[player['name']] = PlayerData(db_player)
+    starting_timestamp = date_to_use.floor('day').int_timestamp
+    ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
+    game_helper = ApexDBGameHelper(apex_db_helper, starting_timestamp, ending_timestamp)
     return render_template(
         'index.html',
         day=day,
-        arrow=arrow,
-        players=apex_db_helper.get_tracked_players(),
-        player_data_dict=player_data_dict,
-        db_helper=apex_db_helper
+        game_helper=game_helper
     )
 
 
