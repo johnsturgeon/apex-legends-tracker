@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.5.4] - 2021-05-13
 ### Added
-- Added `WBR`
+- Added `WBR` to the `Day to Day` page
   WBR is calculated by `xp / games played / 100` and is intended to give you an idea about overall game effectiveness. 
   A higher `WBR` is better, from my initial investigation, a `WBR` of > 30 is kind of the benchmark for a good day
   NOTE: `WBR` stands for WarBlade Rating
