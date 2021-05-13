@@ -1,10 +1,10 @@
-{% macro progress_container(label, count, total, highlight_max=False, show_total=True) -%}
+{% macro progress_container(label, count, total, highlight_max=False, show_total=True, min_width="100pt") -%}
     {% if total > 0 %}
         {% set percent=(count/total)*100 %}
     {% else %}
         {% set percent=0 %}
     {% endif %}
-    <div class="item">
+    <div class="item" style="min-width: {{ min_width }}">
         {{ left_right_style(label, count, total, highlight_max, show_total) }}
         {{ progress_bar(percent) }}
     </div>

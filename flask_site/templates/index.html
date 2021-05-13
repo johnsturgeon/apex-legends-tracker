@@ -38,10 +38,10 @@
                             </span>
                         </div>
                     </div>
-                    {{ macros.progress_container("Games", games_played, max_games, show_total=False) }}
-                    {{ macros.progress_container("Wins", wins, max_wins, highlight_max=True, show_total=False) }}
-                    {{ macros.progress_container("Kill/g", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
-                    {{ macros.progress_container("Damage/g", damage, max_avg_damage, highlight_max=True, show_total=False) }}
+                    {{ macros.progress_container("Games", games_played, max_games, show_total=False, min_width='85pt') }}
+                    {{ macros.progress_container("Wins", wins, max_wins, highlight_max=True, show_total=False, min_width='85pt') }}
+                    {{ macros.progress_container("Kill/g", kill_avg, max_avg_kills, highlight_max=True, show_total=False, min_width='85pt') }}
+                    {{ macros.progress_container("Damage/g", damage, max_avg_damage, highlight_max=True, show_total=False, min_width='85pt') }}
                     <div class="break no_padding"></div>
                 {% endfor %}
             </div>

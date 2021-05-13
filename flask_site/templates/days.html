@@ -17,6 +17,8 @@
                 {% set wins=player_data.category_total(day, 'wins') -%}
                 {% set damage=player_data.category_total(day, 'damage') -%}
                 {% set avg_damage=player_data.category_day_average(day, 'damage') | round(0) | int -%}
+                {% set xp=player_data.category_total(day, 'xp') -%}
+                {% set avg_xp=player_data.category_day_average(day, 'xp') | round(0) | int %}
                 <div class="shadow_container">
                     <div class="container header">
                         <div class="item small_padding">{{ day }}</div>
@@ -28,6 +30,9 @@
                     <div class="item">
                         Damage: {{ damage }}<br><i>{{ avg_damage }} / game</i>
                     </div>
+                    <div class="item">
+                        XP: {{ xp }}<br><i>{{ avg_xp }} / game</i>
+                    </div>
                     <div class="break no_padding"></div>
                     <div class="container footer">
                         <div class="break no_padding"></div>
@@ -36,14 +41,20 @@
                             {% set legend_kills=player_data.category_total(day, 'kills', legend) -%}
                             {% set legend_wins=player_data.category_total(day, 'wins', legend) -%}
                             {% set legend_damage=player_data.category_total(day, 'damage', legend)  -%}
+                            {% set legend_xp=player_data.category_total(day, 'xp', legend) -%}
+                            {% set xp_efficiency=(legend_xp / legend_games / 100) | round(2) %}
                             <div class="item" style="flex-shrink: 0;flex-grow: 0">
-                            <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
-                                 src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
+                                <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
+                                     src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
                             </div>
-                            {{ macros.progress_container("Games", legend_games, games_played) }}
-                            {{ macros.progress_container("Kills", legend_kills, kills) }}
-                            {{ macros.progress_container("Wins", legend_wins, wins) }}
-                            {{ macros.progress_container("Damage", legend_damage, damage) }}
+                            <div class="item" style="flex-shrink: 0; flex-grow: 0">
+                                WBR*: {{ xp_efficiency }}
+                            </div>
+                            {{ macros.progress_container("Games", legend_games, games_played, min_width='94pt') }}
+                            {{ macros.progress_container("Kills", legend_kills, kills, min_width='94pt') }}
+                            {{ macros.progress_container("Wins", legend_wins, wins, min_width='94pt') }}
+                            {{ macros.progress_container("Damage", legend_damage, damage, min_width='94pt') }}
+                            {{ macros.progress_container("XP", legend_xp, xp, min_width='94pt') }}
                             <div class="break no_padding"></div>
                         {% endfor %}
                     </div>

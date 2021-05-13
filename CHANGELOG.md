@@ -4,6 +4,18 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.4] - 2021-05-13
+### Added
+- Added `WBR`
+  WBR is calculated by `xp / games played / 100` and is intended to give you an idea about overall game effectiveness. 
+  A higher `WBR` is better, from my initial investigation, a `WBR` of > 30 is kind of the benchmark for a good day
+  NOTE: `WBR` stands for WarBlade Rating
+  
+## Fixed
+- Fixed an issue with the legend tracker page not updating live.  This meant that in order for you 
+  to see results in the tracker detail page you had to manually refresh your browser, that is no
+  longer the case
+
 ## [0.5.3] - 2021-05-11
 ### Fixed
 - Fixed a date/time issue when selecting previous / next days

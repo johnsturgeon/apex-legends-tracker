@@ -106,8 +106,7 @@ def tracker_detail(player_uid, tracker_key):
     )
 
 
-# http://127.0.0.1:5000/_get_tracker_data?player_uid=2533274947905327&tracker_key=wins
-# Json functions
+# Ajax / Json functions
 @app.route('/_get_tracker_data')
 def get_tracker_data():
     """ Ajax query to get player data """
@@ -118,15 +117,12 @@ def get_tracker_data():
         uid=player_uid, tracker_keys=[tracker_key], active_legends_only=True
     )
     tracker_totals = player_totals[tracker_key]
-    # total = tracker_totals['total']
-    # count = tracker_totals[legend_name]['total']
-    # legend_state: TrackerDataState = tracker_totals[legend_name]['tracker_state']
-    # global_state: TrackerDataState = tracker_totals['tracker_state']
     response = {
         'tracker_key': tracker_key,
         'tracker_totals': tracker_totals,
     }
     json_response = jsonify(response)
+    json_response.headers['Cache-Control'] = 'private, max-age=0'
     return json_response
 
 
