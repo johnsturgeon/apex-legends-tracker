@@ -99,6 +99,9 @@ class PlayerData:
 
         game: GameEvent
         for game in self.games_played(day, legend):
+            if category == 'xp':
+                total += game.xp_progress
+                continue
             tracker: DataTracker
             for tracker in game.game_data_trackers:
                 if tracker.category == category:

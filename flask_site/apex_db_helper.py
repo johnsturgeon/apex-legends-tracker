@@ -398,9 +398,9 @@ class ApexDBGameHelper:
         return max_average
 
 
-# if __name__ == "__main__":
-#     pass
-    # helper = ApexDBHelper()
+if __name__ == "__main__":
+
+    helper = ApexDBHelper()
     # PLAYER_UID: int = 1000132741950
     # results = helper.get_totals_for_legend(
     #     PLAYER_UID, 'Bloodhound', 'damage'
@@ -414,8 +414,8 @@ class ApexDBGameHelper:
     # print(Totals)
     # InactiveLegends = helper.get_inactive_legends(PLAYER_UID)
     # print(InactiveLegends)
-    # today = arrow.now().to('US/Pacific')
-    # starting_timestamp = today.floor('day').int_timestamp
-    # ending_timestamp = today.shift(days=+1).floor('day').int_timestamp
-    # game_helper = ApexDBGameHelper(helper, starting_timestamp, ending_timestamp)
-    # print(game_helper)
+    today = arrow.now().to('US/Pacific')
+    starting_timestamp = today.floor('day').int_timestamp
+    ending_timestamp = today.shift(days=+1).floor('day').int_timestamp
+    game_helper = ApexDBGameHelper(helper, 0, ending_timestamp)
+    print(game_helper)
