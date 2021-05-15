@@ -4,6 +4,10 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.5] - 2021-05-15
+### Fixed
+- Fixed multiple issues connecting to the database by migrating to MongoDB Atlas (cloud)
+
 ## [0.5.4] - 2021-05-13
 ### Added
 - Added `WBR` to the `Day to Day` page
