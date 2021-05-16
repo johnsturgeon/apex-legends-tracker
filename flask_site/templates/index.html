@@ -7,54 +7,55 @@
 {% set max_wins = game_helper.max_category('wins') %}
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
-    <div class="item">
-        <div class="shadow_container no_margin">
-            <div class="item header_label">
-                <span class="header_item first_header_item">
-                    <a href="#" id="date_picker">Choose Date</a> (currently: {{ day }})
-                </span>
+    <div class="leaderboard">
+        <div class="sortable" id="name">Player</div>
+        <div class="sortable" id="games_played">Total Games</div>
+        <div class="sortable" id="wins">Total Wins</div>
+        <div class="sortable" id="kill_avg">Kills / Game</div>
+        <div class="sortable" id="damage_avg">Damage / Game</div>
+        <div class="clear"></div>
+        {% for player in game_helper.players_sorted_by_key(key=sort_key) %}
+            {% set uid = player['uid'] %}
+            {% set is_online = player['is_online'] %}
+            {% set games_played = player['games_played'] %}
+            {% set kill_avg = player['kill_avg'] | round(2) %}
+            {% set wins = player['wins'] %}
+            {% set damage = player['damage_avg'] | round(0) | int -%}
+            <div><!-- this is a row -->
+                <div class="{% if is_online %}online{% endif %}">
+                    <span><a href="{{ url_for('profile', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                    <span class="{% if is_online %}online_small_font{% endif %}">
+                        {% if is_online %}online{% endif %}
+                    </span>
+                </div>
             </div>
-            <div class="item header_label last_header_label" style="text-align: right">
-            <span class="header_item last_header_item">
-                <a href="https://github.com/johnsturgeon/apex-legends-tracker/blob/main/CHANGELOG.md" target="_blank">What's New</a>
-            </span>
-            </div>
-        </div>
-        <div class="shadow_container">
-            <div class="container no_margin">
-                <div class="break no_padding"></div>
-                {% for player in game_helper.tracked_players %}
-                    {% set uid = player['uid'] %}
-                    {% set is_online = player['is_online'] %}
-                    {% set games_played = game_helper.num_games_played_for_player(uid) %}
-                    {% set kill_avg = game_helper.category_average_for_player(uid, 'kills') | round(2) %}
-                    {% set wins = game_helper.category_total_for_player(uid, 'wins') %}
-                    {% set damage = game_helper.category_average_for_player(uid, 'damage') | round(0) | int -%}
-                    <div class="item">
-                        <div class="{% if is_online %}online{% endif %}" style="display: flex; justify-content: space-between">
-                            <span><a href="{{ url_for('profile', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
-                            <span class="{% if is_online %}online_small_font{% endif %}">
-                                {% if is_online %}online{% endif %}
-                            </span>
-                        </div>
-                    </div>
-                    {{ macros.progress_container("Games", games_played, max_games, show_total=False, min_width='85pt') }}
-                    {{ macros.progress_container("Wins", wins, max_wins, highlight_max=True, show_total=False, min_width='85pt') }}
-                    {{ macros.progress_container("Kill/g", kill_avg, max_avg_kills, highlight_max=True, show_total=False, min_width='85pt') }}
-                    {{ macros.progress_container("Damage/g", damage, max_avg_damage, highlight_max=True, show_total=False, min_width='85pt') }}
-                    <div class="break no_padding"></div>
-                {% endfor %}
-            </div>
-        </div>
+            {{ macros.progress_container("", games_played, max_games, show_total=False) }}
+            {{ macros.progress_container("", wins, max_wins, highlight_max=True, show_total=False) }}
+            {{ macros.progress_container("", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
+            {{ macros.progress_container("", damage, max_avg_damage, highlight_max=True, show_total=False) }}
+            <div class="clear"></div>
+        {% endfor %}
     </div>
     <script>
+        setTimeout(function(){
+            location.reload();
+        },300000)
         const picker = new Litepicker({
             element: document.getElementById('date_picker'),
             highlightedDays: ['{{ day }}'],
             maxDate: new Date()
         });
         picker.on('selected', (date1) => {
-            window.location.href='/' + date1.format('YYYY-MM-DD')
+            window.location.href='/' + date1.format('YYYY-MM-DD') + '/' + '{{ sort_key }}'
         });
-    </script>
+        function sort_by_key(key) {
+            window.location.href='/' + '{{ day }}' + '/' + key
+        }
+        $(document).ready(function(){
+            $('#{{ sort_key }}').append(' *')
+            $('.sortable').on('click', function(e) {
+                sort_by_key($(this).attr('id'))
+            });
+
+        });    </script>
 {% endblock %}

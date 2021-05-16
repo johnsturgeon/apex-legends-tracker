@@ -324,6 +324,11 @@ class ApexDBGameHelper:
         self._game_list_by_uid: dict = {}
         self._category_totals_by_uid: dict = {}
         self.tracked_players = db_helper.get_tracked_players()
+        #     'uid': int(glob['uid']),
+        #     'name': glob['name'],
+        #     'platform': glob['platform'],
+        #     'is_online': realtime['isOnline']
+
         for game in game_list:
             game_event: GameEvent = ApexDBGameEvent(game)
             uid: int = int(game_event.uid)
@@ -340,6 +345,13 @@ class ApexDBGameHelper:
         # games are a special category, so let's just make it up here
         for uid in self._game_list_by_uid:
             self._category_totals_by_uid[uid]['games'] = len(self._game_list_by_uid[uid])
+
+        for player in self.tracked_players:
+            uid = player['uid']
+            player['games_played'] = self.num_games_played_for_player(uid)
+            player['kill_avg'] = self.category_average_for_player(uid, 'kills')
+            player['wins'] = self.category_total_for_player(uid, 'wins')
+            player['damage_avg'] = self.category_average_for_player(uid, 'damage')
 
     def num_games_played_for_player(self, uid: int) -> int:
         """ re"""
@@ -393,6 +405,15 @@ class ApexDBGameHelper:
             )
         return max_average
 
+    def players_sorted_by_key(self, key: str):
+        """ returns back a list of players sorted by the category """
+        # one or the other but not both
+        if key == 'name':
+            sorted_players = sorted(self.tracked_players, key=lambda item: item[key].casefold())
+        else:
+            sorted_players = sorted(self.tracked_players, key=lambda item: item[key], reverse=True)
+        return sorted_players
+
 
 if __name__ == "__main__":
 
@@ -414,4 +435,5 @@ if __name__ == "__main__":
     starting_timestamp = today.floor('day').int_timestamp
     ending_timestamp = today.shift(days=+1).floor('day').int_timestamp
     game_helper = ApexDBGameHelper(helper, 0, ending_timestamp)
-    print(game_helper)
+    players_sorted = game_helper.players_sorted_by_key('damage')
+    print(players_sorted)

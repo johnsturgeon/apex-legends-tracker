@@ -40,9 +40,10 @@ def under_maintenance(_):
     return render_template('503.html'), 503
 
 
-@app.route('/', defaults={'day': None})
-@app.route('/<string:day>')
-def index(day: str):
+@app.route('/', defaults={'day': None, 'sort_key': 'name'})
+@app.route('/<string:day>/', defaults={'sort_key': 'name'})
+@app.route('/<string:day>/<string:sort_key>')
+def index(day: str, sort_key: str):
     """ Default route """
     if day:
         date_parts = day.split("-")
@@ -52,23 +53,34 @@ def index(day: str):
         )
     else:
         date_to_use = arrow.now('US/Pacific')
+
     starting_timestamp = date_to_use.floor('day').int_timestamp
     ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
     game_helper = ApexDBGameHelper(apex_db_helper, starting_timestamp, ending_timestamp)
+    if not day:
+        day = date_to_use.format('YYYY-MM-DD')
+    prev_day = date_to_use.shift(days=-1).format('YYYY-MM-DD')
+    today = arrow.now('US/Pacific')
+    next_day = None
+    if date_to_use < today.shift(days=-1):
+        next_day = date_to_use.shift(days=+1).format('YYYY-MM-DD')
     return render_template(
         'index.html',
         day=day,
-        game_helper=game_helper
+        prev_day=prev_day,
+        next_day=next_day,
+        game_helper=game_helper,
+        sort_key=sort_key
     )
 
 
-@app.route('/days/<int:player_uid>')
-def days(player_uid: int):
+@app.route('/day_by_day/<int:player_uid>')
+def day_by_day(player_uid: int):
     """ List of player matches and some detail / day """
     player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
     player_data: PlayerData = PlayerData(player)
     return render_template(
-        'days.html',
+        'day_by_day.html',
         player=player,
         player_data=player_data,
         db_helper=apex_db_helper
@@ -93,7 +105,7 @@ def profile(player_uid):
     return "Not Found"
 
 
-@app.route('/profile/<int:player_uid>/<tracker_key>')
+@app.route('/tracker_detail/<int:player_uid>/<tracker_key>')
 def tracker_detail(player_uid, tracker_key):
     """ Display a page for one tracker and all the detail we have for it.   """
     player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)

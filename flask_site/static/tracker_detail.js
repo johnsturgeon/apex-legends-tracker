@@ -55,12 +55,12 @@ function setTrackerDetails(
  */
 function updateAllTrackers(tracker_key, tracker_totals) {
     const total_for_tracker = tracker_totals.total
-    console.log("tracker state: " + tracker_totals.tracker_state)
-    tracker_state_string = stringForState(tracker_totals.tracker_state)
-    legends = tracker_totals.legends
+    let tracker_state_string = stringForState(tracker_totals.tracker_state)
+    let legends = tracker_totals.legends
+    let legend;
+    let legend_state_string;
     for (let i = 0; i < legends.length; i++) {
         legend = legends[i]
-        console.log(legend)
         legend_state_string = stringForState(legend.tracker_state)
         setTrackerDetails(
             legend.name,
@@ -76,7 +76,6 @@ function updateAllTrackers(tracker_key, tracker_totals) {
 
 function stringForState(tracker_state) {
     let tracker_state_string = ""
-    console.log("stringForState: " + tracker_state)
     switch (tracker_state) {
         case "-1":
             tracker_state_string = "MISSING"
@@ -90,7 +89,6 @@ function stringForState(tracker_state) {
         default:
             tracker_state_string = "NO_DATA"
     }
-    console.log(tracker_state_string)
     return tracker_state_string
 }
 
@@ -112,15 +110,12 @@ function refreshTracker(player_uid, tracker_key) {
  * Sets the default values for all the trackers while the data is loading
  */
 function setDefaultValues() {
-    setTrackerDetails(
-        "Legend",
-        "Loading...",
-        "loading",
-        0,
-        0,
-        "MISSING",
-        "MISSING"
-    )
+    const progress_bar = $("div[id^='tracker-detail-progress-bar-']")
+    const progress_container = $("div[id^='tracker-detail-progres']")
+    $("div[id^='tracker-detail-lr']").text("...")
+    progress_bar.width(0)
+    $("span[id^='circle-total-any-*']").text("...")
+    $("span[id^='circle-total-subtext-any-']").text("...")
 }
 
 

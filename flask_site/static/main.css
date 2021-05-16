@@ -12,29 +12,172 @@ body {
 a {
     color: wheat;
 }
+.base_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgba(84, 39, 39, 0.6);
+    padding: 10pt 0 10pt 0;
+}
 
-.header_label {
+.base_container > DIV {
+    margin: 10pt;
+    padding: 10pt;
+    overflow:hidden;
+    background-color: rgba(84, 39, 39, 0.6);
+    box-shadow: 3px 3px 12pt -3pt #111;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+}
+
+DIV.header {
+    padding: 8pt;
+
+}
+
+.header > DIV {
+    border-left: solid 1pt wheat;
+    flex-grow: 0;
+    padding-left: 8pt;
+    padding-right: 8pt;
     font-size: 14pt;
 }
 
-.header_item {
-    padding-left: 5pt;
-    padding-right: 5pt;
-    border-left: solid 1pt wheat;;
-}
-
-.first_header_item {
-    padding-left: 10pt;
+.header > DIV:first-child {
     border-left: 0;
 }
 
-.last_header_item {
-    padding-right: 20pt;
-    border-left:0;
+.header > DIV:last-child {
+    text-align: right;
+    border-left: 0;
+    flex-grow:1;
 }
 
-.last_header_label {
-    text-align: right;
+DIV.date_picker {
+    padding-top: 12pt;
+    padding-bottom: 4pt;
+    vertical-align: center;
+    font-size: 18pt;
+}
+
+.date_picker .prev_next_arrow {
+    width: 1.4em;
+    padding-left: 24pt;
+    padding-right: 24pt;
+    height: auto;
+}
+
+.date_picker .prev_next_arrow_disabled {
+    width: 1.4em;
+    padding-left: 24pt;
+    padding-right: 24pt;
+    height: auto;
+    vertical-align: middle;
+    opacity: 40%;
+}
+
+
+DIV.leaderboard {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+DIV.leaderboard > DIV {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 80pt;
+    padding: 3pt 10pt 3pt 10pt;
+}
+
+DIV.leaderboard > DIV.clear {
+    flex-basis: 100%;
+    height: 0;
+}
+
+DIV.leaderboard .online {
+    overflow: hidden;
+    background: rgba(181, 181, 181, 0.13) !important;
+    border: solid 5px rgba(84, 39, 39, 0);
+    border-radius: 8pt;
+    margin-left:-5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+DIV.leaderboard .online_small_font {
+    vertical-align: middle;
+    font-family: "Arial", serif;
+    font-size: 9pt
+}
+
+DIV.tracker_detail_container {
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+}
+
+DIV.tracker_detail_trackers {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+DIV.tracker_detail_trackers > DIV {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    padding-top: 10pt;
+}
+
+.tracker_detail_trackers .item {
+    padding: 0 10pt;
+    min-width: 170pt !important;
+    min-height: 30pt;
+}
+
+DIV.tracker_detail_container > DIV.clear {
+    flex-basis: 100%;
+    height: 0;
+}
+
+DIV.day_by_day {
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+DIV.day_by_day > DIV {
+    flex: 1;
+    min-width: 80pt;
+    padding: 3pt 10pt 3pt 10pt;
+}
+
+DIV.day_by_day > DIV.clear {
+    flex-basis: 100%;
+    height: 0;
+}
+
+DIV.day_by_day > DIV.line {
+    margin: 5pt 0;
+    border-top: solid 1pt wheat;
+}
+
+DIV.day_by_day > DIV.day_by_day_thumb {
+    flex: 0 0 24pt;
+    min-width: 24pt;
+}
+
+DIV.day_by_day > DIV.day_by_day_head {
+    text-align: center;
+    font-size: 18pt;
+}
+
+#tracker_detail_instructions {
+    display: flex;
+    flex-direction: column;
+}
+
+.sortable {
+    cursor: pointer;
 }
 
 .center-text {
@@ -48,11 +191,6 @@ a {
 }
 
 /* player profile page */
-.player_profile_container {
-    flex-basis: 100%;
-    justify-content: left;
-    background: rgba(84, 39, 39, 0.6);
-}
 
 .player_profile_card {
     flex-direction: column;
@@ -83,28 +221,27 @@ a {
     justify-content: center;
 }
 
-.profile_stat_outer_container .item {
-    background-color: transparent;
-}
-.profile_stat_outer_container {
+.profile_stat_circle_container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    background: rgba(84, 39, 39, 0.6);
-    overflow:hidden;
+}
+.profile_stat_circle_container > DIV {
+    padding: 10pt;
+}
+
+DIV.profile {
+    flex-direction: column;
 }
 
 .profile_header_container {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
-    background: rgba(84, 39, 39, 0.6);
-    overflow:hidden;
-    padding-left: 25pt;
-    padding-right: 25pt;
+    padding: 10pt 25pt;
 }
 
-.profile_header_item {
+.profile_header_container > DIV {
     font-family: 'Chakra Petch', sans-serif;
     font-size: 12pt;
     text-align: center;
@@ -112,16 +249,16 @@ a {
     flex-basis: 0;
 }
 
-.profile_header_total {
-    font-size: 24pt !important;
-}
-
-
 .header_divider_line {
     border-left: solid 0.5pt wheat;
     margin-top: 5pt;
     margin-bottom: 10pt;
 }
+
+.profile_header_total {
+    font-size: 24pt !important;
+}
+
 /* Profile tracker totals */
 .circle_base {
     border-radius: 50%;
@@ -187,28 +324,6 @@ a {
     flex: 0 0 220px;
 }
 
-.online {
-    overflow: hidden;
-    background: rgba(181, 181, 181, 0.13) !important;
-    border: solid 5px rgba(84, 39, 39, 0);
-    border-radius: 8pt;
-    margin-left:-5px;
-}
-
-.online_small_font {
-    vertical-align: middle;
-    font-family: "Arial", serif;
-    font-size: 9pt
-}
-
-.container, .shadow_container {
-    display: flex; /* or inline-flex */
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 25pt;
-    overflow:hidden;
-}
-
 .progress-bar-tracker-state-old {
     opacity: 0.4;
 }
@@ -245,51 +360,13 @@ a {
     z-index: 9;
 }
 
-.header {
-    justify-content: left;
-    flex-grow: 1;
-    margin: 0;
-    border-bottom: solid 1px;
-    text-align: center;
-}
-
-.footer {
-    justify-content: left;
-    flex-grow: 1;
-    margin: 0;
-    border-top: solid 1px;
-    font-weight: lighter;
-    font-size: 12pt;
-}
-
 .no_margin {
     margin: 0;
-}
-
-.item {
-    flex-grow: 1;
-    background: rgba(84, 39, 39, 0.6);
-    padding:12pt;
-    flex-basis: 0;
 }
 
 .legend_thumb {
     width: 32px;
     height: auto;
-    -webkit-filter: invert(100%); /* safari 6.0 - 9.0 */
     filter: invert(100%);
     vertical-align: middle;
-}
-
-.small_padding {
-    padding: 6pt;
-}
-
-.no_padding {
-    padding: 0;
-}
-
-.break {
-    flex-basis: 100%;
-    height: 0;
 }
