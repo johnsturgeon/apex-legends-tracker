@@ -1,10 +1,16 @@
-{% macro progress_container(label, count, total, highlight_max=False, show_total=True, min_width="100pt") -%}
+{% macro progress_container(label, count, total, highlight_max=False, show_total=True) -%}
     {% if total > 0 %}
         {% set percent=(count/total)*100 %}
     {% else %}
-        {% set percent=0 %}
+        {% set percent=10 %}
     {% endif %}
-    <div class="item" style="min-width: {{ min_width }}">
+    {% if count > 0 %}
+        {% set opacity=100 %}
+    {% else %}
+        {% set opacity=40 %}
+    {% endif %}
+
+    <div style="opacity: {{ opacity }}%">
         {{ left_right_style(label, count, total, highlight_max, show_total) }}
         {{ progress_bar(percent) }}
     </div>
@@ -46,7 +52,11 @@
         {%  set should_highlight=True %}
     {% endif %}
     <div style="display:inline;">
+    {% if label %}
         {{ label }}
+    {% else %}
+        &nbsp;
+    {% endif %}
     </div>
     <div style="float:right;display:inline;{% if should_highlight %}color:darkgreen{% endif %}">
         {{ count }}{% if total and show_total %}/{{ total }}{% endif %}

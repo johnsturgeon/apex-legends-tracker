@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% include 'favicons.html' %}
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?{{ "" | append_version_number }}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;700&display=swap" rel="stylesheet">
@@ -9,36 +10,50 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <title>{{ page_title }}</title>
-    <script type=text/javascript>
+    <script type="text/javascript">
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
 </head>
 <body>
-<div class="container">
-    {% if not hide_header %}
-        <div class="item">
-            <div class="shadow_container no_margin">
-                <div class="item header_label">
-                    <span class="header_item first_header_item">
-                        Other {{ player_name }} pages:
-                    </span>
-                    <span class="header_item first_header_item">
-                        <a href="{{ url_for('days', player_uid=player_uid) }}">Day by Day Totals</a>
-                    </span>
-                    <span class="header_item">
-                        <a href="{{ url_for('profile', player_uid=player_uid) }}">Profile Page</a>
-                    </span>
-                </div>
-                <div class="item header_label last_header_label" style="text-align: right">
-                    <span class="header_item last_header_item">
-                        <a href="{{ url_for('index') }}">Home Page</a>
-                    </span>
-                </div>
+<div class="base_container">
+    {% if 'index' not in request.endpoint %}
+        <div class="header">
+            <div>
+                {{ player_name }}:
             </div>
+            <div>{% if 'day_by_day' in request.endpoint %}Day by Day Totals{% else %}
+                <a href="{{ url_for('day_by_day', player_uid=player_uid) }}">Day by Day Totals</a>{% endif %}
+            </div>
+            <div>{% if 'profile' in request.endpoint %}Profile Page{% else %}
+                <a href="{{ url_for('profile', player_uid=player_uid) }}">Profile Page</a> {% endif %}
+            </div>
+            <div>{% if 'index' in request.endpoint %}Home Page{% else %}
+                <a href="{{ url_for('index') }}">Home Page</a>{% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="date_picker">
+            <div>
+                <a href="{{ url_for('index', day=prev_day, sort_key=sort_key) }}"><!--
+                 --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
+             --></a>
+            </div>
+            <div><a href="#" id="date_picker">{{ day }}</a></div>
+            {% if next_day %}
+                <div>
+                <a href="{{ url_for('index', day=next_day, sort_key=sort_key) }}">
+                    <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                </a>
+                </div>
+            {% else %}
+                <div>
+                    <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                </div>
+            {% endif %}
         </div>
     {% endif %}
     {% block content %} {% endblock %}
 </div>
-{{ macros.version() }}
+<a href="https://github.com/johnsturgeon/apex-legends-tracker/blob/main/CHANGELOG.md" target="_blank">{{ macros.version() }}</a>
 </body>
 </html>
