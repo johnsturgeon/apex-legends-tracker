@@ -4,6 +4,15 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Changes
+- Changed the default player link to go to their `day-to-day` page instead of their profile
+
+### Fixes
+- Fixed a home page refresh timing issue
+- Fixed a javascript issue on the home page
+- Speed improvements for the `day-to-day` page
+
 ## [0.6.0] - 2021-05-16
 ### Changed
 - Redesigned Home Page!

@@ -3,11 +3,13 @@ import os
 from datetime import datetime
 import arrow
 from dotenv import load_dotenv
-from flask import Flask, render_template, abort, jsonify, request
+from flask import Flask, render_template, abort, jsonify, request, send_from_directory
 from flask_profile import Profiler
 from apex_legends_api import ALPlayer
 from apex_api_helper import ApexAPIHelper
-from apex_db_helper import ApexDBHelper, ApexDBGameHelper
+from apex_db_helper import ApexDBHelper
+from apex_view_controllers import IndexViewController,\
+    DayByDayViewController
 import graphing
 from apex_stats import PlayerData
 
@@ -40,6 +42,13 @@ def under_maintenance(_):
     return render_template('503.html'), 503
 
 
+@app.route('/apple-touch-icon.png')
+def favicon():
+    """ route for favicon """
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'images/favicons/favicon.ico', mimetype='image/vnd.microsoft.icon')
+
+
 @app.route('/', defaults={'day': None, 'sort_key': 'name'})
 @app.route('/<string:day>/', defaults={'sort_key': 'name'})
 @app.route('/<string:day>/<string:sort_key>')
@@ -56,7 +65,9 @@ def index(day: str, sort_key: str):
 
     starting_timestamp = date_to_use.floor('day').int_timestamp
     ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
-    game_helper = ApexDBGameHelper(apex_db_helper, starting_timestamp, ending_timestamp)
+    index_view_controller = IndexViewController(
+        apex_db_helper, starting_timestamp, ending_timestamp
+    )
     if not day:
         day = date_to_use.format('YYYY-MM-DD')
     prev_day = date_to_use.shift(days=-1).format('YYYY-MM-DD')
@@ -69,7 +80,7 @@ def index(day: str, sort_key: str):
         day=day,
         prev_day=prev_day,
         next_day=next_day,
-        game_helper=game_helper,
+        index_view_controller=index_view_controller,
         sort_key=sort_key
     )
 
@@ -77,13 +88,11 @@ def index(day: str, sort_key: str):
 @app.route('/day_by_day/<int:player_uid>')
 def day_by_day(player_uid: int):
     """ List of player matches and some detail / day """
-    player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
-    player_data: PlayerData = PlayerData(player)
+    view_controller = DayByDayViewController(apex_db_helper, player_uid=player_uid)
+
     return render_template(
         'day_by_day.html',
-        player=player,
-        player_data=player_data,
-        db_helper=apex_db_helper
+        view_controller=view_controller
     )
 
 
