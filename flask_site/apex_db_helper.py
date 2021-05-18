@@ -307,4 +307,9 @@ class ApexDBGameEvent(GameEvent):  # noqa R0903
     def __init__(self, event_dict: dict):
         super().__init__(event_dict)
         self.day = arrow.get(self.timestamp).to('US/Pacific').format('YYYY-MM-DD')
+        self.categories: dict = {}
+        tracker: DataTracker
+        for tracker in self.game_data_trackers:
+            self.categories[tracker.category] = tracker.value
+
 

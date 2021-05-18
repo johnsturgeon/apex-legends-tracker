@@ -5,6 +5,7 @@ from apex_legends_api.al_domain import DataTracker
 
 class IndexViewController:
     """ Class for performing stats on a set of games """
+
     def __init__(
             self,
             db_helper: ApexDBHelper,
@@ -122,6 +123,7 @@ class IndexViewController:
 
 class DayByDayViewController():
     """ Class for giving player game stats """
+
     def __init__(self, db_helper: ApexDBHelper, player_uid: int):
         self.player = db_helper.get_player_by_uid(player_uid)
         query_filter: dict = {
@@ -133,47 +135,67 @@ class DayByDayViewController():
         )
         if len(game_list) == 0:
             raise Exception("Found no games for player ")
-        self._category_totals_by_day: dict = {}
-        self._game_list_by_day: dict = {}
+        # self._category_totals_by_day: dict = {}
+        # self._game_list_by_day: dict = {}
+        self._game_list: list = []
         for game in game_list:
             game_event: ApexDBGameEvent = ApexDBGameEvent(game)
-            day = game_event.day
-            if not self._game_list_by_day.get(day):
-                self._game_list_by_day[day] = []
-            self._game_list_by_day[day].append(game_event)
+            self._game_list.append(game_event)
 
-            if not self._category_totals_by_day.get(day):
-                self._category_totals_by_day[day] = {}
-            tracker: DataTracker
-            for tracker in game_event.game_data_trackers:
-                if not self._category_totals_by_day[day].get(tracker.category):
-                    self._category_totals_by_day[day][tracker.category] = 0
-                self._category_totals_by_day[day][tracker.category] += tracker.value
-        # games are a special category, so let's just make it up here
-        for day in self._game_list_by_day:
-            self._category_totals_by_day[day]['games'] = len(self._game_list_by_day[day])
+        #     day = game_event.day
+        #     if not self._game_list_by_day.get(day):
+        #         self._game_list_by_day[day] = []
+        #     self._game_list_by_day[day].append(game_event)
+        #
+        #     if not self._category_totals_by_day.get(day):
+        #         self._category_totals_by_day[day] = {}
+        #     tracker: DataTracker
+        #     for tracker in game_event.game_data_trackers:
+        #         if not self._category_totals_by_day[day].get(tracker.category):
+        #             self._category_totals_by_day[day][tracker.category] = 0
+        #         self._category_totals_by_day[day][tracker.category] += tracker.value
+        # # games are a special category, so let's just make it up here
+        # for day in self._game_list_by_day:
+        #     self._category_totals_by_day[day]['games'] = len(self._game_list_by_day[day])
 
-    def category_total(self, day: str, category: str, legend: str) -> int:
+    def category_total(self, category: str, day: str = None, legend: str = None) -> int:
         """ returns the category total for each day"""
         total = 0
-        day = self._category_totals_by_day.get(day)
-        if day:
-            category_total = self._category_totals_by_day[day].get(category)
-            if category_total:
-                total = self._category_totals_by_day[day][category]
+        for game in self.filter_game_list(category, day, legend):
+            game_total = game.categories.get(category)
+            if game_total:
+                total += game_total
         return total
 
-    def category_average_for_day(self, day: str, category: str) -> float:
+    def category_average(self, category: str, day: str = None, legend: str = None) -> float:
         """ Returns the average for the day """
-        return self.category_total_for_day(day, category) / len(self.games_played(day))
+        total = self.category_total(category, day, legend)
+        num_games = self.filter_game_list(category, day, legend)
+        if num_games > 0:
+            return total / num_games
 
     def days_played(self) -> list:
         """ returns a list of days (format 'YYYY-MM-DD') that the player actually PLAYED a game """
         return sorted(self._category_totals_by_day.keys(), reverse=True)
 
-    def games_played(self, day: str = None):
+    def filter_game_list(self,
+                         category: str = None,
+                         day: str = None,
+                         legend: str = None
+                         ) -> list:
         """ Returns a list of the games played on a specific day """
-        return self._game_list_by_day[day]
+        filtered_list: list = []
+        for game in self._game_list:
+            add_list: bool = True
+            if day and game.day != day:
+                add_list = False
+            if legend and game.legend_played != legend:
+                add_list = False
+            if category and game.categories.get(category) != category:
+                add_list = False
+            if add_list:
+                filtered_list.append(game)
+        return filtered_list
 
     def get_legends_played(self, day: str) -> list:
         """ Returns a list of legends played on a given day """
