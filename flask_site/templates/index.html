@@ -53,7 +53,7 @@
         }
         $(document).ready(function(){
             $('#{{ sort_key }}').append(' *')
-            $('.sortable').on('click', function(e) {
+            $('.sortable').click(function(e) {
                 sort_by_key($(this).attr('id'))
             });
 

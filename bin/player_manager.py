@@ -9,12 +9,9 @@ apex_db_helper = ApexDBHelper()
 log = apex_db_helper.logger
 
 
-def save_player_data(refresh_from_api: bool = False):
+def save_player_data():
     """ Loop through all players and save the data """
-    if refresh_from_api:
-        list_of_players = apex_api_helper.get_tracked_players()
-    else:
-        list_of_players = apex_db_helper.get_tracked_players()
+    list_of_players = apex_db_helper.get_tracked_players()
     thread_method_with_player(save_one_player_data, list_of_players)
     thread_method_with_player(save_one_player_event_data, list_of_players)
 
@@ -44,9 +41,16 @@ def save_one_player_data(player: dict):
     else:
         assert isinstance(basic_player_data_list, list)
         assert len(basic_player_data_list) == 1
-        player_data = basic_player_data_list[0]
-        log.debug("Saving Basic Player Data: %s", player_data)
-        apex_db_helper.save_basic_player_data(player_data=player_data)
+        basic_player_data = basic_player_data_list[0]
+        log.debug("Saving Basic Player Data: %s", basic_player_data)
+        apex_db_helper.save_basic_player_data(player_data=basic_player_data)
+        player_data = {
+            'name': basic_player_data['global']['name'],
+            'uid': basic_player_data['global']['uid'],
+            'platform': basic_player_data['global']['platform'],
+            'is_online': basic_player_data['realtime']['isOnline']
+        }
+        apex_db_helper.save_player_data(player_data=player_data)
 
 
 def save_one_player_event_data(player: dict):
@@ -68,32 +72,21 @@ def save_one_player_event_data(player: dict):
             apex_db_helper.save_event_data(event_data=event_data)
 
 
-def add_player_by_name(player_name: str, platform: ALPlatform):
-    """ adds a player to the API for tracking, then refresh the DB with that player """
-    uid = apex_api_helper.api.nametouid(player=player_name, platform=platform)
-    apex_api_helper.api.add_player_by_uid(uid, platform)
-    save_player_data(refresh_from_api=True)
+def update_player_collection_from_api():
+    """ Pulls current players from the API and populates their data from the api and updates
+    the player DB """
+    tracked_players = apex_api_helper.get_tracked_players()
+    for player in tracked_players:
+        apex_db_helper.save_player_data(player_data=player)
 
 
 def is_anyone_online() -> bool:
     """ Returns TRUE if any player is currently online """
-    for player in apex_db_helper.get_tracked_players(active_only=True):
+    for player in apex_db_helper.get_tracked_players():
         if player['is_online']:
             return True
     return False
 
 
-def update_player_collection():
-    """
-    This method will go get all the players that have 'events' in
-    the event list
-    Returns:
-
-    """
-    for player in apex_api_helper.get_tracked_players():
-        player['active'] = True
-        apex_db_helper.save_player_data(player)
-
-
 if __name__ == "__main__":
-    save_player_data(refresh_from_api=True)
+    update_player_collection_from_api()
