@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% set page_title="Friends of the Apex Legends API: Day Summary" %}
 {% set player = view_controller.player %}
-{% set player_name = player_info['name'] %}
+{% set player_uid = player.uid %}
 {% block content %}
     {% for day in view_controller.days_played()%}
         <div class="day_by_day">
             {% set num_games_played=view_controller.games_played(day) | length -%}
-            {% set kills=view_controller.category_total_for_day(day, 'kills') -%}
-            {% set avg_kills=view_controller.category_total_for_day(day, 'kills') | round(2) -%}
-            {% set wins=view_controller.category_total_for_day(day, 'wins') -%}
-            {% set damage=view_controller.category_total_for_day(day, 'damage') -%}
-            {% set avg_damage=view_controller.category_average_for_day(day, 'damage') | round(0) | int -%}
-            {% set xp=view_controller.category_total_for_day(day, 'xp') -%}
-            {% set avg_xp=view_controller.category_average_for_day(day, 'xp') | round(0) | int %}
+            {% set kills=view_controller.category_total(day=day, category='kills') -%}
+            {% set avg_kills=view_controller.category_average(day=day, category = 'kills') | round(2) -%}
+            {% set wins=view_controller.category_total(day=day, category='wins') -%}
+            {% set damage=view_controller.category_total(day=day, category='damage') -%}
+            {% set avg_damage=view_controller.category_average(day=day, category='damage') | round(0) | int -%}
+            {% set xp=view_controller.category_total(day=day, category='xp') -%}
+            {% set avg_xp=view_controller.category_average(day=day, category='xp') | round(0) | int %}
             <div class="day_by_day_head">
                 <div class="item small_padding">{{ day }}</div>
             </div>
@@ -28,11 +28,11 @@
             </div>
             <div class="clear line"></div>
             {% for legend in view_controller.get_legends_played(day) %}
-                {% set legend_games=player_data.games_played(day, legend) | length -%}
-                {% set legend_kills=player_data.category_total(day, 'kills', legend) -%}
-                {% set legend_wins=player_data.category_total(day, 'wins', legend) -%}
-                {% set legend_damage=player_data.category_total(day, 'damage', legend)  -%}
-                {% set legend_xp=player_data.category_total(day, 'xp', legend) -%}
+                {% set legend_games=view_controller.games_played(day, legend) | length -%}
+                {% set legend_kills=view_controller.category_total(day, 'kills', legend) -%}
+                {% set legend_wins=view_controller.category_total(day, 'wins', legend) -%}
+                {% set legend_damage=view_controller.category_total(day, 'damage', legend)  -%}
+                {% set legend_xp=view_controller.category_total(day, 'xp', legend) -%}
                 {% set xp_efficiency=(legend_xp / legend_games / 100) | round(2) %}
                 <div class="day_by_day_thumb">
                     <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"

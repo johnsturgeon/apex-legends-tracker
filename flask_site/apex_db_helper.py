@@ -53,6 +53,7 @@ class LogHandler(logging.Handler):
     """
     A logging handler that will record messages to a capped MongoDB collection.
     """
+
     def __init__(self, client):
         """ Initialize the logger """
         level = getattr(logging, os.getenv('LOG_LEVEL'))
@@ -72,6 +73,7 @@ class LogHandler(logging.Handler):
 
 class ApexDBHelper:
     """ Class for retrieving / saving data to the Apex Mongo DB """
+
     def __init__(self):
         uri = f"mongodb+srv://{os.getenv('MONGO_USERNAME')}:{os.getenv('MONGO_PASSWORD')}"
         uri += f"@{os.getenv('MONGO_HOST')}/{os.getenv('MONGO_DB')}"
@@ -301,15 +303,49 @@ class ApexDBHelper:
 
         return legend_totals_dict
 
+
 # pylint disable=too-few-public-methods
 class ApexDBGameEvent(GameEvent):  # noqa R0903
     """ Class for wrapping a game event """
+
     def __init__(self, event_dict: dict):
         super().__init__(event_dict)
         self.day = arrow.get(self.timestamp).to('US/Pacific').format('YYYY-MM-DD')
-        self.categories: dict = {}
+        self._categories: dict = {}
         tracker: DataTracker
         for tracker in self.game_data_trackers:
-            self.categories[tracker.category] = tracker.value
+            self._categories[tracker.category] = tracker.value
+
+    def category_total(self, category: str):
+        """ returns the category total """
+        total: int = self._categories.get(category)
+        return total if total else 0
+
+    def has_category(self, category: str) -> bool:
+        """ Returns true if the game has a given category tracker """
+        return category in self._categories
 
 
+def filter_game_list(game_list: list,
+                     category: str = None,
+                     day: str = None,
+                     legend: str = None,
+                     uid: int = None
+                     ) -> list:
+    """ Returns a list of the games played on a specific day """
+    filtered_list: list = []
+    game: ApexDBGameEvent
+    for game in game_list:
+        print(game.uid)
+        found: bool = True
+        if day and game.day != day:
+            found = False
+        if legend and game.legend_played != legend:
+            found = False
+        if category and not game.has_category(category):
+            found = False
+        if uid and int(game.uid) != uid:
+            found = False
+        if found:
+            filtered_list.append(game)
+    return filtered_list

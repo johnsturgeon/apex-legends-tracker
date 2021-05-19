@@ -9,9 +9,9 @@ from apex_db_helper import ApexDBHelper
 def save_player_data(loop_delay: int):
     """ Saves the player data record """
     try:
-        player_manager.save_player_data()
+        player_manager.save_player_data(refresh_from_api=True)
         log.debug("Starting loop delay: %s seconds", str(LOOP_DELAY))
-        time.sleep(loop_delay)
+        # time.sleep(loop_delay)
     except exceptions.ConnectionError as error_message:
         log.error(error_message)
 
