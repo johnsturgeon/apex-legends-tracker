@@ -104,25 +104,9 @@ class ApexDBHelper:
         event_info: list = list(self.event_collection.find({'uid': str(uid)}))
         return ALPlayer(basic_player_stats_data=basic_player_stats, events=event_info)
 
-    def get_tracked_players(self, active_only=False) -> list[dict]:
+    def get_tracked_players(self) -> list[dict]:
         """ Return a list of dictionaries containing each player's data"""
-        player_dict: dict = dict()
-        for player in self.player_collection.find():
-            if not active_only or player['active']:
-                basic_player = self.basic_player_collection.find_one(
-                    filter={'global.uid': player['uid']},
-                    sort=[("global.internalUpdateCount", pymongo.DESCENDING)]
-                )
-                glob = basic_player['global']
-                realtime = basic_player['realtime']
-                player_dict[glob['uid']] = {
-                    'uid': int(glob['uid']),
-                    'name': glob['name'],
-                    'platform': glob['platform'],
-                    'is_online': realtime['isOnline']
-                }
-
-        return list(player_dict.values())
+        return list(self.player_collection.find())
 
     def save_basic_player_data(self, player_data: dict):
         """ Saves a player_data record into `basic_player` if it's changed """
@@ -135,14 +119,8 @@ class ApexDBHelper:
 
     def save_player_data(self, player_data: dict):
         """ Saves player record """
-        assert isinstance(player_data['uid'], int)
         key = {'uid': player_data['uid']}
-        data = {
-            'player_name': player_data['name'],
-            'platform': player_data['platform'],
-            'active': player_data['active']
-        }
-        self.player_collection.update_one(filter=key, update={"$set": data}, upsert=True)
+        self.player_collection.update_one(filter=key, update={"$set": player_data}, upsert=True)
 
     def save_event_data(self, event_data: dict):
         """ Saves any 'new' event data record """
