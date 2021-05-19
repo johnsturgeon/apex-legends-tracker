@@ -315,6 +315,7 @@ class ApexDBGameEvent(GameEvent):  # noqa R0903
         tracker: DataTracker
         for tracker in self.game_data_trackers:
             self._categories[tracker.category] = tracker.value
+        self._categories['xp'] = self.xp_progress
 
     def category_total(self, category: str):
         """ returns the category total """
@@ -336,7 +337,6 @@ def filter_game_list(game_list: list,
     filtered_list: list = []
     game: ApexDBGameEvent
     for game in game_list:
-        print(game.uid)
         found: bool = True
         if day and game.day != day:
             found = False

@@ -17,7 +17,7 @@
                 <div class="item small_padding">{{ day }}</div>
             </div>
             <div class="clear line"></div>
-            <div>Games Played: {{ games_played }}</div>
+            <div>Games Played: {{ num_games_played }}</div>
             <div>Kills: {{ kills }}<br><i>{{ avg_kills }} / game</i></div>
             <div>Wins: {{ wins }}</div>
             <div>
@@ -27,12 +27,12 @@
                 XP: {{ xp }}<br><i>{{ avg_xp }} / game</i>
             </div>
             <div class="clear line"></div>
-            {% for legend in view_controller.get_legends_played(day) %}
-                {% set legend_games=view_controller.games_played(day, legend) | length -%}
-                {% set legend_kills=view_controller.category_total(day, 'kills', legend) -%}
-                {% set legend_wins=view_controller.category_total(day, 'wins', legend) -%}
-                {% set legend_damage=view_controller.category_total(day, 'damage', legend)  -%}
-                {% set legend_xp=view_controller.category_total(day, 'xp', legend) -%}
+            {% for legend in view_controller.get_legends_played(day=day) %}
+                {% set legend_games=view_controller.games_played(day=day, legend=legend) | length -%}
+                {% set legend_kills=view_controller.category_total(day=day, category='kills', legend=legend) -%}
+                {% set legend_wins=view_controller.category_total(day=day, category='wins', legend=legend) -%}
+                {% set legend_damage=view_controller.category_total(day=day, category='damage', legend=legend)  -%}
+                {% set legend_xp=view_controller.category_total(day=day, category='xp', legend=legend) -%}
                 {% set xp_efficiency=(legend_xp / legend_games / 100) | round(2) %}
                 <div class="day_by_day_thumb">
                     <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
@@ -41,7 +41,7 @@
                 <div style="flex-shrink: 0; flex-grow: 0">
                     WBR: {{ xp_efficiency }}
                 </div>
-                {{ macros.progress_container("Games", legend_games, games_played) }}
+                {{ macros.progress_container("Games", legend_games, num_games_played) }}
                 {{ macros.progress_container("Kills", legend_kills, kills) }}
                 {{ macros.progress_container("Wins", legend_wins, wins) }}
                 {{ macros.progress_container("Damage", legend_damage, damage) }}

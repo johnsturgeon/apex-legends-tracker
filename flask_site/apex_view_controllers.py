@@ -133,9 +133,8 @@ class DayByDayViewController():
         """ returns the category total for each day"""
         total = 0
         for game in filter_game_list(self._game_list, category, day, legend):
-            game_total = game.categories.get(category)
-            if game_total:
-                total += game_total
+            if game.category_total(category) is not None:
+                total += game.category_total(category)
         return total
 
     def category_average(self, category: str, day: str = None, legend: str = None) -> float:
@@ -158,6 +157,6 @@ class DayByDayViewController():
             legend_set.add(game.legend_played)
         return sorted(legend_set)
 
-    def games_played(self, day):
+    def games_played(self, day: str = None, legend: str = None):
         """ Returns a list of games played that day """
-        return filter_game_list(self._game_list, day=day)
+        return filter_game_list(self._game_list, day=day, legend=legend)
