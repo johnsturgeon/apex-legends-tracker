@@ -106,14 +106,9 @@ class ApexDBHelper:
         event_info: list = list(self.event_collection.find({'uid': str(uid)}))
         return ALPlayer(basic_player_stats_data=basic_player_stats, events=event_info)
 
-    def get_tracked_players(self, active_only=False) -> list[dict]:
+    def get_tracked_players(self) -> list[dict]:
         """ Return a list of dictionaries containing each player's data"""
-        player_dict: dict = dict()
-        for player in self.player_collection.find():
-            if not active_only or player['active']:
-                player_dict[player['uid']] = self.get_tracked_player_by_uid(player['uid'])
-
-        return list(player_dict.values())
+        return list(self.player_collection.find())
 
     def get_tracked_player_by_uid(self, uid: int):
         """ Returns one player given a uid """
@@ -139,14 +134,8 @@ class ApexDBHelper:
 
     def save_player_data(self, player_data: dict):
         """ Saves player record """
-        assert isinstance(player_data['uid'], int)
         key = {'uid': player_data['uid']}
-        data = {
-            'player_name': player_data['name'],
-            'platform': player_data['platform'],
-            'active': player_data['active']
-        }
-        self.player_collection.update_one(filter=key, update={"$set": data}, upsert=True)
+        self.player_collection.update_one(filter=key, update={"$set": player_data}, upsert=True)
 
     def save_event_data(self, event_data: dict):
         """ Saves any 'new' event data record """

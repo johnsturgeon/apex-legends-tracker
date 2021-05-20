@@ -27,7 +27,8 @@ class ApexAPIHelper:  # noqa R0903
             player_dict[player['uid']] = {
                 'uid': int(player['uid']),
                 'name': name,
-                'platform': player['platform']
+                'platform': player['platform'],
+                'is_online': basic_stats[0]['realtime']['isOnline']
             }
 
         return list(player_dict.values())
