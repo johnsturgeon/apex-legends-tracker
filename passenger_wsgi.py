@@ -7,4 +7,5 @@ INTERP = APP_ROOT + "/env/bin/python"
 if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 sys.path.insert(0, APP_ROOT + '/flask_site/')
-from app import app as application  # noqa E402
+# pylint: disable=unused-import, wrong-import-position
+from app import app as application  # noqa E0402

@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% set hide_header=True %}
 {% set page_title="Friends of the Apex Legends API: Home Page" %}
-{% set max_games = game_helper.max_category('games') %}
-{% set max_avg_kills = game_helper.max_category_average('kills') | round(2) %}
-{% set max_avg_damage = game_helper.max_category_average('damage') | round(0) | int %}
-{% set max_wins = game_helper.max_category('wins') %}
+{% set max_games = index_view_controller.max_category('games') %}
+{% set max_avg_kills = index_view_controller.max_category_average('kills') | round(2) %}
+{% set max_avg_damage = index_view_controller.max_category_average('damage') | round(0) | int %}
+{% set max_wins = index_view_controller.max_category('wins') %}
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
     <div class="leaderboard">
@@ -14,7 +14,7 @@
         <div class="sortable" id="kill_avg">Kills / Game</div>
         <div class="sortable" id="damage_avg">Damage / Game</div>
         <div class="clear"></div>
-        {% for player in game_helper.players_sorted_by_key(key=sort_key) %}
+        {% for player in index_view_controller.players_sorted_by_key(key=sort_key) %}
             {% set uid = player['uid'] %}
             {% set is_online = player['is_online'] %}
             {% set games_played = player['games_played'] %}
@@ -23,7 +23,7 @@
             {% set damage = player['damage_avg'] | round(0) | int -%}
             <div><!-- this is a row -->
                 <div class="{% if is_online %}online{% endif %}">
-                    <span><a href="{{ url_for('profile', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                    <span><a href="{{ url_for('day_by_day', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
                     <span class="{% if is_online %}online_small_font{% endif %}">
                         {% if is_online %}online{% endif %}
                     </span>
@@ -37,9 +37,10 @@
         {% endfor %}
     </div>
     <script>
+        const seconds = 1000
         setTimeout(function(){
             location.reload();
-        },300000)
+        }, 30 * seconds)
         const picker = new Litepicker({
             element: document.getElementById('date_picker'),
             highlightedDays: ['{{ day }}'],

@@ -2,11 +2,12 @@
 import os
 from dotenv import load_dotenv
 from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlatform, ALAction
+from apex_utilities import player_data_from_basic_player
 
 load_dotenv()
 
-# pylint disable=too-few-public-methods
-class ApexAPIHelper:  # noqa R0903
+
+class ApexAPIHelper:
     """ Wrapper class for the Apex API to add a few helper methods """
     def __init__(self):
         self.api: ApexLegendsAPI = ApexLegendsAPI(api_key=os.getenv('APEX_LEGENDS_API_KEY'))
@@ -23,12 +24,6 @@ class ApexAPIHelper:  # noqa R0903
                 )
             except ALHTTPExceptionFromResponse:
                 continue
-            name = basic_stats[0]['global']['name']
-            player_dict[player['uid']] = {
-                'uid': int(player['uid']),
-                'name': name,
-                'platform': player['platform'],
-                'is_online': basic_stats[0]['realtime']['isOnline']
-            }
+            player_dict[player['uid']] = player_data_from_basic_player(basic_stats[0])
 
         return list(player_dict.values())

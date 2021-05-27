@@ -2,6 +2,7 @@
 from threading import Thread
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
+from apex_utilities import player_data_from_basic_player
 from apex_legends_api import ALPlatform, ALAction, ALHTTPExceptionFromResponse
 
 apex_api_helper = ApexAPIHelper()
@@ -44,12 +45,7 @@ def save_one_player_data(player: dict):
         basic_player_data = basic_player_data_list[0]
         log.debug("Saving Basic Player Data: %s", basic_player_data)
         apex_db_helper.save_basic_player_data(player_data=basic_player_data)
-        player_data = {
-            'name': basic_player_data['global']['name'],
-            'uid': basic_player_data['global']['uid'],
-            'platform': basic_player_data['global']['platform'],
-            'is_online': basic_player_data['realtime']['isOnline']
-        }
+        player_data = player_data_from_basic_player(basic_player_data)
         apex_db_helper.save_player_data(player_data=player_data)
 
 

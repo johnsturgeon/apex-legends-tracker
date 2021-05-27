@@ -4,6 +4,22 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0]
+Taking three steps backwards and one step forwards.
+Pretty massive refactor here, I removed the tracker page since it was not quite right, and I really have to get it right, there are a lot of details with regards to the different kinds of trackers and how they can be reported, so I need to be a bit more deliberate before I bring it back.
+
+### Removed
+- Removed the trackers from the profile page
+- Removed the tracker detail (when clicking on a tracker)
+### Changed
+- Changed the profile page so that it is kind of a dumbed down version of data that is not tracker data, mostly state data.  Plan is to add to this often and quickly
+- Changed the default player link to go to their `day-to-day` page instead of their profile
+### Fixed
+- Fixed massive performance issues, anything I add from now on will be performant
+- Fixed a home page refresh timing issue
+- Fixed a javascript issue on the home page
+- Speed improvements for the `day-to-day` page
+
 ## [0.6.0] - 2021-05-16
 ### Changed
 - Redesigned Home Page!

@@ -16,30 +16,6 @@
     </div>
 {% endmacro -%}
 
-{% macro tracker_detail_progress_container(player_uid, legend_name, tracker_key) -%}
-    <div id="tracker-detail-progress-container-{{ legend_name }}-{{ tracker_key }}" class="item progress-bar-tracker-state-current" style="min-width:140pt">
-        {{ tracker_detail_lr_style(player_uid, legend_name, tracker_key) }}
-    </div>
-{% endmacro -%}
-
-{% macro tracker_detail_lr_style(player_uid, legend_name, tracker_key) -%}
-    <div id="tracker-detail-lr-style-label-{{ legend_name }}-{{ tracker_key }}" style="display:inline;">
-        {{ label }}
-    </div>
-    <div id="" style="float:right;display:inline;">
-        <span id="tracker-detail-lr-style-count-{{ legend_name }}-{{ tracker_key }}"></span><!--
-     --><span>/</span><!--
-     --><span id="tracker-detail-lr-style-total-{{ legend_name }}-{{ tracker_key }}"></span>
-    </div>
-    <div class="progress-container">
-        <div class="progress-background"></div>
-        <div class="progress-bar" id="tracker-detail-progress-bar-{{ legend_name }}-{{ tracker_key }}"></div>
-    </div>
-
-    <script>
-    </script>
-{% endmacro %}
-
 {% macro progress_bar(percent) -%}
     <div class="progress-container">
         <div class="progress-background"></div>
@@ -66,21 +42,5 @@
 {% macro version() %}
     <div class="version">
         {{ "Version: " | append_version_number }}
-    </div>
-{% endmacro %}
-
-{% macro circle_total(tracker_key, tracker_total, tracker_subtitle, legend_name="any") %}
-    <div class="item">
-        <div class="circle_container">
-            <div class="circle_base circle_inner"></div>
-            <div class="circle_base circle_outer"></div>
-            <div class="circle_base circle_text">
-                <span class="circle_total_label">
-                    {{ tracker_key | safe | upper}}
-                </span><br />
-                <span class="circle_total" id="circle-total-{{ legend_name }}-{{ tracker_key | lower}}">{{ "{:,d}".format(tracker_total) }}</span><br />
-                <span class="circle_total_subtext" id="circle-total-subtext-{{ legend_name }}-{{ tracker_key | lower}}">{{ tracker_subtitle | safe }}</span>
-            </div>
-        </div>
     </div>
 {% endmacro %}
