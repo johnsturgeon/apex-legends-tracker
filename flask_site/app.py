@@ -3,15 +3,12 @@ import os
 from datetime import datetime
 import arrow
 from dotenv import load_dotenv
-from flask import Flask, render_template, abort, jsonify, request, send_from_directory
+from flask import Flask, render_template, abort, send_from_directory
 from flask_profile import Profiler
-from apex_legends_api import ALPlayer
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
 from apex_view_controllers import IndexViewController,\
     DayByDayViewController, ProfileViewController
-import graphing
-from apex_stats import PlayerData
 
 load_dotenv()
 load_dotenv('common.env')
@@ -101,46 +98,16 @@ def profile(player_uid):
     """ Simple player profile page """
     # line = create_plot()
     if player_uid:
-        view_controller = ProfileViewController(apex_db_helper, player_uid=player_uid)
+        view_controller = ProfileViewController(
+            db_helper=apex_db_helper,
+            player_uid=player_uid
+        )
         return render_template(
             'profile.html',
             view_controller=view_controller
         )
 
     return "Not Found"
-
-
-@app.route('/tracker_detail/<int:player_uid>/<tracker_key>')
-def tracker_detail(player_uid, tracker_key):
-    """ Display a page for one tracker and all the detail we have for it.   """
-    player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
-    player_data: PlayerData = PlayerData(player)
-    return render_template(
-        'tracker_detail.html',
-        player_data=player_data,
-        tracker_key=tracker_key,
-        db_helper=apex_db_helper
-    )
-
-
-# Ajax / Json functions
-@app.route('/_get_tracker_data')
-def get_tracker_data():
-    """ Ajax query to get player data """
-    player_uid = request.args.get('player_uid', 0, type=int)
-    tracker_key = request.args.get('tracker_key', 0, type=str)
-    # legend_name = request.args.get('legend_name', 0, type=str)
-    player_totals = apex_db_helper.get_player_totals(
-        uid=player_uid, tracker_keys=[tracker_key], active_legends_only=True
-    )
-    tracker_totals = player_totals[tracker_key]
-    response = {
-        'tracker_key': tracker_key,
-        'tracker_totals': tracker_totals,
-    }
-    json_response = jsonify(response)
-    json_response.headers['Cache-Control'] = 'private, max-age=0'
-    return json_response
 
 
 @app.template_filter('append_version_number')

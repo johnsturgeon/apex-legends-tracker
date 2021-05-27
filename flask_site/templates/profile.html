@@ -5,56 +5,12 @@
 {% set player_name = player.name %}
 {% block content %}
     <div class="profile">
-        <div class="player_profile_name">{{ player_name }}<br />
-            <span class="player_profile_selected_legend">Selected Legend: {{ player.selected_legend }}</span>
+        <div class="profile_player_name">{{ player_name }}
+        {% if player.is_online %}<span class="profile_online">online</span>{% endif %}
         </div>
-        <div class="clear"></div>
-        <div class="profile_header_container">
-            <div id="games_detail" style="cursor:pointer">
-                LIFETIME<br />
-                GAMES<br />
-                <span class="profile_header_total">{{ view_controller.games_played() | length }}</span>
-            </div>
-            <div class="header_divider_line"></div>
-            <div>
-                LEVEL<br />
-                <span class="profile_header_total">{{ player.level }}</span>
-            </div>
-            <div class="header_divider_line"></div>
-            <div id="wins_detail" style="cursor:pointer">
-                LIFETIME<br />
-                WINS<br />
-                <span class="profile_header_total"> {{ view_controller.category_total('wins') }}</span>
-            </div>
-        </div>
-        <div class="profile_stat_circle_container">
-            <div id="damage_detail" class="circle_item" style="cursor:pointer">
-                {% set damage = view_controller.category_total('damage') %}
-                {{ macros.circle_total('damage', damage, 'HIGHEST <br>AVG') }}
-            </div>
-            <div id="kills_detail" class="circle_item" style="cursor:pointer">
-                {% set kills = view_controller.category_total('kills') %}
-                {{ macros.circle_total('kills', kills, 'HIGHEST <br>AVG') }}
-            </div>
-        </div>
-        <div class="profile_page_bottom_note_container">
-            <div class="item center-text">
-                * If a stat doesn't look correct, click on it, and you will be taken to a page that scans your stats and figures out what's wrong.
-            </div>
-        </div>
+        <div class="profile_selected_legend">Selected Legend: {{ player.selected_legend }}</div>
+        <div class="profile_details">Profile Details</div>
+        <div>Level: {{ player.level }}</div>
+        <div>Platform: {{ view_controller.get_platform() }}</div>
     </div>
-    <script>
-        $('#games_detail').click(function(){
-            window.location = '/tracker_detail/{{ player_uid }}/games_played'
-        });
-        $('#wins_detail').click(function(){
-            window.location = '/tracker_detail/{{ player_uid }}/wins'
-        });
-        $('#damage_detail').click(function(){
-            window.location = '/tracker_detail/{{ player_uid }}/damage'
-        });
-        $('#kills_detail').click(function(){
-            window.location = '/tracker_detail/{{ player_uid }}/kills'
-        });
-    </script>
 {% endblock %}

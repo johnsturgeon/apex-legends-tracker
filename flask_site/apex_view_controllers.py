@@ -1,8 +1,6 @@
 """ This module contains all the controllers for each of the views """
 from typing import List
 from apex_db_helper import ApexDBHelper, ApexDBGameEvent, filter_game_list
-from apex_legends_api import ALPlayer
-from apex_legends_api.al_domain import DataTracker
 
 
 class BaseGameViewController:
@@ -14,8 +12,6 @@ class BaseGameViewController:
         game_list: list = list(
             db_helper.event_collection.find(query_filter)
         )
-        if len(game_list) == 0:
-            raise Exception("No games found")
         self._game_list: List[ApexDBGameEvent] = []
         for game in game_list:
             game_event: ApexDBGameEvent = ApexDBGameEvent(game)
@@ -30,12 +26,13 @@ class BaseGameViewController:
         """ Returns a list of games played that day """
         return filter_game_list(self.game_list, uid=uid, day=day, legend=legend)
 
-    def category_total(self, category: str, uid: int = None, legend: str = None):
+    def category_total(self, category: str, day: str = None, uid: int = None, legend: str = None):
         """ Returns a filtered category total """
         total = 0
         filtered_list = filter_game_list(
             self.game_list,
             uid=uid,
+            day=day,
             category=category,
             legend=legend
         )
@@ -44,11 +41,11 @@ class BaseGameViewController:
             total += game.category_total(category)
         return total
 
-    def category_average(self, category: str, uid: int = None, legend: str = None) -> float:
+    def category_average(self, category: str, day: str = None, uid: int = None, legend: str = None) -> float:
         """ Returns the average for the category for a given player """
         average = 0.0
-        total = self.category_total(category, uid=uid, legend=legend)
-        num_games = len(self.games_played(uid=uid, legend=legend))
+        total = self.category_total(category, day=day, uid=uid, legend=legend)
+        num_games = len(self.games_played(uid=uid, day=day, legend=legend))
         if num_games:
             average = total / num_games
 
@@ -125,22 +122,6 @@ class DayByDayViewController(BaseGameViewController):
         for game in self.game_list:
             self._days_played.add(game.day)
 
-    def category_total(self, category: str, day: str = None, legend: str = None) -> int:
-        """ returns the category total for each day"""
-        total = 0
-        for game in filter_game_list(self._game_list, category, day, legend):
-            if game.category_total(category) is not None:
-                total += game.category_total(category)
-        return total
-
-    def category_average(self, category: str, day: str = None, legend: str = None) -> float:
-        """ Returns the average for the day """
-        total = self.category_total(category, day, legend)
-        num_games = len(filter_game_list(self._game_list, category, day, legend))
-        if num_games > 0:
-            return total / num_games
-        return 0.0
-
     def days_played(self, reverse: bool = True) -> list:
         """ returns a list of days (format 'YYYY-MM-DD') that the player actually PLAYED a game """
         return sorted(self._days_played, reverse=reverse)
@@ -154,8 +135,19 @@ class DayByDayViewController(BaseGameViewController):
         return sorted(legend_set)
 
 
-class ProfileViewController:
-    """ View controller for the player profile page """
+# pylint disable=too-few-public-methods
+class ProfileViewController:  # noqa R0903
+    """ View controller for the player detail page """
     def __init__(self, db_helper: ApexDBHelper, player_uid: int):
-        self.player: ALPlayer = db_helper.get_player_by_uid(player_uid)
+        self.player = db_helper.get_tracked_player_by_uid(player_uid)
+
+    def get_platform(self) -> str:
+        """ Return friendly version of the player's platform"""
+        platform: str = self.player['platform']
+        if platform == 'X1':
+            return 'Xbox'
+        elif platform == 'PS4':
+            return 'Playstation'
+
+        return platform
 
