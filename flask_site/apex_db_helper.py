@@ -110,8 +110,7 @@ class ApexDBHelper:
             self.event_collection.insert_one(event_data)
 
 
-# pylint disable=too-few-public-methods
-class ApexDBGameEvent(GameEvent):  # noqa R0903
+class ApexDBGameEvent(GameEvent):
     """ Class for wrapping a game event """
 
     def __init__(self, event_dict: dict):

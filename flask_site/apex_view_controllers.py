@@ -41,7 +41,13 @@ class BaseGameViewController:
             total += game.category_total(category)
         return total
 
-    def category_average(self, category: str, day: str = None, uid: int = None, legend: str = None) -> float:
+    def category_average(
+            self,
+            category: str,
+            day: str = None,
+            uid: int = None,
+            legend: str = None
+    ) -> float:
         """ Returns the average for the category for a given player """
         average = 0.0
         total = self.category_total(category, day=day, uid=uid, legend=legend)
@@ -135,8 +141,7 @@ class DayByDayViewController(BaseGameViewController):
         return sorted(legend_set)
 
 
-# pylint disable=too-few-public-methods
-class ProfileViewController:  # noqa R0903
+class ProfileViewController:
     """ View controller for the player detail page """
     def __init__(self, db_helper: ApexDBHelper, player_uid: int):
         self.player = db_helper.get_tracked_player_by_uid(player_uid)
@@ -146,8 +151,6 @@ class ProfileViewController:  # noqa R0903
         platform: str = self.player['platform']
         if platform == 'X1':
             return 'Xbox'
-        elif platform == 'PS4':
+        if platform == 'PS4':
             return 'Playstation'
-
         return platform
-
