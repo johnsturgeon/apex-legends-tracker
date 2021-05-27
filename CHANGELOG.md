@@ -3,6 +3,9 @@ Welcome to the 'Apex Legends Tracker' changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [Unreleased]
+### Fixed
+- Changed the background color of the site so 'white' wouldn't bleed through any longer (Issue #120)
 
 ## [0.7.0]
 Taking three steps backwards and one step forwards.
