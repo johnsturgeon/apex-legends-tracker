@@ -86,7 +86,7 @@ class IndexViewController(BaseGameViewController):
         """ Returns the maximum category total for the day """
         max_category: int = 0
         for player in self.tracked_players:
-            if category == 'games': # special case for games
+            if category == 'games':  # special case for games
                 max_category = max(max_category, player['games_played'])
             else:
                 uid = player['uid']
