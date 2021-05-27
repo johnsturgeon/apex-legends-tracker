@@ -1,45 +1,40 @@
 {% extends 'base.html' %}
 {% set page_title="Friends of the Apex Legends API: Profile Page" %}
-{% set player = player_data.player %}
-{% set player_uid = player.global_info.uid %}
-{% set player_name = player.global_info.name %}
-{% set player_totals = db_helper.get_player_totals(
-                      player_uid,
-                      ['games_played', 'wins', 'kills', 'damage'],
-                      active_legends_only=True)  -%}
-
+{% set player = view_controller.player %}
+{% set player_uid = player.uid %}
+{% set player_name = player.name %}
 {% block content %}
     <div class="profile">
-        <div class="player_profile_name">{{ player.global_info.name }}<br />
-            <span class="player_profile_selected_legend">Selected Legend: {{ player.selected_legend.name }}</span>
+        <div class="player_profile_name">{{ player_name }}<br />
+            <span class="player_profile_selected_legend">Selected Legend: {{ player.selected_legend }}</span>
         </div>
         <div class="clear"></div>
         <div class="profile_header_container">
             <div id="games_detail" style="cursor:pointer">
                 LIFETIME<br />
                 GAMES<br />
-                <span class="profile_header_total">{{ player_totals['games_played']['total'] }}</span>
+                <span class="profile_header_total">{{ view_controller.games_played() | length }}</span>
             </div>
             <div class="header_divider_line"></div>
             <div>
                 LEVEL<br />
-                <span class="profile_header_total">{{ player.global_info.level }}</span>
+                <span class="profile_header_total">{{ player.level }}</span>
             </div>
             <div class="header_divider_line"></div>
             <div id="wins_detail" style="cursor:pointer">
                 LIFETIME<br />
                 WINS<br />
-                <span class="profile_header_total">{{ player_totals['wins']['total'] }}</span>
+                <span class="profile_header_total"> {{ view_controller.category_total('wins') }}</span>
             </div>
         </div>
         <div class="profile_stat_circle_container">
             <div id="damage_detail" class="circle_item" style="cursor:pointer">
-                {% set damage = player_totals['damage'] %}
-                {{ macros.circle_total('damage', damage['total'], 'HIGHEST <br>AVG') }}
+                {% set damage = view_controller.category_total('damage') %}
+                {{ macros.circle_total('damage', damage, 'HIGHEST <br>AVG') }}
             </div>
             <div id="kills_detail" class="circle_item" style="cursor:pointer">
-                {% set kills = player_totals['kills'] %}
-                {{ macros.circle_total('kills', kills['total'], 'HIGHEST <br>AVG') }}
+                {% set kills = view_controller.category_total('kills') %}
+                {{ macros.circle_total('kills', kills, 'HIGHEST <br>AVG') }}
             </div>
         </div>
         <div class="profile_page_bottom_note_container">
@@ -47,19 +42,6 @@
                 * If a stat doesn't look correct, click on it, and you will be taken to a page that scans your stats and figures out what's wrong.
             </div>
         </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="chart" id="spline">
-                </div>
-            </div>
-        </div>
-        <script>
-            let graphs = {{ plot | safe }};
-            Plotly.setPlotConfig({displayModeBar: false});
-            Plotly.newPlot('spline',graphs,{});
-        </script>
     </div>
     <script>
         $('#games_detail').click(function(){

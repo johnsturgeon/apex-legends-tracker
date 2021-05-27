@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% set page_title="Friends of the Apex Legends API: Day Summary" %}
 {% set player = view_controller.player %}
+{% set player_name = player.name %}
 {% set player_uid = player.uid %}
 {% block content %}
     {% for day in view_controller.days_played()%}

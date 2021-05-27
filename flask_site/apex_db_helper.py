@@ -12,6 +12,7 @@ from pymongo.database import Database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer, ALPlatform
 from apex_legends_api.al_domain import GameEvent, DataTracker
+from apex_utilities import player_data_from_basic_player
 
 load_dotenv()
 
@@ -112,16 +113,9 @@ class ApexDBHelper:
 
     def get_tracked_player_by_uid(self, uid: int):
         """ Returns one player given a uid """
-        player = self.basic_player_collection.find_one(
-            filter={'global.uid': uid},
-            sort=[("global.internalUpdateCount", pymongo.DESCENDING)]
+        return self.player_collection.find_one(
+            filter={'uid': uid}
         )
-        return {
-            'uid': uid,
-            'name': player['global']['name'],
-            'platform': player['global']['platform'],
-            'is_online': player['realtime']['isOnline']
-        }
 
     def save_basic_player_data(self, player_data: dict):
         """ Saves a player_data record into `basic_player` if it's changed """
@@ -134,6 +128,7 @@ class ApexDBHelper:
 
     def save_player_data(self, player_data: dict):
         """ Saves player record """
+        assert player_data.get('uid')
         key = {'uid': player_data['uid']}
         self.player_collection.update_one(filter=key, update={"$set": player_data}, upsert=True)
 

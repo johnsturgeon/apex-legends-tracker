@@ -9,7 +9,7 @@ from apex_legends_api import ALPlayer
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
 from apex_view_controllers import IndexViewController,\
-    DayByDayViewController
+    DayByDayViewController, ProfileViewController
 import graphing
 from apex_stats import PlayerData
 
@@ -101,14 +101,10 @@ def profile(player_uid):
     """ Simple player profile page """
     # line = create_plot()
     if player_uid:
-        player: ALPlayer = apex_db_helper.get_player_by_uid(uid=player_uid)
-        player_data: PlayerData = PlayerData(player)
-        bar_plot = graphing.create_bar(player, 'damage')
+        view_controller = ProfileViewController(apex_db_helper, player_uid=player_uid)
         return render_template(
             'profile.html',
-            player_data=player_data,
-            plot=bar_plot,
-            db_helper=apex_db_helper
+            view_controller=view_controller
         )
 
     return "Not Found"
