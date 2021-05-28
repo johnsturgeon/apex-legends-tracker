@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Fixed it so that the home page no longer refreshes when it's not on 'Today'
+- Moved the 'prev / next' date navigation into the content area of the home page, so we don't have two headers there.
+- Resolves #125
+### Added
+- Added platform logo to the user's profile page (#122)
 
 ## [0.8.0]
 ### Added
