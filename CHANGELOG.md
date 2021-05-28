@@ -4,6 +4,10 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- Fixed it so that the home page no longer refreshes when it's not on 'Today'
+
 ## [0.8.0]
 ### Added
 - Added new `Battlepass Tracker` page (Issues #96)

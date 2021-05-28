@@ -55,11 +55,15 @@
             <div class="clear"></div>
         {% endfor %}
     </div>
+    {% if next_day %}
+        <script>
+            const seconds = 1000
+            setTimeout(function(){
+                location.reload();
+            }, 3 * seconds)
+        </script>
+    {% endif %}
     <script>
-        const seconds = 1000
-        setTimeout(function(){
-            location.reload();
-        }, 30 * seconds)
         const picker = new Litepicker({
             element: document.getElementById('date_picker'),
             highlightedDays: ['{{ day }}'],
