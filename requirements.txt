@@ -1,11 +1,11 @@
-﻿rich~=10.1.0
-Flask~=1.1.2
+﻿rich~=10.2.2
+Flask~=2.0.1
 plotly~=4.14.3
-numpy
-arrow~=1.0.3
+numpy~=1.20.3
+arrow~=1.1.0
 apex-legends-api~=2.0.3
 python-dotenv~=0.17.0
-pymongo~=3.11.3
+pymongo~=3.11.4
 requests~=2.25.1
 flask_profile~=0.2.0
 dnspython~=2.1.0

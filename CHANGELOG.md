@@ -4,6 +4,11 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.2]
+### Changed
+- Upgrade python packages
+- Upgrade to Flask 2.0 (Resolves #104)
+
 ## [0.8.1]
 ### Fixed
 - Fixed it so that the home page no longer refreshes when it's not on 'Today'
