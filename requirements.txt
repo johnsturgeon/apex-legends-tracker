@@ -2,7 +2,7 @@
 Flask~=2.0.1
 plotly~=4.14.3
 numpy~=1.20.3
-arrow~=1.1.0
+arrow~=1.0.3
 apex-legends-api~=2.0.3
 python-dotenv~=0.17.0
 pymongo~=3.11.4
