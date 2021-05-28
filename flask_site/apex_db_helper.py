@@ -36,7 +36,7 @@ class LogHandler(logging.Handler):
         })
 
 # pylint: disable=too-many-instance-attributes
-class ApexDBHelper:
+class ApexDBHelper: # noqa E0302
     """ Class for retrieving / saving data to the Apex Mongo DB """
 
     def __init__(self):
