@@ -63,10 +63,16 @@ DIV.header_left > DIV {
 }
 
 DIV.date_picker {
+    display: flex;
+    justify-content: center;
     padding-top: 12pt;
     padding-bottom: 4pt;
     vertical-align: center;
     font-size: 18pt;
+}
+
+DIV.date_picker > DIV {
+    border-bottom: solid 1pt wheat;
 }
 
 .date_picker .prev_next_arrow {
