@@ -55,12 +55,12 @@
             <div class="clear"></div>
         {% endfor %}
     </div>
-    {% if next_day %}
+    {% if not next_day %}
         <script>
             const seconds = 1000
             setTimeout(function(){
                 location.reload();
-            }, 3 * seconds)
+            }, 30 * seconds)
         </script>
     {% endif %}
     <script>
