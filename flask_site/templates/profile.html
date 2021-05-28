@@ -5,12 +5,15 @@
 {% set player_name = player.name %}
 {% block content %}
     <div class="profile">
+        {% set logo_filename = view_controller.get_platform_logo() %}
         <div class="profile_player_name">{{ player_name }}
+            <img class="platform_logo" alt="{{ logo_filename }} icon" title="{{ logo_filename }}"
+                 src="{{ url_for('static', filename='images/'+logo_filename) }}">
         {% if player.is_online %}<span class="profile_online">online</span>{% endif %}
         </div>
         <div class="profile_selected_legend">Selected Legend: {{ player.selected_legend }}</div>
         <div class="profile_details">Profile Details</div>
         <div>Level: {{ player.level }}</div>
-        <div>Platform: {{ view_controller.get_platform() }}</div>
+        <div>Platform: {{ view_controller.get_platform_logo() }}</div>
     </div>
 {% endblock %}

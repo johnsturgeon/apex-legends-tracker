@@ -149,14 +149,15 @@ class ProfileViewController:
     def __init__(self, db_helper: ApexDBHelper, player_uid: int):
         self.player = db_helper.get_tracked_player_by_uid(player_uid)
 
-    def get_platform(self) -> str:
+    def get_platform_logo(self) -> str:
         """ Return friendly version of the player's platform"""
         platform: str = self.player['platform']
         if platform == 'X1':
-            return 'Xbox'
+            return 'xbox.svg'
         if platform == 'PS4':
-            return 'Playstation'
-        return platform
+            return 'playstation.svg'
+        # default
+        return 'origin.svg'
 
 
 class BattlePassViewController:

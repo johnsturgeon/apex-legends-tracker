@@ -187,6 +187,10 @@ DIV.profile {
     flex-direction: column;
 }
 
+.profile_player_name > IMG.platform_logo {
+    width: 18pt;
+}
+
 .profile > .profile_player_name {
     font-size: 24pt !important;
     text-align: center;
