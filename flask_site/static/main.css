@@ -263,3 +263,39 @@ DIV.profile {
 .sortable {
     cursor: pointer;
 }
+
+:root {
+    --dark-red: #542727;
+    --wheat-highlight: #f1e2c4;
+    --litepicker-container-months-color-bg: var(--wheat-highlight);
+    --litepicker-container-months-box-shadow-color: #3e3e3e;
+    --litepicker-footer-color-bg: #fafafa;
+    --litepicker-footer-box-shadow-color: #ddd;
+    --litepicker-tooltip-color-bg: #fff;
+    --litepicker-month-header-color: var(--dark-red);
+    --litepicker-button-prev-month-color: #bca69d;
+    --litepicker-button-next-month-color: var(--litepicker-button-prev-month-color);
+    --litepicker-button-prev-month-color-hover: var(--dark-red);
+    --litepicker-button-next-month-color-hover: var(--dark-red);
+    --litepicker-month-width: calc(var(--litepicker-day-width) * 7);
+    --litepicker-month-weekday-color: rgba(0, 0, 0, 0.35);
+    --litepicker-month-week-number-color: #9e9e9e;
+    --litepicker-day-width: 38px;
+    --litepicker-day-color: var(--dark-red);
+    --litepicker-day-color-hover: rgba(0, 0, 0, 0.5);
+    --litepicker-is-today-color: rgb(255, 109, 0);
+    --litepicker-is-in-range-color: #bbdefb;
+    --litepicker-is-locked-color: #9e9e9e;
+    --litepicker-is-start-color: #fff;
+    --litepicker-is-start-color-bg: #2196f3;
+    --litepicker-is-end-color: #fff;
+    --litepicker-is-end-color-bg: #2196f3;
+    --litepicker-button-cancel-color: #fff;
+    --litepicker-button-cancel-color-bg: #9e9e9e;
+    --litepicker-button-apply-color: #fff;
+    --litepicker-button-apply-color-bg: #2196f3;
+    --litepicker-button-reset-color: #909090;
+    --litepicker-button-reset-color-hover: #2196f3;
+    --litepicker-highlighted-day-color: wheat;
+    --litepicker-highlighted-day-color-bg: #542727;
+}
