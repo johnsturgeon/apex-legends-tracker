@@ -187,5 +187,3 @@ class BattlePassViewController:
         else:
             sorted_players = sorted(self.tracked_players, key=lambda item: item[key], reverse=True)
         return sorted_players
-
-

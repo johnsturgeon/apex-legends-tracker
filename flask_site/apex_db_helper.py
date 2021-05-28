@@ -35,7 +35,7 @@ class LogHandler(logging.Handler):
             'message': record.msg % record.args
         })
 
-
+# pylint: disable=too-many-instance-attributes
 class ApexDBHelper:
     """ Class for retrieving / saving data to the Apex Mongo DB """
 
