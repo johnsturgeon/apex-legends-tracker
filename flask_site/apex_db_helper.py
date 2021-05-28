@@ -48,6 +48,7 @@ class ApexDBHelper:
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: Collection = self.database.event
         self.player_collection: Collection = self.database.player
+        self.battlepass_info_collection: Collection = self.database.battlepass_info
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
         if not logger.handlers:

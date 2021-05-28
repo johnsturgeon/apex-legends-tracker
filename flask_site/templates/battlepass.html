@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% set page_title="Friends of the Apex Legends API: Battle Pass" %}
+{% set bp_info = view_controller.battlepass_info %}
+{% set max_battlepass = bp_info['max_battlepass'] %}
+{% set goal_level = bp_info['goal_levels'] | round(0) | int%}
+{% set cur_day = bp_info['days_progressed'] %}
+{% set total_days = bp_info['days_in_season'] %}
+{% block content %}
+    <div class="battlepass">
+        <div class="intro">Welcome to the Battlepass tracker<br />
+            * To use, make sure that you have added your battlepass badge to your currently selected legend</div>
+        <div class="clear"></div>
+        <div class="name">Day {{ cur_day }} / {{ total_days }}</div>
+        {{ macros.progress_container("Target level", goal_level, max_battlepass, show_total=False) }}
+        <div class="clear border"></div>
+        {% for player in view_controller.players_sorted_by_key(key='name') %}
+            {% if player.battlepass_level > -1 %}
+                {% set battlepass_level = player['battlepass_level'] %}
+                {% set percent_to_goal = (player['battlepass_level'] / goal_level * 100) %}
+                {% set delta_from_goal = battlepass_level - goal_level  %}
+                {% set plus_sign = "" %}
+                {% if delta_from_goal > 0 %}
+                    {% set plus_sign = "+" %}
+                {% endif %}
+                    {% if percent_to_goal < 50 %}
+                    {% set label_color="color:red" %}
+                {% elif percent_to_goal < 100 %}
+                    {% set label_color="color:#CDB900FF" %}
+                {% elif percent_to_goal > 100 %}
+                    {% set label_color="color:green" %}
+                {% endif %}
+                {% set uid = player['uid'] %}
+                <div class="name"><!-- this is a row -->
+                    <div>
+                        <span><a href="{{ url_for('profile', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                    </div>
+                </div>
+                {{ macros.progress_container(plus_sign + delta_from_goal | string, battlepass_level, max_battlepass, show_total=False, label_color=label_color) }}
+                <div class="clear"></div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -8,7 +8,7 @@ from flask_profile import Profiler
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
 from apex_view_controllers import IndexViewController,\
-    DayByDayViewController, ProfileViewController
+    DayByDayViewController, ProfileViewController, BattlePassViewController
 
 load_dotenv()
 load_dotenv('common.env')
@@ -108,6 +108,16 @@ def profile(player_uid):
         )
 
     return "Not Found"
+
+
+@app.route('/battlepass/')
+def battlepass():
+    """ Battle pass page """
+    view_controller = BattlePassViewController(db_helper=apex_db_helper)
+    return render_template(
+        'battlepass.html',
+        view_controller=view_controller
+    )
 
 
 @app.template_filter('append_version_number')
