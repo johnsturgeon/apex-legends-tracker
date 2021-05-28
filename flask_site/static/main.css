@@ -34,7 +34,14 @@ a {
 
 DIV.header {
     padding: 8pt;
+}
 
+DIV.header_left {
+    justify-content: left;
+}
+
+DIV.header_left > DIV {
+    padding-left: 14pt;
 }
 
 .header > DIV {
@@ -79,20 +86,34 @@ DIV.date_picker {
 }
 
 
-DIV.leaderboard {
+DIV.battlepass > DIV.name {
+    max-width: 110pt;
+}
+
+DIV.battlepass > DIV.intro {
+    text-align: center;
+}
+
+DIV.battlepass > DIV.border {
+    border-bottom: 1px solid wheat;
+    padding-top: 10pt;
+    margin-bottom: 8pt;
+}
+
+DIV.leaderboard, DIV.battlepass {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
-DIV.leaderboard > DIV {
+DIV.battlepass > DIV, DIV.leaderboard > DIV {
     flex-grow: 1;
     flex-basis: 0;
     min-width: 80pt;
     padding: 3pt 10pt 3pt 10pt;
 }
 
-DIV.leaderboard > DIV.clear {
+DIV.battlepass > DIV.clear, DIV.leaderboard > DIV.clear {
     flex-basis: 100%;
     height: 0;
 }

@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% set hide_header=True %}
 {% set page_title="Friends of the Apex Legends API: Home Page" %}
 {% set max_games = index_view_controller.max_category('games') %}
 {% set max_avg_kills = index_view_controller.max_category_average('kills') | round(2) %}
@@ -7,6 +6,26 @@
 {% set max_wins = index_view_controller.max_category('wins') %}
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
+    <div class="date_picker">
+        <div>
+            <a href="{{ url_for('index', day=prev_day, sort_key=sort_key) }}"><!--
+                 --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
+             --></a>
+        </div>
+        <div><a href="#" id="date_picker">{{ day }}</a></div>
+        {% if next_day %}
+            <div>
+                <a href="{{ url_for('index', day=next_day, sort_key=sort_key) }}">
+                    <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                </a>
+            </div>
+        {% else %}
+            <div>
+                <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+            </div>
+        {% endif %}
+    </div>
+
     <div class="leaderboard">
         <div class="sortable" id="name">Player</div>
         <div class="sortable" id="games_played">Total Games</div>

@@ -35,8 +35,8 @@ class LogHandler(logging.Handler):
             'message': record.msg % record.args
         })
 
-
-class ApexDBHelper:
+# pylint: disable=too-many-instance-attributes
+class ApexDBHelper: # noqa E0302
     """ Class for retrieving / saving data to the Apex Mongo DB """
 
     def __init__(self):
@@ -48,6 +48,7 @@ class ApexDBHelper:
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: Collection = self.database.event
         self.player_collection: Collection = self.database.player
+        self.battlepass_info_collection: Collection = self.database.battlepass_info
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
         if not logger.handlers:

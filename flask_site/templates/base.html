@@ -16,7 +16,15 @@
 </head>
 <body>
 <div class="base_container">
-    {% if 'index' not in request.endpoint %}
+    {% if 'battlepass' in request.endpoint %}
+        <div class="header_left">
+            <div><a href="{{ url_for('index') }}">Home Page</a></div>
+        </div>
+    {% elif 'index' in request.endpoint %}
+        <div class="header_left">
+            <div><a href="{{ url_for('battlepass') }}">Battle Pass</a></div>
+        </div>
+    {% elif 'index' not in request.endpoint %}
         <div class="header">
             <div>
                 {{ player_name }}:
@@ -27,30 +35,12 @@
             <div>{% if 'profile' in request.endpoint %}Profile Page{% else %}
                 <a href="{{ url_for('profile', player_uid=player_uid) }}">Profile Page</a> {% endif %}
             </div>
+            <div><a href="{{ url_for('battlepass') }}">Battle Pass</a></div>
             <div>{% if 'index' in request.endpoint %}Home Page{% else %}
                 <a href="{{ url_for('index') }}">Home Page</a>{% endif %}
             </div>
         </div>
     {% else %}
-        <div class="date_picker">
-            <div>
-                <a href="{{ url_for('index', day=prev_day, sort_key=sort_key) }}"><!--
-                 --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
-             --></a>
-            </div>
-            <div><a href="#" id="date_picker">{{ day }}</a></div>
-            {% if next_day %}
-                <div>
-                <a href="{{ url_for('index', day=next_day, sort_key=sort_key) }}">
-                    <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
-                </a>
-                </div>
-            {% else %}
-                <div>
-                    <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
-                </div>
-            {% endif %}
-        </div>
     {% endif %}
     {% block content %} {% endblock %}
 </div>

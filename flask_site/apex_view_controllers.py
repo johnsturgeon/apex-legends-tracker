@@ -1,5 +1,8 @@
 """ This module contains all the controllers for each of the views """
 from typing import List
+
+import arrow
+
 from apex_db_helper import ApexDBHelper, ApexDBGameEvent, filter_game_list
 
 
@@ -154,3 +157,33 @@ class ProfileViewController:
         if platform == 'PS4':
             return 'Playstation'
         return platform
+
+
+class BattlePassViewController:
+    """ View controller for the battlepass page """
+    def __init__(self, db_helper: ApexDBHelper):
+        self.tracked_players: list = []
+        player_list = db_helper.get_tracked_players()
+        for player in player_list:
+            self.tracked_players.append(player)
+
+        self.battlepass_info = db_helper.battlepass_info_collection.find_one({})
+        start_date = arrow.get(self.battlepass_info['start_date'])
+        end_date = arrow.get(self.battlepass_info['end_date'])
+        today = arrow.now('US/Pacific')
+        battlepass_max = self.battlepass_info['max_battlepass']
+        days_progressed = (today - start_date).days
+        days_in_season = (end_date - start_date).days
+        self.battlepass_info['days_in_season'] = days_in_season
+        self.battlepass_info['days_progressed'] = days_progressed
+        level_per_day_rate = battlepass_max / days_in_season
+        self.battlepass_info['goal_levels'] = level_per_day_rate * days_progressed
+
+    def players_sorted_by_key(self, key: str):
+        """ returns back a list of players sorted by the category """
+        # one or the other but not both
+        if key == 'name':
+            sorted_players = sorted(self.tracked_players, key=lambda item: item[key].casefold())
+        else:
+            sorted_players = sorted(self.tracked_players, key=lambda item: item[key], reverse=True)
+        return sorted_players
