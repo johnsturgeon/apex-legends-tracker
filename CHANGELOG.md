@@ -4,7 +4,7 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.1]
 ### Fixed
 - Fixed it so that the home page no longer refreshes when it's not on 'Today'
 - Moved the 'prev / next' date navigation into the content area of the home page, so we don't have two headers there.
