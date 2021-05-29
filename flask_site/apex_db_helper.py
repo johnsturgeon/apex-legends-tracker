@@ -6,7 +6,8 @@ from logging import Logger
 import arrow
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from pymongo.database import Database
+from bson import ObjectId
+import pymongo.database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer
 from apex_legends_api.al_domain import GameEvent, DataTracker
@@ -23,7 +24,7 @@ class LogHandler(logging.Handler):
         """ Initialize the logger """
         level = getattr(logging, os.getenv('LOG_LEVEL'))
         logging.Handler.__init__(self, level)
-        database: Database = client.apex_legends
+        database: pymongo.database.Database = client.apex_legends
         self.log_collection: Collection = database.get_collection(os.getenv('LOG_COLLECTION'))
 
     def emit(self, record):
@@ -36,7 +37,7 @@ class LogHandler(logging.Handler):
         })
 
 # pylint: disable=too-many-instance-attributes
-class ApexDBHelper: # noqa E0302
+class ApexDBHelper:  # noqa E0302
     """ Class for retrieving / saving data to the Apex Mongo DB """
 
     def __init__(self):
@@ -44,7 +45,7 @@ class ApexDBHelper: # noqa E0302
         uri += f"@{os.getenv('MONGO_HOST')}/{os.getenv('MONGO_DB')}"
         uri += "?retryWrites=true&w=majority"
         self.client: MongoClient = MongoClient(uri)
-        self.database: Database = self.client.apex_legends
+        self.database: pymongo.database.Database = self.client.apex_legends
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: Collection = self.database.event
         self.player_collection: Collection = self.database.player
@@ -109,6 +110,31 @@ class ApexDBHelper: # noqa E0302
             self.logger.info(
                 "Adding event for %s", event_data['player'])
             self.event_collection.insert_one(event_data)
+
+    def save_rank_change_event(self, basic_player_data: dict):
+        """ Saves a rank change event """
+        uid = str(basic_player_data['global']['uid'])
+        player = basic_player_data['global']['name']
+        timestamp = arrow.get(ObjectId(basic_player_data['_id']).generation_time).int_timestamp
+        event = basic_player_data['global']['rank']
+        new_record = {
+            "uid": uid,
+            "player": player,
+            "timestamp": timestamp,
+            "eventType": "rankScoreChange",
+            "event": event
+        }
+        key = {
+            'uid': uid,
+            'eventType': "rankScoreChange",
+            "event.rankScore": event['rankScore'],
+            "event.rankedSeason": event['rankedSeason']
+        }
+        self.event_collection.update_one(
+            filter=key,
+            update={"$set": new_record},
+            upsert=True
+        )
 
 
 class ApexDBGameEvent(GameEvent):
