@@ -12,7 +12,15 @@
         {% if player.is_online %}<span class="profile_online">online</span>{% endif %}
         </div>
         <div class="profile_selected_legend">Selected Legend: {{ player.selected_legend }}</div>
-        <div class="profile_details">Profile Details</div>
-        <div>Level: {{ player.level }}</div>
+        <div class="profile_selected_legend">Level: {{ player.level }}</div>
+        <div class="profile_details">Stats</div>
+        <div>Ranked Progression</div>
+        <div id="spline" class="spline"></div>
     </div>
+    <script>
+        let graphs = {{view_controller.ranked_plot() | safe}};
+        Plotly.setPlotConfig({displayModeBar: false})
+        Plotly.setPlotConfig({responsive: true})
+        Plotly.newPlot('spline',graphs,{})
+    </script>
 {% endblock %}
