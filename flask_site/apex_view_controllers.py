@@ -172,7 +172,6 @@ class ProfileViewController:
         """ Return ranked event lists """
         x_array: list = list()
         y_array: list = list()
-        y2_array: list = list()
         skip_one = True
         prev_date = ""
         for ranked_event in self.ranked_events:
