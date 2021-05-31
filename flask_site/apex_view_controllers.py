@@ -1,13 +1,15 @@
 """ This module contains all the controllers for each of the views """
-from typing import List
-
+from typing import List, Tuple
+import json
 import arrow
-
 from apex_db_helper import ApexDBHelper, ApexDBGameEvent, filter_game_list
+import plotly.graph_objects as go
+import plotly.utils as ut
 
 
 class BaseGameViewController:
     """ Base controller for all views that deal with games """
+
     def __init__(self, db_helper: ApexDBHelper, query_filter: dict):
         # we must convert this to a string for the db (for now)
         if query_filter.get('uid'):
@@ -146,8 +148,15 @@ class DayByDayViewController(BaseGameViewController):
 
 class ProfileViewController:
     """ View controller for the player detail page """
+
     def __init__(self, db_helper: ApexDBHelper, player_uid: int):
         self.player = db_helper.get_tracked_player_by_uid(player_uid)
+        self.ranked_events = db_helper.event_collection.find(
+            {
+                'uid': str(player_uid),
+                'eventType': "rankScoreChange"
+            }
+        )
 
     def get_platform_logo(self) -> str:
         """ Return friendly version of the player's platform"""
@@ -159,9 +168,85 @@ class ProfileViewController:
         # default
         return 'origin.svg'
 
+    def get_ranked_events(self) -> Tuple[list, list]:
+        """ Return ranked event lists """
+        x_array: list = list()
+        y_array: list = list()
+        skip_one = True
+        prev_date = ""
+        for ranked_event in self.ranked_events:
+            if ranked_event['event']['rankedSeason'] == 'season09_split_1':
+                if skip_one:
+                    skip_one = False
+                    continue
+                date = arrow.get(ranked_event['timestamp']).to('US/Pacific').format('YYYY-MM-DD')
+                if date != prev_date:
+                    prev_date = date
+                    x_array.append(date.format())
+                    y_array.append(ranked_event['event']['rankScore'])
+        return x_array, y_array
+
+    @staticmethod
+    def add_rect_to_fig(fig, y_pos, fillcolor, opacity, annotation_text):
+        """ adds a rank band to the figure """
+        fig.add_hrect(y0=y_pos,
+                      y1=y_pos + 300,
+                      line_width=0,
+                      fillcolor=fillcolor,
+                      opacity=opacity,
+                      annotation_text=annotation_text,
+                      annotation_font_size=9
+                      )
+
+    def ranked_plot(self):
+        """ Create a spline smoothed chart """
+        x_axis, y_axis = self.get_ranked_events()
+        max_y = 6000
+        min_y = 0
+        if y_axis:
+            max_y = max(y_axis)
+            min_y = min(y_axis)
+            count, _ = divmod(max_y, 1200)
+            max_y = (count * 1200) + 1200
+            count, _ = divmod(min_y, 1200)
+            min_y = max((count * 1200), 0)
+        fig = go.Figure()
+        ProfileViewController.add_rect_to_fig(fig, 0, "#937B44", 0.05, "IV")
+        ProfileViewController.add_rect_to_fig(fig, 300, "#937B44", 0.1, "III")
+        ProfileViewController.add_rect_to_fig(fig, 600, "#937B44", 0.2, "II")
+        ProfileViewController.add_rect_to_fig(fig, 900, "#937B44", 0.3, "Bronze I")
+        ProfileViewController.add_rect_to_fig(fig, 1200, "#ddd", 0.05, "IV")
+        ProfileViewController.add_rect_to_fig(fig, 1500, "#ddd", 0.1, "III")
+        ProfileViewController.add_rect_to_fig(fig, 1800, "#ddd", 0.2, "II")
+        ProfileViewController.add_rect_to_fig(fig, 2100, "#ddd", 0.3, "Silver I")
+        ProfileViewController.add_rect_to_fig(fig, 2400, "#A2A200", 0.05, "IV")
+        ProfileViewController.add_rect_to_fig(fig, 2700, "#A2A200", 0.1, "III")
+        ProfileViewController.add_rect_to_fig(fig, 3000, "#A2A200", 0.2, "II")
+        ProfileViewController.add_rect_to_fig(fig, 3300, "#A2A200", 0.3, "Gold I")
+        ProfileViewController.add_rect_to_fig(fig, 3600, "#ACDFE5", 0.05, "IV")
+        ProfileViewController.add_rect_to_fig(fig, 3900, "#ACDFE5", 0.1, "III")
+        ProfileViewController.add_rect_to_fig(fig, 4200, "#ACDFE5", 0.2, "II")
+        ProfileViewController.add_rect_to_fig(fig, 4500, "#ACDFE5", 0.3, "Platinum I")
+        ProfileViewController.add_rect_to_fig(fig, 4800, "#01DAE5", 0.05, "IV")
+        ProfileViewController.add_rect_to_fig(fig, 5100, "#01DAE5", 0.1, "III")
+        ProfileViewController.add_rect_to_fig(fig, 5400, "#01DAE5", 0.2, "II")
+        ProfileViewController.add_rect_to_fig(fig, 5700, "#01DAE5", 0.3, "Diamond I")
+        fig.add_trace(go.Scatter(x=x_axis, y=y_axis, name="spline",
+                                 text=["tweak line smoothness<br>with 'smoothing' in line object"],
+                                 hoverinfo='text+name', mode='lines+markers'))
+        fig.update_traces(hoverinfo='text+name')
+        fig.update_yaxes(tick0=1200, dtick=1200)
+        fig.update_layout(
+            template="plotly_dark",
+            legend=dict(y=0.5, traceorder='reversed', font_size=16),
+            yaxis_range=[min_y, max_y]
+        )
+        return json.dumps(fig, cls=ut.PlotlyJSONEncoder)
+
 
 class BattlePassViewController:
     """ View controller for the battlepass page """
+
     def __init__(self, db_helper: ApexDBHelper):
         self.tracked_players: list = []
         player_list = db_helper.get_tracked_players()

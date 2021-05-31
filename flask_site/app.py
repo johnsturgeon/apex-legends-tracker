@@ -96,7 +96,6 @@ def day_by_day(player_uid: int):
 @app.route('/profile/<int:player_uid>')
 def profile(player_uid):
     """ Simple player profile page """
-    # line = create_plot()
     if player_uid:
         view_controller = ProfileViewController(
             db_helper=apex_db_helper,
