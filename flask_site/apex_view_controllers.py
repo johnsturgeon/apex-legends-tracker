@@ -156,7 +156,20 @@ class ProfileViewController:
                 'uid': str(player_uid),
                 'eventType': "rankScoreChange"
             }
-        )
+        ).sort('timestamp', 1)
+        self.rank_level_info = db_helper.get_ranked_level_info()
+
+    @staticmethod
+    def roman_numeral(number: int) -> str:
+        """ Converts numbers from 1 - 4 to roman numberals """
+        assert 1 <= number <= 4
+        if number == 1:
+            return "I"
+        if number == 2:
+            return "II"
+        if number == 3:
+            return "III"
+        return "IV"
 
     def get_platform_logo(self) -> str:
         """ Return friendly version of the player's platform"""
@@ -168,78 +181,92 @@ class ProfileViewController:
         # default
         return 'origin.svg'
 
-    def get_ranked_events(self) -> Tuple[list, list]:
+    def get_ranked_events(self) -> Tuple[list, list, list]:
         """ Return ranked event lists """
-        x_array: list = list()
-        y_array: list = list()
-        skip_one = True
-        prev_date = ""
+        rank_dict: dict = {}
+        skip_one: bool = True
         for ranked_event in self.ranked_events:
             if ranked_event['event']['rankedSeason'] == 'season09_split_1':
                 if skip_one:
                     skip_one = False
                     continue
                 date = arrow.get(ranked_event['timestamp']).to('US/Pacific').format('YYYY-MM-DD')
-                if date != prev_date:
-                    prev_date = date
-                    x_array.append(date.format())
-                    y_array.append(ranked_event['event']['rankScore'])
-        return x_array, y_array
+                rank_dict[date] = {
+                    'rankScore': ranked_event['event']['rankScore'],
+                    'rankName': ranked_event['event']['rankName'],
+                    'rankDiv': self.roman_numeral(ranked_event['event']['rankDiv'])
+                }
+        x_array: list = list()
+        y_array: list = list()
+        text_array: list = list()
+        for key, value in rank_dict.items():
+            x_array.append(key)
+            y_array.append(value['rankScore'])
+            text_array.append(
+                f"{value['rankName']} {value['rankDiv']}"
+            )
+        return x_array, y_array, text_array
 
-    @staticmethod
-    def add_rect_to_fig(fig, y_pos, fillcolor, opacity, annotation_text):
+    def add_rank_bands_to_fig(self, fig):
         """ adds a rank band to the figure """
-        fig.add_hrect(y0=y_pos,
-                      y1=y_pos + 300,
-                      line_width=0,
-                      fillcolor=fillcolor,
-                      opacity=opacity,
-                      annotation_text=annotation_text,
-                      annotation_font_size=9
-                      )
+        y_pos = 0
+        for level in self.rank_level_info['levels']:
+            opacity = 0.05
+            step_increment = level['rp_between_tiers']
+            step_bg_color = level['color']
+            for tier in range(4, 0, -1):
+                annotation_text = self.roman_numeral(tier)
+                fig.add_hrect(y0=y_pos,
+                              y1=y_pos + step_increment,
+                              line_width=0,
+                              fillcolor=step_bg_color,
+                              opacity=opacity,
+                              annotation_text=annotation_text,
+                              annotation_font_size=9
+                              )
+                y_pos += step_increment
+                opacity += 0.06
 
     def ranked_plot(self):
         """ Create a spline smoothed chart """
-        x_axis, y_axis = self.get_ranked_events()
-        max_y = 6000
+        x_axis, y_axis, text_list = self.get_ranked_events()
+        fig = go.Figure()
+        self.add_rank_bands_to_fig(fig)
+        fig.add_trace(go.Scatter(x=x_axis, y=y_axis, name="spline",
+                                 text=text_list,
+                                 mode='lines+markers'))
+        fig.update_traces(hovertemplate=None)
+        fig.update_layout(hovermode="x unified")
+        fig.update_layout(hoverlabel=dict(font_color='black', bgcolor='wheat'))
+        # initialize with bottom value
+        y_tick_value: int = 0
+        tick_values: list = [y_tick_value]
+        tick_text: list = ['']
+        for level in self.rank_level_info['levels']:
+            y_tick_value = y_tick_value + (level['rp_between_tiers'] * 4)
+            tick_values.append(y_tick_value)
+            tick_text.append(level['name'])
+        max_y = 10000
         min_y = 0
         if y_axis:
             max_y = max(y_axis)
             min_y = min(y_axis)
-            count, _ = divmod(max_y, 1200)
-            max_y = (count * 1200) + 1200
-            count, _ = divmod(min_y, 1200)
-            min_y = max((count * 1200), 0)
-        fig = go.Figure()
-        ProfileViewController.add_rect_to_fig(fig, 0, "#937B44", 0.05, "IV")
-        ProfileViewController.add_rect_to_fig(fig, 300, "#937B44", 0.1, "III")
-        ProfileViewController.add_rect_to_fig(fig, 600, "#937B44", 0.2, "II")
-        ProfileViewController.add_rect_to_fig(fig, 900, "#937B44", 0.3, "Bronze I")
-        ProfileViewController.add_rect_to_fig(fig, 1200, "#ddd", 0.05, "IV")
-        ProfileViewController.add_rect_to_fig(fig, 1500, "#ddd", 0.1, "III")
-        ProfileViewController.add_rect_to_fig(fig, 1800, "#ddd", 0.2, "II")
-        ProfileViewController.add_rect_to_fig(fig, 2100, "#ddd", 0.3, "Silver I")
-        ProfileViewController.add_rect_to_fig(fig, 2400, "#A2A200", 0.05, "IV")
-        ProfileViewController.add_rect_to_fig(fig, 2700, "#A2A200", 0.1, "III")
-        ProfileViewController.add_rect_to_fig(fig, 3000, "#A2A200", 0.2, "II")
-        ProfileViewController.add_rect_to_fig(fig, 3300, "#A2A200", 0.3, "Gold I")
-        ProfileViewController.add_rect_to_fig(fig, 3600, "#ACDFE5", 0.05, "IV")
-        ProfileViewController.add_rect_to_fig(fig, 3900, "#ACDFE5", 0.1, "III")
-        ProfileViewController.add_rect_to_fig(fig, 4200, "#ACDFE5", 0.2, "II")
-        ProfileViewController.add_rect_to_fig(fig, 4500, "#ACDFE5", 0.3, "Platinum I")
-        ProfileViewController.add_rect_to_fig(fig, 4800, "#01DAE5", 0.05, "IV")
-        ProfileViewController.add_rect_to_fig(fig, 5100, "#01DAE5", 0.1, "III")
-        ProfileViewController.add_rect_to_fig(fig, 5400, "#01DAE5", 0.2, "II")
-        ProfileViewController.add_rect_to_fig(fig, 5700, "#01DAE5", 0.3, "Diamond I")
-        fig.add_trace(go.Scatter(x=x_axis, y=y_axis, name="spline",
-                                 text=["tweak line smoothness<br>with 'smoothing' in line object"],
-                                 hoverinfo='text+name', mode='lines+markers'))
-        fig.update_traces(hoverinfo='text+name')
-        fig.update_yaxes(tick0=1200, dtick=1200)
+            new_min_y: int = min_y
+            new_max_y: int = max_y
+            for value in tick_values:
+                if value < min_y:
+                    new_min_y = value
+            for value in reversed(tick_values):
+                if value > max_y:
+                    new_max_y = value
+            max_y = new_max_y
+            min_y = new_min_y
+
         fig.update_layout(
             template="plotly_dark",
             legend=dict(y=0.5, traceorder='reversed', font_size=16),
-            yaxis_range=[min_y, max_y]
+            yaxis_range=[min_y, max_y],
+            yaxis=dict(tickvals=tick_values, ticktext=tick_text, tickmode='array')
         )
         return json.dumps(fig, cls=ut.PlotlyJSONEncoder)
 
@@ -253,7 +280,7 @@ class BattlePassViewController:
         for player in player_list:
             self.tracked_players.append(player)
 
-        self.battlepass_info = db_helper.battlepass_info_collection.find_one({})
+        self.battlepass_info = db_helper.get_battlepass_info()
         start_date = arrow.get(self.battlepass_info['start_date'])
         end_date = arrow.get(self.battlepass_info['end_date'])
         today = arrow.now('US/Pacific')

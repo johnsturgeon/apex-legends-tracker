@@ -49,13 +49,31 @@ class ApexDBHelper:  # noqa E0302
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: Collection = self.database.event
         self.player_collection: Collection = self.database.player
-        self.battlepass_info_collection: Collection = self.database.battlepass_info
+        self.basic_info: dict = self.database.basic_info.find_one({})
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
         if not logger.handlers:
             logger.addHandler(LogHandler(self.client))
         self.logger = logger
         self._latest_event_timestamp: int = 0
+
+    def get_battlepass_info(self):
+        """ Returns the battlepass info for the current season """
+        return self.get_current_season()['battlepass_info']
+
+    def get_current_season(self):
+        """ Returns the info for the current season """
+        current_season_number: int = self.basic_info['current_season']
+        return self.basic_info['seasons'][current_season_number-1]
+
+    def get_current_ranked_split(self):
+        """ Returns the current split for the current season """
+        current_ranked_split: int = self.basic_info['current_split']
+        return self.get_current_season()['splits'][current_ranked_split]
+
+    def get_ranked_level_info(self):
+        """ Returns the current ranked level info """
+        return self.basic_info['ranked_level_info']
 
     def get_player_by_uid(self, uid: int) -> ALPlayer:
         """
