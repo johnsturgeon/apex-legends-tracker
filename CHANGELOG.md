@@ -3,9 +3,15 @@ Welcome to the 'Apex Legends Tracker' changelog
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [Unreleased]
+
+## [0.9.1]
 ### Added
+- Hover labels on ranked progression page show some more detail (and are styled a bit)
 - Added a 15-second refresh to the maintenance page to check to see if the site is ready, and if it is, reload it.
+### Fixed
+- Fixed the Rank Progression tracker page (several issues)
+### Changed
+- [internal change] moved some season / battlepass data into a config database
 
 ## [0.9.0]
 ### Added
