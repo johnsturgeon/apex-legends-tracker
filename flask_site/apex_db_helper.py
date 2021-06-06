@@ -4,7 +4,6 @@ import logging
 import datetime
 from logging import Logger
 from typing import List
-import marshmallow
 import arrow
 from dotenv import load_dotenv
 from pymongo import MongoClient
