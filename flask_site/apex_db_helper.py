@@ -3,14 +3,17 @@ import os
 import logging
 import datetime
 from logging import Logger
+from typing import List
+import marshmallow
 import arrow
+import desert
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from bson import ObjectId
 import pymongo.database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer
 from apex_legends_api.al_domain import GameEvent, DataTracker
+from models import BasicInfo, RankedGameEvent, RankedSplit
 
 load_dotenv()
 
@@ -36,6 +39,7 @@ class LogHandler(logging.Handler):
             'message': record.msg % record.args
         })
 
+
 # pylint: disable=too-many-instance-attributes
 class ApexDBHelper:  # noqa E0302
     """ Class for retrieving / saving data to the Apex Mongo DB """
@@ -49,7 +53,7 @@ class ApexDBHelper:  # noqa E0302
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: Collection = self.database.event
         self.player_collection: Collection = self.database.player
-        self.basic_info: dict = self.database.basic_info.find_one({})
+        self._basic_info = None
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
         if not logger.handlers:
@@ -57,23 +61,66 @@ class ApexDBHelper:  # noqa E0302
         self.logger = logger
         self._latest_event_timestamp: int = 0
 
-    def get_battlepass_info(self):
-        """ Returns the battlepass info for the current season """
-        return self.get_current_season()['battlepass_info']
+    @property
+    def basic_info(self) -> BasicInfo:
+        """ Factory method for BasicInfo data """
+        if getattr(self, '_basic_info', None) is None:
+            schema = desert.schema(BasicInfo, meta={"unknown": marshmallow.EXCLUDE})
+            self._basic_info = schema.load(self.database.basic_info.find_one({}))
+        return self._basic_info
 
-    def get_current_season(self):
-        """ Returns the info for the current season """
-        current_season_number: int = self.basic_info['current_season']
-        return self.basic_info['seasons'][current_season_number-1]
+    def get_ranked_games(self,
+                         player_uid: int = 0,
+                         season_number: int = 0,
+                         split_number: int = 0
+                         ) -> List[RankedGameEvent]:
+        """
+        Returns a list of 'filtered' games based on season / split (current if none given)
+        Args:
+            player_uid:  Player UID for ranked games (default all players)
+            season_number: Season number must be less than or equal to the current season
+            split_number: Split number (cannot be zero of season given)
 
-    def get_current_ranked_split(self):
-        """ Returns the current split for the current season """
-        current_ranked_split: int = self.basic_info['current_split']
-        return self.get_current_season()['splits'][current_ranked_split]
+        Returns:
+            List of all ranked game events
+        """
+        basic_info: BasicInfo = self.basic_info
+        if season_number:
+            assert split_number
+            assert season_number <= basic_info.current_season
+        current_ranked_split: RankedSplit = basic_info.get_ranked_split(
+            season_number=season_number,
+            split_number=split_number
+        )
+        start_date = arrow.get(current_ranked_split.start_date).to('US/Pacific')
+        end_date = arrow.get(current_ranked_split.end_date).to('US/Pacific')
+        start_timestamp = start_date.int_timestamp
+        end_timestamp = end_date.int_timestamp
 
-    def get_ranked_level_info(self):
-        """ Returns the current ranked level info """
-        return self.basic_info['ranked_level_info']
+        query_filter: dict = {
+            "eventType": "Game",
+            "rankScoreChange": {
+                "$ne": "0"
+            },
+            "currentRankScore": {
+                "$exists": True
+            },
+            "timestamp": {
+                "$gt": start_timestamp,
+                "$lt": end_timestamp
+            }
+        }
+        if player_uid:
+            query_filter['uid'] = str(player_uid)
+
+        game_list: list = list(
+            self.event_collection.find(query_filter).sort('timestamp', pymongo.ASCENDING)
+        )
+        ranked_game_list: List[RankedGameEvent] = []
+        for game in game_list:
+            schema = desert.schema(RankedGameEvent, meta={"unknown": marshmallow.EXCLUDE})
+            ranked_game_list.append(schema.load(game))
+        return ranked_game_list
 
     def get_player_by_uid(self, uid: int) -> ALPlayer:
         """
@@ -128,31 +175,6 @@ class ApexDBHelper:  # noqa E0302
             self.logger.info(
                 "Adding event for %s", event_data['player'])
             self.event_collection.insert_one(event_data)
-
-    def save_rank_change_event(self, basic_player_data: dict):
-        """ Saves a rank change event """
-        uid = str(basic_player_data['global']['uid'])
-        player = basic_player_data['global']['name']
-        timestamp = arrow.get(ObjectId(basic_player_data['_id']).generation_time).int_timestamp
-        event = basic_player_data['global']['rank']
-        new_record = {
-            "uid": uid,
-            "player": player,
-            "timestamp": timestamp,
-            "eventType": "rankScoreChange",
-            "event": event
-        }
-        key = {
-            'uid': uid,
-            'eventType': "rankScoreChange",
-            "event.rankScore": event['rankScore'],
-            "event.rankedSeason": event['rankedSeason']
-        }
-        self.event_collection.update_one(
-            filter=key,
-            update={"$set": new_record},
-            upsert=True
-        )
 
 
 class ApexDBGameEvent(GameEvent):
