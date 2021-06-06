@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 {% set page_title="Friends of the Apex Legends API: Battle Pass" %}
 {% set bp_info = view_controller.battlepass_info %}
-{% set max_battlepass = bp_info['max_battlepass'] %}
-{% set goal_level = bp_info['goal_levels'] | round(0) | int%}
-{% set cur_day = bp_info['days_progressed'] %}
-{% set total_days = bp_info['days_in_season'] %}
+{% set bp_data = view_controller.battlepass_data %}
+{% set max_battlepass = bp_info.goal_battlepass %}
+{% set goal_level = bp_data.goal_levels | round(0) | int%}
+{% set cur_day = bp_data.days_progressed%}
+{% set total_days = bp_data.days_in_season %}
 {% block content %}
     <div class="battlepass">
         <div class="intro">Welcome to the Battlepass tracker<br />
             * To use, make sure that you have added your battlepass badge to your currently selected legend</div>
         <div class="clear"></div>
         <div class="name">Day {{ cur_day }} / {{ total_days }}</div>
-        {{ macros.progress_container("Target level", goal_level, max_battlepass, show_total=False) }}
+        {{ macros.progress_container("Target level (" + max_battlepass | string + ")", goal_level, max_battlepass, show_total=False) }}
         <div class="clear border"></div>
         {% for player in view_controller.players_sorted_by_key(key='name') %}
             {% if player.battlepass_level > -1 %}

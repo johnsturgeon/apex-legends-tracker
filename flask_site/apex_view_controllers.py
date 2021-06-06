@@ -275,17 +275,18 @@ class BattlePassViewController:
         for player in player_list:
             self.tracked_players.append(player)
 
-        self.battlepass_info = db_helper.get_battlepass_info()
-        start_date = arrow.get(self.battlepass_info['start_date'])
-        end_date = arrow.get(self.battlepass_info['end_date'])
+        self.battlepass_info = db_helper.basic_info.get_season().battlepass_info
+        self.battlepass_data: dict = dict()
+        start_date = arrow.get(self.battlepass_info.start_date)
+        end_date = arrow.get(self.battlepass_info.end_date)
         today = arrow.now('US/Pacific')
-        battlepass_max = self.battlepass_info['max_battlepass']
+        battlepass_max = self.battlepass_info.goal_battlepass
         days_progressed = (today - start_date).days
         days_in_season = (end_date - start_date).days
-        self.battlepass_info['days_in_season'] = days_in_season
-        self.battlepass_info['days_progressed'] = days_progressed
+        self.battlepass_data['days_in_season'] = days_in_season
+        self.battlepass_data['days_progressed'] = days_progressed
         level_per_day_rate = battlepass_max / days_in_season
-        self.battlepass_info['goal_levels'] = level_per_day_rate * days_progressed
+        self.battlepass_data['goal_levels'] = level_per_day_rate * days_progressed
 
     def players_sorted_by_key(self, key: str):
         """ returns back a list of players sorted by the category """
