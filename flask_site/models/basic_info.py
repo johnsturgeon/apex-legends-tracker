@@ -4,34 +4,37 @@ from typing import List, Optional
 
 
 # pylint: disable=missing-class-docstring
+from mashumaro import DataClassDictMixin
+
+
 @dataclass
-class RankTier:
+class RankTier(DataClassDictMixin):
     division: str
     tier: str
 
 
 @dataclass
-class Division:
+class Division(DataClassDictMixin):
     name: str
     color: str
     rp_between_tiers: int
 
 
 @dataclass
-class RankedDivisionInfo:
+class RankedDivisionInfo(DataClassDictMixin):
     divisions: List[Division]
     tiers: List[str]
 
 
 @dataclass
-class RankedSplit:
+class RankedSplit(DataClassDictMixin):
     split_number: int
     end_date: str
     start_date: str
 
 
 @dataclass
-class BattlepassInfo:
+class BattlepassInfo(DataClassDictMixin):
     start_date: str
     end_date: str
     max_battlepass: int
@@ -39,14 +42,14 @@ class BattlepassInfo:
 
 
 @dataclass
-class Season:
+class Season(DataClassDictMixin):
     season_number: int
     ranked_splits: List[RankedSplit]
     battlepass_info: BattlepassInfo
 
 
 @dataclass
-class BasicInfo:
+class BasicInfo(DataClassDictMixin):
     current_split: int
     current_season: int
     seasons: List[Season]

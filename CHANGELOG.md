@@ -4,6 +4,13 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.3]
+Internal updates only (no user facing differences)
+
+### Changed
+- Did away with 'player_data', I now just use the `Player` dataclass
+- Updated the serialization to use `mashumaro` instead of `desert` (much better docs)
+
 ## [0.9.2]
 ### Changed
 - Using a new method for accessing data models (dataclasses / desert JSON deserializer to dataclass)

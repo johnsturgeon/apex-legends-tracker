@@ -1,4 +1,7 @@
 """ A collection of utilities so I don't repeat myself """
+from typing import List
+
+from models import Player
 
 
 def player_data_from_basic_player(basic_player_data):
@@ -19,3 +22,18 @@ def player_data_from_basic_player(basic_player_data):
         'selected_legend': realtime['selectedLegend'],
         'battlepass_level': battlepass_level
     }
+
+
+def players_sorted_by_key(tracked_players: List[Player], key: str):
+    """ returns back a list of players sorted by the category """
+    if key == 'name':
+        sorted_players = sorted(
+            tracked_players,
+            key=lambda item: getattr(item, key).casefold()
+        )
+    else:
+        sorted_players = sorted(
+            tracked_players,
+            key=lambda item: getattr(item, key), reverse=True
+        )
+    return sorted_players

@@ -1,15 +1,14 @@
 """ Dataclass to represent basic_info collection """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 import arrow
-import desert
 
 # pylint: disable=missing-class-docstring
-import marshmallow.fields
+from mashumaro import DataClassDictMixin, field_options
 
 
 @dataclass
-class GameTracker:
+class GameTracker(DataClassDictMixin):
     value: int
     key: str
     name: str
@@ -17,17 +16,17 @@ class GameTracker:
 
 # pylint: disable=too-many-instance-attributes
 @dataclass
-class RankedGameEvent:
+class RankedGameEvent(DataClassDictMixin):
     uid: str
     player: str
     timestamp: int
     event: List[GameTracker]
-    game_length: int = desert.field(marshmallow.fields.Integer(data_key='gameLength'))
-    legend_played: str = desert.field(marshmallow.fields.String(data_key='legendPlayed'))
-    current_rank_score: str = desert.field(marshmallow.fields.String(data_key='currentRankScore'))
-    rank_score_change: str = desert.field(marshmallow.fields.String(data_key='rankScoreChange'))
-    xp_progress: int = desert.field(marshmallow.fields.Integer(data_key='xpProgress'))
-    event_type: str = desert.field(marshmallow.fields.String(data_key='eventType'))
+    game_length: int = field(metadata=field_options(alias="gameLength"))
+    legend_played: str = field(metadata=field_options(alias="legendPlayed"))
+    current_rank_score: str = field(metadata=field_options(alias="currentRankScore"))
+    rank_score_change: str = field(metadata=field_options(alias="rankScoreChange"))
+    xp_progress: int = field(metadata=field_options(alias="xpProgress"))
+    event_type: str = field(metadata=field_options(alias="eventType"))
     _day_of_event: str = None
 
     @property

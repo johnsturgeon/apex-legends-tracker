@@ -1,8 +1,10 @@
 """ A helper module for the apex legends API """
 import os
+from typing import List
 from dotenv import load_dotenv
 from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlatform, ALAction
 from apex_utilities import player_data_from_basic_player
+from models import Player
 
 load_dotenv()
 
@@ -12,9 +14,9 @@ class ApexAPIHelper:
     def __init__(self):
         self.api: ApexLegendsAPI = ApexLegendsAPI(api_key=os.getenv('APEX_LEGENDS_API_KEY'))
 
-    def get_tracked_players(self) -> list:
+    def get_tracked_players(self) -> List[Player]:
         """ Return a list of dictionaries containing each player's data"""
-        player_dict: dict = dict()
+        list_of_players: List[Player] = list()
         # This is the 'events' api, but it does indeed return back a list of players by UID
         player_list = self.api.events('GoshDarnedHero', ALPlatform.PC, ALAction.INFO)
         for player in player_list[0]['data']:
@@ -24,6 +26,7 @@ class ApexAPIHelper:
                 )
             except ALHTTPExceptionFromResponse:
                 continue
-            player_dict[player['uid']] = player_data_from_basic_player(basic_stats[0])
+            player_data = player_data_from_basic_player(basic_stats[0])
+            list_of_players.append(Player.from_dict(player_data))
 
-        return list(player_dict.values())
+        return list_of_players
