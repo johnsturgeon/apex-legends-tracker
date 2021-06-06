@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import arrow
 from apex_db_helper import ApexDBHelper, ApexDBGameEvent, filter_game_list
 from models import RankedGameEvent, RankTier, Division, RankedDivisionInfo
+from apex_utilities import players_sorted_by_key
 import plotly.graph_objects as go
 import plotly.utils as ut
 
@@ -77,26 +78,23 @@ class IndexViewController(BaseGameViewController):
             }
         }
         super().__init__(db_helper, query_filter)
-        self.tracked_players: list = []
-        player_list = db_helper.get_tracked_players()
-        for player in player_list:
-            self.tracked_players.append(player)
+        self.tracked_players = db_helper.get_tracked_players()
 
         for player in self.tracked_players:
-            uid = player['uid']
-            player['games_played'] = len(self.games_played(uid=uid))
-            player['kill_avg'] = self.category_average('kills', uid=uid)
-            player['wins'] = self.category_total('wins', uid=uid)
-            player['damage_avg'] = self.category_average('damage', uid=uid)
+            uid = player.uid
+            player.games_played = len(self.games_played(uid=uid))
+            player.kill_avg = self.category_average('kills', uid=uid)
+            player.wins = self.category_total('wins', uid=uid)
+            player.damage_avg = self.category_average('damage', uid=uid)
 
     def max_category(self, category: str) -> int:
         """ Returns the maximum category total for the day """
         max_category: int = 0
         for player in self.tracked_players:
             if category == 'games':  # special case for games
-                max_category = max(max_category, player['games_played'])
+                max_category = max(max_category, player.games_played)
             else:
-                uid = player['uid']
+                uid = player.uid
                 max_category = max(max_category, self.category_total(category, uid=uid))
 
         return max_category
@@ -107,18 +105,13 @@ class IndexViewController(BaseGameViewController):
         for player in self.tracked_players:
             max_average = max(
                 max_average,
-                self.category_average(category, uid=player['uid'])
+                self.category_average(category, uid=player.uid)
             )
         return max_average
 
     def players_sorted_by_key(self, key: str):
-        """ returns back a list of players sorted by the category """
-        # one or the other but not both
-        if key == 'name':
-            sorted_players = sorted(self.tracked_players, key=lambda item: item[key].casefold())
-        else:
-            sorted_players = sorted(self.tracked_players, key=lambda item: item[key], reverse=True)
-        return sorted_players
+        """ Wrapper for utility function"""
+        return players_sorted_by_key(self.tracked_players, key)
 
 
 class DayByDayViewController(BaseGameViewController):
@@ -289,10 +282,5 @@ class BattlePassViewController:
         self.battlepass_data['goal_levels'] = level_per_day_rate * days_progressed
 
     def players_sorted_by_key(self, key: str):
-        """ returns back a list of players sorted by the category """
-        # one or the other but not both
-        if key == 'name':
-            sorted_players = sorted(self.tracked_players, key=lambda item: item[key].casefold())
-        else:
-            sorted_players = sorted(self.tracked_players, key=lambda item: item[key], reverse=True)
-        return sorted_players
+        """ Wrapper for utility function"""
+        return players_sorted_by_key(self.tracked_players, key)

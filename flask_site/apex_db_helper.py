@@ -6,14 +6,13 @@ from logging import Logger
 from typing import List
 import marshmallow
 import arrow
-import desert
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import pymongo.database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer
 from apex_legends_api.al_domain import GameEvent, DataTracker
-from models import BasicInfo, RankedGameEvent, RankedSplit
+from models import BasicInfo, RankedGameEvent, RankedSplit, Player
 
 load_dotenv()
 
@@ -65,8 +64,7 @@ class ApexDBHelper:  # noqa E0302
     def basic_info(self) -> BasicInfo:
         """ Factory method for BasicInfo data """
         if getattr(self, '_basic_info', None) is None:
-            schema = desert.schema(BasicInfo, meta={"unknown": marshmallow.EXCLUDE})
-            self._basic_info = schema.load(self.database.basic_info.find_one({}))
+            self._basic_info = BasicInfo.from_dict(self.database.basic_info.find_one({}))
         return self._basic_info
 
     def get_ranked_games(self,
@@ -118,8 +116,7 @@ class ApexDBHelper:  # noqa E0302
         )
         ranked_game_list: List[RankedGameEvent] = []
         for game in game_list:
-            schema = desert.schema(RankedGameEvent, meta={"unknown": marshmallow.EXCLUDE})
-            ranked_game_list.append(schema.load(game))
+            ranked_game_list.append(RankedGameEvent.from_dict(game))
         return ranked_game_list
 
     def get_player_by_uid(self, uid: int) -> ALPlayer:
@@ -138,9 +135,12 @@ class ApexDBHelper:  # noqa E0302
         event_info: list = list(self.event_collection.find({'uid': str(uid)}))
         return ALPlayer(basic_player_stats_data=basic_player_stats, events=event_info)
 
-    def get_tracked_players(self) -> list[dict]:
+    def get_tracked_players(self) -> list[Player]:
         """ Return a list of dictionaries containing each player's data"""
-        return list(self.player_collection.find())
+        player_list: List[Player] = list()
+        for player_data in self.player_collection.find():
+            player_list.append(Player.from_dict(player_data))
+        return player_list
 
     def get_tracked_player_by_uid(self, uid: int):
         """ Returns one player given a uid """
@@ -157,10 +157,10 @@ class ApexDBHelper:  # noqa E0302
             filter=key, update={"$set": player_data}, upsert=True
         )
 
-    def save_player_data(self, player_data: dict):
+    def save_player_data(self, player_data: Player):
         """ Saves player record """
-        assert player_data.get('uid')
-        key = {'uid': player_data['uid']}
+        assert player_data.uid != 0
+        key = {'uid': player_data.uid}
         self.player_collection.update_one(filter=key, update={"$set": player_data}, upsert=True)
 
     def save_event_data(self, event_data: dict):

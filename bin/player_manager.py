@@ -85,5 +85,5 @@ def is_anyone_online() -> bool:
 
 
 if __name__ == "__main__":
-    # update_player_collection_from_api()
-    apex_db_helper.event_collection.delete_many({'eventType': 'rankScoreChange'})
+    update_player_collection_from_api()
+    # apex_db_helper.event_collection.delete_many({'eventType': 'rankScoreChange'})
