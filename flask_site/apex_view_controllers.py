@@ -1,8 +1,10 @@
 """ This module contains all the controllers for each of the views """
 from typing import List, Tuple
 import json
+from dataclasses import dataclass
 import arrow
 from apex_db_helper import ApexDBHelper, ApexDBGameEvent, filter_game_list
+from models import RankedGameEvent, RankTier, Division, RankedDivisionInfo
 import plotly.graph_objects as go
 import plotly.utils as ut
 
@@ -148,28 +150,10 @@ class DayByDayViewController(BaseGameViewController):
 
 class ProfileViewController:
     """ View controller for the player detail page """
-
     def __init__(self, db_helper: ApexDBHelper, player_uid: int):
+        self._ranked_games = db_helper.get_ranked_games(player_uid)
+        self._basic_info = db_helper.basic_info
         self.player = db_helper.get_tracked_player_by_uid(player_uid)
-        self.ranked_events = db_helper.event_collection.find(
-            {
-                'uid': str(player_uid),
-                'eventType': "rankScoreChange"
-            }
-        ).sort('timestamp', 1)
-        self.rank_level_info = db_helper.get_ranked_level_info()
-
-    @staticmethod
-    def roman_numeral(number: int) -> str:
-        """ Converts numbers from 1 - 4 to roman numberals """
-        assert 1 <= number <= 4
-        if number == 1:
-            return "I"
-        if number == 2:
-            return "II"
-        if number == 3:
-            return "III"
-        return "IV"
 
     def get_platform_logo(self) -> str:
         """ Return friendly version of the player's platform"""
@@ -181,43 +165,54 @@ class ProfileViewController:
         # default
         return 'origin.svg'
 
-    def get_ranked_events(self) -> Tuple[list, list, list]:
+    def get_ranked_plot_data(self) -> Tuple[list, list, list]:
         """ Return ranked event lists """
+        @dataclass
+        class RankedGameDay:
+            """ Container for ranked info"""
+            end_of_day_score: int
+            number_of_games: int
+
         rank_dict: dict = {}
-        skip_one: bool = True
-        for ranked_event in self.ranked_events:
-            if ranked_event['event']['rankedSeason'] == 'season09_split_1':
-                if skip_one:
-                    skip_one = False
-                    continue
-                date = arrow.get(ranked_event['timestamp']).to('US/Pacific').format('YYYY-MM-DD')
-                rank_dict[date] = {
-                    'rankScore': ranked_event['event']['rankScore'],
-                    'rankName': ranked_event['event']['rankName'],
-                    'rankDiv': self.roman_numeral(ranked_event['event']['rankDiv'])
-                }
+        game_count: int = 0
+        ranked_game: RankedGameEvent
+        for ranked_game in self._ranked_games:
+            rank_tier: RankTier
+            date: str = ranked_game.day_of_event
+            score: int = int(ranked_game.current_rank_score)
+            if not rank_dict.get(date):
+                game_count = 0
+            game_count += 1
+            rank_dict[date] = RankedGameDay(score, game_count)
         x_array: list = list()
         y_array: list = list()
         text_array: list = list()
-        for key, value in rank_dict.items():
-            x_array.append(key)
-            y_array.append(value['rankScore'])
+        rank_info: RankedGameDay
+        for day, rank_info in rank_dict.items():
+            rank_tier: RankTier = self._basic_info.get_rank_div_tier(
+                rank_info.end_of_day_score
+            )
+            x_array.append(day)
+            y_array.append(rank_info.end_of_day_score)
             text_array.append(
-                f"{value['rankName']} {value['rankDiv']}"
+                f"{rank_tier.division} {rank_tier.tier}<br />"
+                f"Ranked Games Played: {rank_info.number_of_games}"
             )
         return x_array, y_array, text_array
 
     def add_rank_bands_to_fig(self, fig):
         """ adds a rank band to the figure """
         y_pos = 0
-        for level in self.rank_level_info['levels']:
+        div_info: RankedDivisionInfo = self._basic_info.ranked_division_info
+        division: Division
+        for division in div_info.divisions:
             opacity = 0.05
-            step_increment = level['rp_between_tiers']
-            step_bg_color = level['color']
-            for tier in range(4, 0, -1):
-                annotation_text = self.roman_numeral(tier)
+            step_increment = division.rp_between_tiers
+            step_bg_color = division.color
+            for tier in div_info.tiers:
+                annotation_text = tier
                 fig.add_hrect(y0=y_pos,
-                              y1=y_pos + step_increment,
+                              y1=y_pos + step_increment - 1,
                               line_width=0,
                               fillcolor=step_bg_color,
                               opacity=opacity,
@@ -229,12 +224,11 @@ class ProfileViewController:
 
     def ranked_plot(self):
         """ Create a spline smoothed chart """
-        x_axis, y_axis, text_list = self.get_ranked_events()
+        x_axis, y_axis, text_list = self.get_ranked_plot_data()
         fig = go.Figure()
         self.add_rank_bands_to_fig(fig)
         fig.add_trace(go.Scatter(x=x_axis, y=y_axis, name="spline",
-                                 text=text_list,
-                                 mode='lines+markers'))
+                                 text=text_list))
         fig.update_traces(hovertemplate=None)
         fig.update_layout(hovermode="x unified")
         fig.update_layout(hoverlabel=dict(font_color='black', bgcolor='wheat'))
@@ -242,10 +236,11 @@ class ProfileViewController:
         y_tick_value: int = 0
         tick_values: list = [y_tick_value]
         tick_text: list = ['']
-        for level in self.rank_level_info['levels']:
-            y_tick_value = y_tick_value + (level['rp_between_tiers'] * 4)
-            tick_values.append(y_tick_value)
-            tick_text.append(level['name'])
+        division: Division
+        for division in self._basic_info.ranked_division_info.divisions:
+            y_tick_value = y_tick_value + (division.rp_between_tiers * 4)
+            tick_values.append(y_tick_value - 1)
+            tick_text.append(division.name)
         max_y = 10000
         min_y = 0
         if y_axis:
@@ -280,17 +275,18 @@ class BattlePassViewController:
         for player in player_list:
             self.tracked_players.append(player)
 
-        self.battlepass_info = db_helper.get_battlepass_info()
-        start_date = arrow.get(self.battlepass_info['start_date'])
-        end_date = arrow.get(self.battlepass_info['end_date'])
+        self.battlepass_info = db_helper.basic_info.get_season().battlepass_info
+        self.battlepass_data: dict = dict()
+        start_date = arrow.get(self.battlepass_info.start_date)
+        end_date = arrow.get(self.battlepass_info.end_date)
         today = arrow.now('US/Pacific')
-        battlepass_max = self.battlepass_info['max_battlepass']
+        battlepass_max = self.battlepass_info.goal_battlepass
         days_progressed = (today - start_date).days
         days_in_season = (end_date - start_date).days
-        self.battlepass_info['days_in_season'] = days_in_season
-        self.battlepass_info['days_progressed'] = days_progressed
+        self.battlepass_data['days_in_season'] = days_in_season
+        self.battlepass_data['days_progressed'] = days_progressed
         level_per_day_rate = battlepass_max / days_in_season
-        self.battlepass_info['goal_levels'] = level_per_day_rate * days_progressed
+        self.battlepass_data['goal_levels'] = level_per_day_rate * days_progressed
 
     def players_sorted_by_key(self, key: str):
         """ returns back a list of players sorted by the category """

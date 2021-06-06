@@ -4,6 +4,12 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.2]
+### Changed
+- Using a new method for accessing data models (dataclasses / desert JSON deserializer to dataclass)
+- Changed the ranked progression page to use the 'game' data for ranked progression which means that the old data is now gone
+- Fixed the battlepass tracker to max to 100 not 110
+
 ## [0.9.1]
 ### Added
 - Hover labels on ranked progression page show some more detail (and are styled a bit)

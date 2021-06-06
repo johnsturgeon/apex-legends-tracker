@@ -47,7 +47,6 @@ def save_one_player_data(player: dict):
         apex_db_helper.save_basic_player_data(player_data=basic_player_data)
         player_data = player_data_from_basic_player(basic_player_data)
         apex_db_helper.save_player_data(player_data=player_data)
-        apex_db_helper.save_rank_change_event(basic_player_data=basic_player_data)
 
 
 def save_one_player_event_data(player: dict):
@@ -85,12 +84,6 @@ def is_anyone_online() -> bool:
     return False
 
 
-def rank_events():
-    """Sample """
-    for basic_player in apex_db_helper.basic_player_collection.find({}):
-        apex_db_helper.save_rank_change_event(basic_player)
-
-
 if __name__ == "__main__":
     # update_player_collection_from_api()
-    rank_events()
+    apex_db_helper.event_collection.delete_many({'eventType': 'rankScoreChange'})
