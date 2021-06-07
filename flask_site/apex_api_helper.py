@@ -26,7 +26,7 @@ class ApexAPIHelper:
                 )
             except ALHTTPExceptionFromResponse:
                 continue
-            player_data = player_data_from_basic_player(basic_stats[0])
-            list_of_players.append(Player.from_dict(player_data))
+            player: Player = player_data_from_basic_player(basic_stats[0])
+            list_of_players.append(player)
 
         return list_of_players

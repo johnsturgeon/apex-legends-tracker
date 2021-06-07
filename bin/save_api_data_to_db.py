@@ -6,10 +6,10 @@ from requests import exceptions
 from apex_db_helper import ApexDBHelper
 
 
-def save_player_data_with_delay(loop_delay: int):
+def save_all_player_data_with_delay(loop_delay: int):
     """ Saves the player data record """
     try:
-        player_manager.save_player_data()
+        player_manager.save_all_player_data()
         log.debug("Starting loop delay: %s seconds", str(LOOP_DELAY))
         time.sleep(loop_delay)
     except exceptions.ConnectionError as error_message:
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         except requests.RequestException as error:
             # Log ping failure here...
             log.error("Ping of healthchecks.io failed: %s", error)
-        save_player_data_with_delay(LOOP_DELAY)
+        save_all_player_data_with_delay(LOOP_DELAY)
 
         LOOP_DELAY = MIN_LOOP_DELAY if player_manager.is_anyone_online() else MAX_LOOP_DELAY
         if PREVIOUS_LOOP_DELAY != LOOP_DELAY:

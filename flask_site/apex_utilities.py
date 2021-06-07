@@ -4,7 +4,7 @@ from typing import List
 from models import Player
 
 
-def player_data_from_basic_player(basic_player_data):
+def player_data_from_basic_player(basic_player_data: dict) -> Player:
     """ Returns a player dict from basic player data """
     global_info = basic_player_data.get('global')
     assert global_info
@@ -13,7 +13,7 @@ def player_data_from_basic_player(basic_player_data):
     battlepass_level = global_info['battlepass']['history'].get('season9')
     if battlepass_level is None:
         battlepass_level = -1
-    return {
+    player_data = {
         'name': global_info['name'],
         'uid': global_info['uid'],
         'platform': global_info['platform'],
@@ -22,6 +22,7 @@ def player_data_from_basic_player(basic_player_data):
         'selected_legend': realtime['selectedLegend'],
         'battlepass_level': battlepass_level
     }
+    return Player.from_dict(player_data)
 
 
 def players_sorted_by_key(tracked_players: List[Player], key: str):
