@@ -1,23 +1,27 @@
 """ methods for retrieving and saving player data """
 from threading import Thread
+from typing import List
+
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
 from apex_utilities import player_data_from_basic_player
 from apex_legends_api import ALPlatform, ALAction, ALHTTPExceptionFromResponse
+
+from models import Player
 
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
 log = apex_db_helper.logger
 
 
-def save_player_data():
+def save_all_player_data():
     """ Loop through all players and save the data """
     list_of_players = apex_db_helper.get_tracked_players()
     thread_method_with_player(save_one_player_data, list_of_players)
     thread_method_with_player(save_one_player_event_data, list_of_players)
 
 
-def thread_method_with_player(method_name, list_of_players):
+def thread_method_with_player(method_name, list_of_players: List[Player]):
     """ Executes a method name on a list of players (threaded) """
     threads: list = []
     for player in list_of_players:
@@ -30,11 +34,11 @@ def thread_method_with_player(method_name, list_of_players):
         thread.join()
 
 
-def save_one_player_data(player: dict):
+def save_one_player_data(player: Player):
     """ Saves one player's data if it has been updated """
     try:
         basic_player_data_list = apex_api_helper.api.basic_player_stats_by_uid(
-            player['uid'], ALPlatform(value=player['platform'])
+            str(player.uid), ALPlatform(value=player.platform)
         )
     except ALHTTPExceptionFromResponse:
         log.warning("Player: %s not found", player)
@@ -45,17 +49,17 @@ def save_one_player_data(player: dict):
         basic_player_data = basic_player_data_list[0]
         log.debug("Saving Basic Player Data: %s", basic_player_data)
         apex_db_helper.save_basic_player_data(player_data=basic_player_data)
-        player_data = player_data_from_basic_player(basic_player_data)
-        apex_db_helper.save_player_data(player_data=player_data)
+        player = player_data_from_basic_player(basic_player_data)
+        apex_db_helper.save_player(player)
 
 
-def save_one_player_event_data(player: dict):
+def save_one_player_event_data(player: Player):
     """ saves just one player's event data """
     try:
         log.debug("Getting events by UID for player: %s: ", player)
         event_data_list = apex_api_helper.api.events_by_uid(
-            uid=player['uid'],
-            platform=ALPlatform(value=player['platform']),
+            uid=str(player.uid),
+            platform=ALPlatform(value=player.platform),
             action=ALAction.GET
         )
         log.debug("Got events by UID for player %s ", player)
@@ -73,13 +77,14 @@ def update_player_collection_from_api():
     the player DB """
     tracked_players = apex_api_helper.get_tracked_players()
     for player in tracked_players:
-        apex_db_helper.save_player_data(player_data=player)
+        apex_db_helper.save_player(player_data=player)
 
 
 def is_anyone_online() -> bool:
     """ Returns TRUE if any player is currently online """
+    player: Player
     for player in apex_db_helper.get_tracked_players():
-        if player['is_online']:
+        if player.is_online:
             return True
     return False
 

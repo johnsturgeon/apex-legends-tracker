@@ -4,6 +4,7 @@ from typing import Optional
 
 # pylint: disable=too-many-instance-attributes
 from mashumaro import DataClassDictMixin
+from mashumaro.config import BaseConfig, TO_DICT_ADD_OMIT_NONE_FLAG
 
 
 @dataclass
@@ -20,3 +21,7 @@ class Player(DataClassDictMixin):
     kill_avg: Optional[float] = None
     wins: Optional[int] = None
     damage_avg: Optional[float] = None
+
+    class Config(BaseConfig):
+        """ Config class """
+        code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]

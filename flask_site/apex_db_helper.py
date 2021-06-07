@@ -156,11 +156,14 @@ class ApexDBHelper:  # noqa E0302
             filter=key, update={"$set": player_data}, upsert=True
         )
 
-    def save_player_data(self, player_data: Player):
-        """ Saves player record """
-        assert player_data.uid != 0
-        key = {'uid': player_data.uid}
-        self.player_collection.update_one(filter=key, update={"$set": player_data}, upsert=True)
+    def save_player(self, player: Player):
+        """ Saves player to database """
+        key = {'uid': player.uid}
+        self.player_collection.update_one(
+            filter=key,
+            update={"$set": player.to_dict(omit_none=True)},
+            upsert=True
+        )
 
     def save_event_data(self, event_data: dict):
         """ Saves any 'new' event data record """
