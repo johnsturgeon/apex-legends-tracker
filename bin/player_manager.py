@@ -77,7 +77,7 @@ def update_player_collection_from_api():
     the player DB """
     tracked_players = apex_api_helper.get_tracked_players()
     for player in tracked_players:
-        apex_db_helper.save_player(player_data=player)
+        apex_db_helper.save_player(player=player)
 
 
 def is_anyone_online() -> bool:
