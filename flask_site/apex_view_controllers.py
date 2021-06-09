@@ -161,6 +161,7 @@ class ProfileViewController:
         # default
         return 'origin.svg'
 
+    # pylint: disable=too-many-locals
     def get_ranked_plot_data(self) -> Tuple[list, list, list]:
         """ Return ranked event lists """
         @dataclass
