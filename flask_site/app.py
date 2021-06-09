@@ -92,13 +92,17 @@ def before_request():
 @app.after_request
 def after_request(response):
     """ Always set the cookie if it's not set """
+    player: Optional[Player] = None
     if session.get('clear_discord_id'):
         response.set_cookie('discord_id', expires=0)
         session.pop('clear_discord_id')
     elif not request.cookies.get('discord_id'):
         player: Player = get_player_from_session()
-        if player:
-            response.set_cookie('discord_id', str(player.discord_id), max_age=COOKIE_TIME_OUT)
+        if player and player.discord_id == 0:
+            player = get_player_from_discord_login()
+    if player:
+        response.set_cookie('discord_id', str(player.discord_id), max_age=COOKIE_TIME_OUT)
+
     return response
 
 
