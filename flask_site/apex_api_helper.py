@@ -1,8 +1,10 @@
 """ A helper module for the apex legends API """
 import os
 from typing import List
+
 from dotenv import load_dotenv
 from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlatform, ALAction
+
 from apex_utilities import player_data_from_basic_player
 from models import Player
 

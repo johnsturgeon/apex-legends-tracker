@@ -3,7 +3,8 @@ import os
 import logging
 import datetime
 from logging import Logger
-from typing import List
+from typing import List, Optional
+
 import arrow
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -11,6 +12,7 @@ import pymongo.database
 from pymongo.collection import Collection
 from apex_legends_api import ALPlayer
 from apex_legends_api.al_domain import GameEvent, DataTracker
+
 from models import BasicInfo, RankedGameEvent, RankedSplit, Player
 
 load_dotenv()
@@ -146,6 +148,13 @@ class ApexDBHelper:  # noqa E0302
         return self.player_collection.find_one(
             filter={'uid': uid}
         )
+
+    def get_player_by_discord_id(self, discord_id: int) -> Optional[Player]:
+        """ Returns one `Player` given a discord id / None if no match"""
+        player_dict: dict = self.player_collection.find_one({'discord_id': discord_id})
+        if player_dict:
+            return Player.from_dict(player_dict)
+        return None
 
     def save_basic_player_data(self, player_data: dict):
         """ Saves a player_data record into `basic_player` if it's changed """

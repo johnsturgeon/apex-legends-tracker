@@ -4,6 +4,9 @@
 {% set max_avg_kills = index_view_controller.max_category_average('kills') | round(2) %}
 {% set max_avg_damage = index_view_controller.max_category_average('damage') | round(0) | int %}
 {% set max_wins = index_view_controller.max_category('wins') %}
+{% if session['player'] %}
+    {%  set player_uid = session['player'].uid%}
+{% endif %}
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
 
