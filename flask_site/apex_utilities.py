@@ -1,7 +1,9 @@
 """ A collection of utilities so I don't repeat myself """
 from typing import List
-
+from apex_db_helper import ApexDBHelper
 from models import Player
+
+db_helper = ApexDBHelper()
 
 
 def player_data_from_basic_player(basic_player_data: dict) -> Player:
@@ -20,8 +22,12 @@ def player_data_from_basic_player(basic_player_data: dict) -> Player:
         'level': global_info['level'],
         'is_online': realtime['isOnline'],
         'selected_legend': realtime['selectedLegend'],
-        'battlepass_level': battlepass_level
+        'battlepass_level': battlepass_level,
+        'discord_id': 0
     }
+    db_player = db_helper.get_tracked_player_by_uid(player_data['uid'])
+    if db_player:
+        player_data['discord_id'] = db_player.discord_id
     return Player.from_dict(player_data)
 
 

@@ -143,11 +143,12 @@ class ApexDBHelper:  # noqa E0302
             player_list.append(Player.from_dict(player_data))
         return player_list
 
-    def get_tracked_player_by_uid(self, uid: int):
+    def get_tracked_player_by_uid(self, uid: int) -> Player:
         """ Returns one player given a uid """
-        return self.player_collection.find_one(
+        player_data = self.player_collection.find_one(
             filter={'uid': uid}
         )
+        return Player.from_dict(player_data)
 
     def get_player_by_discord_id(self, discord_id: int) -> Optional[Player]:
         """ Returns one `Player` given a discord id / None if no match"""
