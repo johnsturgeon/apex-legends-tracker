@@ -1,5 +1,4 @@
 """ Flask application for Apex Legends API Tracker """
-import json
 import os
 from datetime import datetime
 from typing import Optional
