@@ -7,7 +7,7 @@ from typing import Optional
 import arrow
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, render_template, \
-    abort, send_from_directory, request, session, make_response
+    abort, send_from_directory, request, session
 from flask_profile import Profiler
 from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
 
@@ -193,12 +193,12 @@ def profile():
         db_helper=apex_db_helper,
         player_uid=player_uid
     )
-    resp = make_response(render_template(
+    return render_template(
         'profile.html',
         view_controller=view_controller,
         other_player=other_player
-    ))
-    resp.set_cookie('discord_oath', json.dumps(discord.get_authorization_token()))
+    )
+
 
 @app.route('/battlepass/')
 def battlepass():
