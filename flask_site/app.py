@@ -49,7 +49,6 @@ def logged_in_player() -> Optional[Player]:
     """ Returns the currently logged in player, None if not logged in """
     if not session.get('player'):
         discord_user = discord.fetch_user()
-        make
         player: Player = apex_db_helper.get_player_by_discord_id(discord_user.id)
         if player:
             session['player'] = player.to_dict()
