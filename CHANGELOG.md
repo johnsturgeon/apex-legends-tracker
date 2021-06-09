@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Emergency fix for data scraping script
 - Fixed it to use new Player object
 
+## [1.0.0]
+Introducing version 1.0.0!  I'm introducing the concept of 'login via discord' and 'claim your profile'
+The way it works is that you will log in using your discord credentials, and then 'link' your profile to your discord account.
+Once you've done that you will just log in, and be able to see all your data
+
+## Added
+- Discord login
+- Claim profile
+
+## Changed
+- Nav bar to make a lot more sense
+
 ## [0.9.3]
 Internal updates only (no user facing differences)
 

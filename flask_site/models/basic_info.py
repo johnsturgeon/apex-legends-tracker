@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 
-# pylint: disable=missing-class-docstring
 from mashumaro import DataClassDictMixin
 
 
+# pylint: disable=missing-class-docstring
 @dataclass
 class RankTier(DataClassDictMixin):
     division: str

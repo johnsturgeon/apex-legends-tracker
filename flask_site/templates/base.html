@@ -4,6 +4,7 @@
 <head>
     {% include 'favicons.html' %}
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?{{ "" | append_version_number }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
@@ -12,36 +13,78 @@
     <title>{{ page_title }}</title>
     <script type="text/javascript">
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        $(function() {
+            $('body').addClass('js');
+
+            const $hamburger = $('.hamburger'),
+                $nav = $('#site-nav'),
+                $masthead = $('#masthead');
+
+            $hamburger.click(function() {
+                $(this).toggleClass('is-active');
+                $nav.toggleClass('is-active');
+                $masthead.toggleClass('is-active');
+                return false;
+            })
+        });
     </script>
+
 </head>
 <body>
+
 <div class="base_container">
-    {% if 'battlepass' in request.endpoint %}
-        <div class="header_left">
-            <div><a href="{{ url_for('index') }}">Home Page</a></div>
+    <div class="hero">
+        <div id="masthead">
+            <div class="container">
+                <button class="hamburger hamburger--boring" type="button">
+                    <span class="hamburger-box">
+                        <span class="hamburger-inner"></span>
+                    </span>
+                    <span class="hamburger-label">Menu</span>
+                </button>
+                {% if session['player'] %}
+                <div class="login_name">
+                    <div><img src="{{ url_for('static', filename='images/discord-logo.png') }}" alt="discord logo"></div>
+                    <div>{{ session['player'].name }}</div>
+                </div>
+                {% endif %}
+                <nav id="site-nav" role="navigation">
+                    <div class="col">
+                        <h4>Site wide</h4>
+                        <ul>
+                            <li><a href="{{ url_for('index') }}">Home</a></li>
+                            <li><a href="{{ url_for('battlepass') }}">Battlepass</a></li>
+                        </ul>
+                    </div>
+                    {% if session['player'] %}
+                        <div class="col">
+                            <h4>Personal</h4>
+                            <ul>
+                                <li><a href="{{ url_for('profile', player_uid=session['player'].uid) }}">Profile Page</a></li>
+                                <li><a href="{{ url_for('day_by_day', player_uid=session['player'].uid) }}">Day by Day Totals</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="col">
+                            <h4>Personal</h4>
+                            <ul>
+                                <li><a href="{{ url_for('login') }}">Login</a></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if other_player %}
+                        <div class="col">
+                            <h4>{{ other_player.name }}</h4>
+                            <ul>
+                                <li><a href="{{ url_for('profile', player_uid=other_player.uid) }}">Profile Page</a></li>
+                                <li><a href="{{ url_for('day_by_day', player_uid=other_player.uid) }}">Day by Day Totals</a></li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </nav>
+            </div>
         </div>
-    {% elif 'index' in request.endpoint %}
-        <div class="header_left">
-            <div><a href="{{ url_for('battlepass') }}">Battle Pass</a></div>
-        </div>
-    {% elif 'index' not in request.endpoint %}
-        <div class="header">
-            <div>
-                {{ player_name }}:
-            </div>
-            <div>{% if 'day_by_day' in request.endpoint %}Day by Day Totals{% else %}
-                <a href="{{ url_for('day_by_day', player_uid=player_uid) }}">Day by Day Totals</a>{% endif %}
-            </div>
-            <div>{% if 'profile' in request.endpoint %}Profile Page{% else %}
-                <a href="{{ url_for('profile', player_uid=player_uid) }}">Profile Page</a> {% endif %}
-            </div>
-            <div><a href="{{ url_for('battlepass') }}">Battle Pass</a></div>
-            <div>{% if 'index' in request.endpoint %}Home Page{% else %}
-                <a href="{{ url_for('index') }}">Home Page</a>{% endif %}
-            </div>
-        </div>
-    {% else %}
-    {% endif %}
+    </div>
     {% block content %} {% endblock %}
 </div>
 <a href="https://github.com/johnsturgeon/apex-legends-tracker/releases" target="_blank">{{ macros.version() }}</a>

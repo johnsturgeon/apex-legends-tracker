@@ -2,11 +2,11 @@
 from dataclasses import dataclass
 from typing import Optional
 
-# pylint: disable=too-many-instance-attributes
 from mashumaro import DataClassDictMixin
 from mashumaro.config import BaseConfig, TO_DICT_ADD_OMIT_NONE_FLAG
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass
 class Player(DataClassDictMixin):
     """ Player data class """
@@ -17,6 +17,7 @@ class Player(DataClassDictMixin):
     selected_legend: str
     level: int
     battlepass_level: int
+    discord_id: int = 0
     games_played: Optional[int] = None
     kill_avg: Optional[float] = None
     wins: Optional[int] = None

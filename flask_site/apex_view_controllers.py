@@ -2,9 +2,11 @@
 from typing import List, Tuple
 import json
 from dataclasses import dataclass
+
 import arrow
+
 from apex_db_helper import ApexDBHelper, ApexDBGameEvent, filter_game_list
-from models import RankedGameEvent, RankTier, Division, RankedDivisionInfo
+from models import RankedGameEvent, RankTier, Division, RankedDivisionInfo, Player
 from apex_utilities import players_sorted_by_key
 import plotly.graph_objects as go
 import plotly.utils as ut
@@ -17,9 +19,10 @@ class BaseGameViewController:
         # we must convert this to a string for the db (for now)
         if query_filter.get('uid'):
             query_filter['uid'] = str(query_filter['uid'])
-        game_list: list = list(
-            db_helper.event_collection.find(query_filter)
-        )
+
+        cursor = db_helper.event_collection.find(query_filter)
+        cursor.batch_size(5000)
+        game_list: list = list(cursor)
         self._game_list: List[ApexDBGameEvent] = []
         for game in game_list:
             game_event: ApexDBGameEvent = ApexDBGameEvent(game)
@@ -263,11 +266,7 @@ class BattlePassViewController:
     """ View controller for the battlepass page """
 
     def __init__(self, db_helper: ApexDBHelper):
-        self.tracked_players: list = []
-        player_list = db_helper.get_tracked_players()
-        for player in player_list:
-            self.tracked_players.append(player)
-
+        self.tracked_players: List[Player] = db_helper.get_tracked_players()
         self.battlepass_info = db_helper.basic_info.get_season().battlepass_info
         self.battlepass_data: dict = dict()
         start_date = arrow.get(self.battlepass_info.start_date)
@@ -281,6 +280,27 @@ class BattlePassViewController:
         level_per_day_rate = battlepass_max / days_in_season
         self.battlepass_data['goal_levels'] = level_per_day_rate * days_progressed
 
-    def players_sorted_by_key(self, key: str):
+    def players_sorted_by_key(self, key: str) -> List[Player]:
         """ Wrapper for utility function"""
         return players_sorted_by_key(self.tracked_players, key)
+
+
+class ClaimProfileViewController:
+    """ View controller for the 'claim profile' page """
+    def __init__(self, db_helper: ApexDBHelper):
+        self.db_helper = db_helper
+        player: Player
+        self.tracked_players: List[Player] = list()
+        for player in db_helper.get_tracked_players():
+            if not player.discord_id:
+                self.tracked_players.append(player)
+        self.tracked_players = players_sorted_by_key(self.tracked_players, 'name')
+
+    def claim_profile_with_discord_id(self, player_uid: int, discord_id: int):
+        """ Save a player with the discord ID """
+        player: Player
+        for player in self.tracked_players:
+            if player_uid == player.uid:
+                player.discord_id = discord_id
+                self.db_helper.save_player(player)
+                break

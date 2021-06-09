@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% set page_title="Claim Profile" %}
+{% block content %}
+    <div class="claim_profile">
+        <div class="discord_info">
+            <div class="discord_login_info">
+                <img src="{{ url_for('static', filename="images/discord-logo.png") }}" width="48" height="48" alt="discord logo">
+                Discord User: {{ discord_user.name }}
+                <img src="{{ discord_user.avatar_url }}" width="48" height="48" alt="discord user avatar">
+            </div>
+            <div class="clear"></div>
+            <div>You are now logged in to Discord.  Claim your profile below by clicking on your user below</div>
+            <div class="clear"></div>
+        </div>
+    <ul>
+    {% for player in view_controller.tracked_players %}
+        <li><a href="{{ url_for('claim_profile', player_uid=player.uid) }}">{{ player.name }}</a></li>
+    {% endfor %}
+    </ul>
+    </div>
+{% endblock %}

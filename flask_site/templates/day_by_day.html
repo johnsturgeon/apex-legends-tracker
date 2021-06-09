@@ -14,6 +14,12 @@
             {% set avg_damage=view_controller.category_average(day=day, category='damage') | round(0) | int -%}
             {% set xp=view_controller.category_total(day=day, category='xp') -%}
             {% set avg_xp=view_controller.category_average(day=day, category='xp') | round(0) | int %}
+            {% if loop.index == 1 %}
+                <div class="day_by_day_head">
+                    <div class="item small_padding">{{ other_player.name }}</div>
+                </div>
+                <div class="clear"></div>
+            {% endif %}
             <div class="day_by_day_head">
                 <div class="item small_padding">{{ day }}</div>
             </div>

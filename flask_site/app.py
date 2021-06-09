@@ -1,18 +1,37 @@
 """ Flask application for Apex Legends API Tracker """
+import json
 import os
 from datetime import datetime
+from typing import Optional
+
 import arrow
 from dotenv import load_dotenv
-from flask import Flask, render_template, abort, send_from_directory
+from flask import Flask, redirect, url_for, render_template, \
+    abort, send_from_directory, request, session, make_response
 from flask_profile import Profiler
+from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthorized
+
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
 from apex_view_controllers import IndexViewController,\
-    DayByDayViewController, ProfileViewController, BattlePassViewController
+    DayByDayViewController, ProfileViewController, BattlePassViewController,\
+    ClaimProfileViewController
+from models import Player
 
 load_dotenv()
 load_dotenv('common.env')
 app = Flask(__name__, template_folder='templates')
+app.secret_key = os.getenv('FLASK_APP_SECRET_KEY')
+
+# OAuth2 must make use of HTTPS in production environment.
+# !! Only in development environment.
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = os.getenv('OAUTHLIB_INSECURE_TRANSPORT')
+app.config["DISCORD_CLIENT_ID"] = os.getenv('DISCORD_CLIENT_ID')
+app.config["DISCORD_CLIENT_SECRET"] = os.getenv('DISCORD_CLIENT_SECRET')
+app.config["DISCORD_REDIRECT_URI"] = os.getenv('DISCORD_REDIRECT_URI')
+
+discord = DiscordOAuth2Session(app)
+
 api_key = os.getenv('APEX_LEGENDS_API_KEY')
 default_player = os.getenv('DEFAULT_PLAYER_NAME')
 apex_api_helper = ApexAPIHelper()
@@ -24,6 +43,20 @@ app.config["flask_profiler"] = {
     },
     "profile_dir": "/Users/johnsturgeon/Code/apex-legends-tracker/log"
 }
+
+
+def logged_in_player() -> Optional[Player]:
+    """ Returns the currently logged in player, None if not logged in """
+    if not session.get('player'):
+        discord_user = discord.fetch_user()
+        make
+        player: Player = apex_db_helper.get_player_by_discord_id(discord_user.id)
+        if player:
+            session['player'] = player.to_dict()
+            return player
+    else:
+        return Player.from_dict(session.get('player'))
+    return None
 
 
 @app.before_request
@@ -46,11 +79,54 @@ def favicon():
                                'images/favicons/favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 
+@app.route("/callback")
+def callback():
+    """ discord callback url """
+    discord.callback()
+    if logged_in_player() is None:
+        return redirect(url_for("claim_profile"))
+    return redirect(url_for("profile"))
+
+
+@app.errorhandler(Unauthorized)
+def redirect_unauthorized(_):
+    """ Error for unauthorized requests """
+    return redirect(url_for("login"))
+
+
+@app.route('/claim_profile')
+@requires_authorization
+def claim_profile():
+    """ Page for claiming your profile """
+    uid: int = request.args.get("player_uid")
+    discord_user = discord.fetch_user()
+    view_controller = ClaimProfileViewController(db_helper=apex_db_helper)
+    if uid:
+        player_uid: int = int(uid)
+        view_controller.claim_profile_with_discord_id(
+            player_uid=player_uid,
+            discord_id=discord_user.id
+        )
+        return redirect(url_for('profile', player_uid=player_uid))
+    return render_template(
+        'claim_profile.html',
+        view_controller=view_controller,
+        discord_user=discord_user
+    )
+
+
+@app.route('/login/')
+def login():
+    """ create the discord session """
+    return discord.create_session(scope=["identify"])
+
+
 @app.route('/', defaults={'day': None, 'sort_key': 'name'})
 @app.route('/<string:day>/', defaults={'sort_key': 'name'})
 @app.route('/<string:day>/<string:sort_key>')
 def index(day: str, sort_key: str):
     """ Default route """
+    logged_in_player()
     if day:
         date_parts = day.split("-")
         date_to_use = arrow.get(
@@ -78,36 +154,52 @@ def index(day: str, sort_key: str):
         prev_day=prev_day,
         next_day=next_day,
         index_view_controller=index_view_controller,
-        sort_key=sort_key
+        sort_key=sort_key,
+        logged_in_player=None
     )
 
 
-@app.route('/day_by_day/<int:player_uid>')
-def day_by_day(player_uid: int):
+@app.route('/day_by_day')
+def day_by_day():
     """ List of player matches and some detail / day """
+    other_player = None
+    player_uid = int(request.args.get('player_uid'))
+    if player_uid and logged_in_player().uid != player_uid:
+        other_player = apex_db_helper.get_tracked_player_by_uid(player_uid)
+    else:
+        player_uid = logged_in_player().uid
+
     view_controller = DayByDayViewController(apex_db_helper, player_uid=player_uid)
 
     return render_template(
         'day_by_day.html',
-        view_controller=view_controller
+        view_controller=view_controller,
+        other_player=other_player
     )
 
 
-@app.route('/profile/<int:player_uid>')
-def profile(player_uid):
+@app.route('/profile')
+def profile():
     """ Simple player profile page """
-    if player_uid:
-        view_controller = ProfileViewController(
-            db_helper=apex_db_helper,
-            player_uid=player_uid
-        )
-        return render_template(
-            'profile.html',
-            view_controller=view_controller
-        )
+    other_player = None
 
-    return "Not Found"
+    player_uid = request.args.get('player_uid')
+    if player_uid and logged_in_player().uid != int(player_uid):
+        player_uid = int(player_uid)
+        other_player = apex_db_helper.get_tracked_player_by_uid(player_uid)
+    else:
+        player_uid = logged_in_player().uid
 
+    view_controller = ProfileViewController(
+        db_helper=apex_db_helper,
+        player_uid=player_uid
+    )
+    resp = make_response(render_template(
+        'profile.html',
+        view_controller=view_controller,
+        other_player=other_player
+    ))
+    resp.set_cookie('discord_oath', json.dumps(discord.get_authorization_token()))
 
 @app.route('/battlepass/')
 def battlepass():

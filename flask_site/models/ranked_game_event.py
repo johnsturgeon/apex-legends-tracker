@@ -1,12 +1,12 @@
 """ Dataclass to represent basic_info collection """
 from dataclasses import dataclass, field
 from typing import List
-import arrow
 
-# pylint: disable=missing-class-docstring
+import arrow
 from mashumaro import DataClassDictMixin, field_options
 
 
+# pylint: disable=missing-class-docstring
 @dataclass
 class GameTracker(DataClassDictMixin):
     value: int

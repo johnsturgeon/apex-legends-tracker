@@ -55,6 +55,11 @@ jobs:
             MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
             LOG_LEVEL=${{ secrets.LOG_LEVEL }}
             LOG_COLLECTION=${{ secrets.LOG_COLLECTION }}
+            OAUTHLIB_INSECURE_TRANSPORT=${{ secrets.OAUTHLIB_INSECURE_TRANSPORT }}
+            DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}
+            DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }}
+            DISCORD_REDIRECT_URI=${{ secrets.DISCORD_REDIRECT_URI }}
+            FLASK_APP_SECRET_KEY=${{ secrets.FLASK_APP_SECRET_KEY }}
             EOF
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
