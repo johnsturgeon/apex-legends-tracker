@@ -11,6 +11,7 @@ from mashumaro import DataClassDictMixin
 class RankTier(DataClassDictMixin):
     division: str
     tier: str
+    distance_to_next: int
 
 
 @dataclass
@@ -82,7 +83,8 @@ class BasicInfo(DataClassDictMixin):
             for tier in self.ranked_division_info.tiers:
                 upper_rp = lower_rp + division.rp_between_tiers
                 if rank_points in range(lower_rp, upper_rp):
-                    return RankTier(tier=tier, division=division.name)
+                    to_next = upper_rp - rank_points
+                    return RankTier(tier=tier, division=division.name, distance_to_next=to_next)
                 tier_index += 1
                 lower_rp = upper_rp
 

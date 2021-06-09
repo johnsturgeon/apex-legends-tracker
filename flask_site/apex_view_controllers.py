@@ -161,6 +161,7 @@ class ProfileViewController:
         # default
         return 'origin.svg'
 
+    # pylint: disable=too-many-locals
     def get_ranked_plot_data(self) -> Tuple[list, list, list]:
         """ Return ranked event lists """
         @dataclass
@@ -184,16 +185,27 @@ class ProfileViewController:
         y_array: list = list()
         text_array: list = list()
         rank_info: RankedGameDay
+        prev_rank: int = 0
+        distance_to_next: int = 0
         for day, rank_info in rank_dict.items():
             rank_tier: RankTier = self._basic_info.get_rank_div_tier(
                 rank_info.end_of_day_score
             )
+            distance_token: str = '🟢'
+            distance_from_prev: int = rank_info.end_of_day_score - prev_rank
+            if distance_from_prev < 0:
+                distance_token = '🔴'
+            prev_rank = rank_info.end_of_day_score
             x_array.append(day)
             y_array.append(rank_info.end_of_day_score)
+            distance_to_next = rank_tier.distance_to_next
             text_array.append(
                 f"{rank_tier.division} {rank_tier.tier}<br />"
-                f"Ranked Games Played: {rank_info.number_of_games}"
+                f"Ranked Games Played: {rank_info.number_of_games}<br />"
+                f"RP change from previous {distance_token}: {distance_from_prev}"
             )
+        text_array[-1] += f"<br />RP to next tier {distance_to_next}"
+
         return x_array, y_array, text_array
 
     def add_rank_bands_to_fig(self, fig):
