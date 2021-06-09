@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-{% set page_title="Friends of the Apex Legends API: Profile Page" %}
+{% set page_title="Profile Page" %}
 {% set player = view_controller.player %}
+{% set other_player = view_controller.other_player %}
 {% set player_uid = player.uid %}
 {% set player_name = player.name %}
 {% block content %}

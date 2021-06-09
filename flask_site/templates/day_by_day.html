@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
-{% set page_title="Friends of the Apex Legends API: Day Summary" %}
+{% set page_title="Day Summary" %}
 {% set player = view_controller.player %}
-{% set player_name = player.name %}
-{% set player_uid = player.uid %}
+{% set session_player = session.get('player') %}
 {% block content %}
     {% for day in view_controller.days_played()%}
         <div class="day_by_day">
@@ -14,9 +13,9 @@
             {% set avg_damage=view_controller.category_average(day=day, category='damage') | round(0) | int -%}
             {% set xp=view_controller.category_total(day=day, category='xp') -%}
             {% set avg_xp=view_controller.category_average(day=day, category='xp') | round(0) | int %}
-            {% if loop.index == 1 %}
+            {% if is_not_me and loop.index == 1%}
                 <div class="day_by_day_head">
-                    <div class="item small_padding">{{ other_player.name }}</div>
+                    <div class="item small_padding">{{ player.name }}</div>
                 </div>
                 <div class="clear"></div>
             {% endif %}

@@ -120,13 +120,13 @@ class IndexViewController(BaseGameViewController):
 class DayByDayViewController(BaseGameViewController):
     """ Class for giving player game stats """
 
-    def __init__(self, db_helper: ApexDBHelper, player_uid: int):
+    def __init__(self, db_helper: ApexDBHelper, player: Player):
+        self.player = player
         query_filter: dict = {
             "eventType": "Game",
-            "uid": str(player_uid)
+            "uid": str(player.uid)
         }
         super().__init__(db_helper, query_filter)
-        self.player = db_helper.get_tracked_player_by_uid(player_uid)
         self._days_played: set = set()
         for game in self.game_list:
             self._days_played.add(game.day)
@@ -146,14 +146,14 @@ class DayByDayViewController(BaseGameViewController):
 
 class ProfileViewController:
     """ View controller for the player detail page """
-    def __init__(self, db_helper: ApexDBHelper, player_uid: int):
-        self._ranked_games = db_helper.get_ranked_games(player_uid)
+    def __init__(self, db_helper: ApexDBHelper, player: Player):
+        self.player = player
+        self._ranked_games = db_helper.get_ranked_games(player_uid=self.player.uid)
         self._basic_info = db_helper.basic_info
-        self.player = db_helper.get_tracked_player_by_uid(player_uid)
 
     def get_platform_logo(self) -> str:
         """ Return friendly version of the player's platform"""
-        platform: str = self.player['platform']
+        platform: str = self.player.platform
         if platform == 'X1':
             return 'xbox.svg'
         if platform == 'PS4':

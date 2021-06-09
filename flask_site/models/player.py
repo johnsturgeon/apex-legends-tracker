@@ -17,7 +17,7 @@ class Player(DataClassDictMixin):
     selected_legend: str
     level: int
     battlepass_level: int
-    discord_id: int = 0
+    discord_id: int
     games_played: Optional[int] = None
     kill_avg: Optional[float] = None
     wins: Optional[int] = None

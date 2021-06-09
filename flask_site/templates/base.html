@@ -1,4 +1,5 @@
 {% import 'macros.html' as macros %}
+{% set session_player = session.get('player') %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,10 +29,8 @@
             })
         });
     </script>
-
 </head>
 <body>
-
 <div class="base_container">
     <div class="hero">
         <div id="masthead">
@@ -42,10 +41,10 @@
                     </span>
                     <span class="hamburger-label">Menu</span>
                 </button>
-                {% if session['player'] %}
+                {% if session_player %}
                 <div class="login_name">
                     <div><img src="{{ url_for('static', filename='images/discord-logo.png') }}" alt="discord logo"></div>
-                    <div>{{ session['player'].name }}</div>
+                    <div>{{ session_player.name }}</div>
                 </div>
                 {% endif %}
                 <nav id="site-nav" role="navigation">
@@ -56,12 +55,13 @@
                             <li><a href="{{ url_for('battlepass') }}">Battlepass</a></li>
                         </ul>
                     </div>
-                    {% if session['player'] %}
+                    {% if session_player %}
                         <div class="col">
                             <h4>Personal</h4>
                             <ul>
-                                <li><a href="{{ url_for('profile', player_uid=session['player'].uid) }}">Profile Page</a></li>
-                                <li><a href="{{ url_for('day_by_day', player_uid=session['player'].uid) }}">Day by Day Totals</a></li>
+                                <li><a href="{{ url_for('profile', player_uid=session_player.uid) }}">Profile Page</a></li>
+                                <li><a href="{{ url_for('day_by_day', player_uid=session_player.uid) }}">Day by Day Totals</a></li>
+                                <li><a href="{{ url_for('logout') }}">Logout</a></li>
                             </ul>
                         </div>
                     {% else %}
@@ -72,12 +72,12 @@
                             </ul>
                         </div>
                     {% endif %}
-                    {% if other_player %}
+                    {% if is_not_me %}
                         <div class="col">
-                            <h4>{{ other_player.name }}</h4>
+                            <h4>{{ player.name }}</h4>
                             <ul>
-                                <li><a href="{{ url_for('profile', player_uid=other_player.uid) }}">Profile Page</a></li>
-                                <li><a href="{{ url_for('day_by_day', player_uid=other_player.uid) }}">Day by Day Totals</a></li>
+                                <li><a href="{{ url_for('profile', player_uid=player.uid) }}">Profile Page</a></li>
+                                <li><a href="{{ url_for('day_by_day', player_uid=player.uid) }}">Day by Day Totals</a></li>
                             </ul>
                         </div>
                     {% endif %}
