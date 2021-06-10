@@ -4,6 +4,9 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2021-06-10
+- Resolves #158 (profile page has error when there are zero ranked games)
+
 ## [1.1.1]
 ### Fixed
 - Fixed a lint issue by moving some code into a separate method.

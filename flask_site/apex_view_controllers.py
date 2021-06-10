@@ -194,7 +194,8 @@ class ProfileViewController:
                 f"Ranked Games Played: {rank_info.number_of_games}<br />"
                 f"RP change from previous {distance_token}: {distance_from_prev}"
             )
-        text_array[-1] += f"<br />RP to next tier {distance_to_next}"
+        if text_array:
+            text_array[-1] += f"<br />RP to next tier {distance_to_next}"
 
         return x_array, y_array, text_array
 
