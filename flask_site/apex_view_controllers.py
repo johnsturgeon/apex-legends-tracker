@@ -12,6 +12,13 @@ import plotly.graph_objects as go
 import plotly.utils as ut
 
 
+@dataclass
+class RankedGameDay:
+    """ Container for ranked info"""
+    end_of_day_score: int
+    number_of_games: int
+
+
 class BaseGameViewController:
     """ Base controller for all views that deal with games """
 
@@ -161,26 +168,9 @@ class ProfileViewController:
         # default
         return 'origin.svg'
 
-    # pylint: disable=too-many-locals
     def get_ranked_plot_data(self) -> Tuple[list, list, list]:
         """ Return ranked event lists """
-        @dataclass
-        class RankedGameDay:
-            """ Container for ranked info"""
-            end_of_day_score: int
-            number_of_games: int
-
-        rank_dict: dict = {}
-        game_count: int = 0
-        ranked_game: RankedGameEvent
-        for ranked_game in self._ranked_games:
-            rank_tier: RankTier
-            date: str = ranked_game.day_of_event
-            score: int = int(ranked_game.current_rank_score)
-            if not rank_dict.get(date):
-                game_count = 0
-            game_count += 1
-            rank_dict[date] = RankedGameDay(score, game_count)
+        rank_dict: dict = self.create_ranked_dict()
         x_array: list = list()
         y_array: list = list()
         text_array: list = list()
@@ -207,6 +197,20 @@ class ProfileViewController:
         text_array[-1] += f"<br />RP to next tier {distance_to_next}"
 
         return x_array, y_array, text_array
+
+    def create_ranked_dict(self) -> dict:
+        """ Create the ranked dictionary """
+        rank_dict: dict = {}
+        game_count: int = 0
+        ranked_game: RankedGameEvent
+        for ranked_game in self._ranked_games:
+            date: str = ranked_game.day_of_event
+            score: int = int(ranked_game.current_rank_score)
+            if not rank_dict.get(date):
+                game_count = 0
+            game_count += 1
+            rank_dict[date] = RankedGameDay(score, game_count)
+        return rank_dict
 
     def add_rank_bands_to_fig(self, fig):
         """ adds a rank band to the figure """
