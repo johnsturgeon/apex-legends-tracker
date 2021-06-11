@@ -32,36 +32,6 @@ a {
     justify-content: center;
 }
 
-DIV.header {
-    padding: 8pt;
-}
-
-DIV.header_left {
-    justify-content: left;
-}
-
-DIV.header_left > DIV {
-    padding-left: 14pt;
-}
-
-.header > DIV {
-    border-left: solid 1pt wheat;
-    flex-grow: 0;
-    padding-left: 8pt;
-    padding-right: 8pt;
-    font-size: 14pt;
-}
-
-.header > DIV:first-child {
-    border-left: 0;
-}
-
-.header > DIV:last-child {
-    text-align: right;
-    border-left: 0;
-    flex-grow:1;
-}
-
 .login_name {
     display: flex;
     float:right;
@@ -273,18 +243,6 @@ DIV.claim_profile > .discord_info {
     font-weight: lighter;
     font-size: 12pt;
     padding-left: 25pt;
-}
-
-.progress-bar-tracker-state-old {
-    opacity: 0.4;
-}
-
-.progress-bar-tracker-state-missing {
-    color: red;
-    opacity: 0.6;
-}
-.progress-bar-tracker-state-current {
-
 }
 
 .progress-container {

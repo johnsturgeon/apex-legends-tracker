@@ -220,7 +220,7 @@ def day_by_day():
 @app.route('/day_detail')
 def day_detail():
     """ route for the day_detail page """
-    date_to_use = get_arrow_date_to_use( request.args.get('day'))
+    date_to_use = get_arrow_date_to_use(request.args.get('day'))
     player, is_not_me = get_player_for_view(request.args.get('player_uid'))
 
     view_controller = DayDetailViewController(apex_db_helper, player=player, day=date_to_use)

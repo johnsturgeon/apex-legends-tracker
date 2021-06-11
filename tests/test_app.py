@@ -1,4 +1,5 @@
 """ Unit test for the flask app """
+# noinspection Pylint
 from flask_site import app
 
 

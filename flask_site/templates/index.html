@@ -81,7 +81,7 @@
         }
         $(document).ready(function(){
             $('#{{ sort_key }}').append(' *')
-            $('.sortable').click(function(e) {
+            $('.sortable').click(function(_) {
                 sort_by_key($(this).attr('id'))
             });
 
