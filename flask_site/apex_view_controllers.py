@@ -4,9 +4,11 @@ import json
 from dataclasses import dataclass
 
 import arrow
+import pymongo
+from arrow import Arrow
 
-from apex_db_helper import ApexDBHelper, ApexDBGameEvent, filter_game_list
-from models import RankedGameEvent, RankTier, Division, RankedDivisionInfo, Player
+from apex_db_helper import ApexDBHelper, filter_game_list
+from models import GameEvent, RankTier, Division, RankedDivisionInfo, Player
 from apex_utilities import players_sorted_by_key
 import plotly.graph_objects as go
 import plotly.utils as ut
@@ -27,13 +29,9 @@ class BaseGameViewController:
         if query_filter.get('uid'):
             query_filter['uid'] = str(query_filter['uid'])
 
-        cursor = db_helper.event_collection.find(query_filter)
-        cursor.batch_size(5000)
-        game_list: list = list(cursor)
-        self._game_list: List[ApexDBGameEvent] = []
-        for game in game_list:
-            game_event: ApexDBGameEvent = ApexDBGameEvent(game)
-            self._game_list.append(game_event)
+        self._game_list = db_helper.event_collection.get_games(
+            additional_filter=query_filter
+        )
 
     @property
     def game_list(self):
@@ -54,7 +52,7 @@ class BaseGameViewController:
             category=category,
             legend=legend
         )
-        game: ApexDBGameEvent
+        game: GameEvent
         for game in filtered_list:
             total += game.category_total(category)
         return total
@@ -88,7 +86,7 @@ class IndexViewController(BaseGameViewController):
             }
         }
         super().__init__(db_helper, query_filter)
-        self.tracked_players = db_helper.get_tracked_players()
+        self.tracked_players = db_helper.player_collection.get_tracked_players()
 
         for player in self.tracked_players:
             uid = player.uid
@@ -136,7 +134,7 @@ class DayByDayViewController(BaseGameViewController):
         super().__init__(db_helper, query_filter)
         self._days_played: set = set()
         for game in self.game_list:
-            self._days_played.add(game.day)
+            self._days_played.add(game.day_of_event)
 
     def days_played(self, reverse: bool = True) -> list:
         """ returns a list of days (format 'YYYY-MM-DD') that the player actually PLAYED a game """
@@ -145,17 +143,44 @@ class DayByDayViewController(BaseGameViewController):
     def get_legends_played(self, day: str) -> list:
         """ Returns a list of legends played on a given day """
         legend_set: set = set()
-        game: ApexDBGameEvent
+        game: GameEvent
         for game in filter_game_list(self._game_list, category=None, day=day):
             legend_set.add(game.legend_played)
         return sorted(legend_set)
+
+
+class DayDetailViewController:
+    """ View Controller for the Day Detail """
+
+    def __init__(self, db_helper: ApexDBHelper, player: Player, day: Arrow):
+        self.player = player
+        start_day = day.format('YYYY-MM-DD')
+        end_day = day.shift(days=+1).format('YYYY-MM-DD')
+        self.games: List[GameEvent] = db_helper.event_collection.get_games(
+            player.uid, (start_day, end_day), sort=pymongo.DESCENDING
+        )
+
+    def category_total(self, category: str) -> int:
+        """ Returns the category total """
+        total = 0
+        for game in self.games:
+            if hasattr(game, category):
+                total += getattr(game, category)
+        return total
+
+    def category_average(self, category: str) -> float:
+        """ Returns the category average """
+        total_games = len(self.games)
+        if total_games:
+            return self.category_total(category) / total_games
+        return 0
 
 
 class ProfileViewController:
     """ View controller for the player detail page """
     def __init__(self, db_helper: ApexDBHelper, player: Player):
         self.player = player
-        self._ranked_games = db_helper.get_ranked_games(player_uid=self.player.uid)
+        self._ranked_games = db_helper.event_collection.get_ranked_games(player_uid=self.player.uid)
         self._basic_info = db_helper.basic_info
 
     def get_platform_logo(self) -> str:
@@ -203,7 +228,7 @@ class ProfileViewController:
         """ Create the ranked dictionary """
         rank_dict: dict = {}
         game_count: int = 0
-        ranked_game: RankedGameEvent
+        ranked_game: GameEvent
         for ranked_game in self._ranked_games:
             date: str = ranked_game.day_of_event
             score: int = int(ranked_game.current_rank_score)
@@ -283,7 +308,7 @@ class BattlePassViewController:
     """ View controller for the battlepass page """
 
     def __init__(self, db_helper: ApexDBHelper):
-        self.tracked_players: List[Player] = db_helper.get_tracked_players()
+        self.tracked_players: List[Player] = db_helper.player_collection.get_tracked_players()
         self.battlepass_info = db_helper.basic_info.get_season().battlepass_info
         self.battlepass_data: dict = dict()
         start_date = arrow.get(self.battlepass_info.start_date)
@@ -305,10 +330,10 @@ class BattlePassViewController:
 class ClaimProfileViewController:
     """ View controller for the 'claim profile' page """
     def __init__(self, db_helper: ApexDBHelper):
-        self.db_helper = db_helper
+        self.player_collection = db_helper.player_collection
         player: Player
         self.tracked_players: List[Player] = list()
-        for player in db_helper.get_tracked_players():
+        for player in self.player_collection.get_tracked_players():
             if not player.discord_id:
                 self.tracked_players.append(player)
         self.tracked_players = players_sorted_by_key(self.tracked_players, 'name')
@@ -319,5 +344,5 @@ class ClaimProfileViewController:
         for player in self.tracked_players:
             if player_uid == player.uid:
                 player.discord_id = discord_id
-                self.db_helper.save_player(player)
+                self.player_collection.save_player(player)
                 break

@@ -103,7 +103,6 @@ DIV.date_picker > DIV {
     opacity: 40%;
 }
 
-
 DIV.battlepass > DIV.name {
     max-width: 110pt;
 }
@@ -186,10 +185,19 @@ DIV.day_by_day > DIV.day_by_day_thumb {
 }
 
 DIV.day_by_day > DIV.day_by_day_head {
+    display: flex;
     text-align: center;
     font-size: 18pt;
 }
 
+DIV.day_by_day_head > DIV {
+    flex-grow: 1;
+}
+
+DIV.day_by_day_head > DIV:first-child {
+    text-align: left;
+    font-size: 14pt;
+}
 DIV.day_by_day > DIV{
     font-size: 12pt;
 }

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% set page_title="Day Detail" %}
+{% set player = view_controller.player %}
+{% set session_player = session.get('player') %}
+{% block content %}
+    <div class="day_by_day">
+        {% set num_games_played=view_controller.games | length -%}
+        {% set total_kills=view_controller.category_total(category='kills') -%}
+        {% set avg_kills=view_controller.category_average(category = 'kills') | round(2) -%}
+        {% set total_wins=view_controller.category_total(category='wins') -%}
+        {% set total_damage=view_controller.category_total(category='damage') -%}
+        {% set avg_damage=view_controller.category_average(category='damage') | round(0) | int -%}
+        {% set total_xp=view_controller.category_total(category='xp') -%}
+        {% set avg_xp=view_controller.category_average(category='xp') | round(0) | int %}
+        {% if is_not_me %}
+            <div class="day_by_day_head">
+                <div class="item small_padding">{{ player.name }}</div>
+            </div>
+            <div class="clear"></div>
+        {% endif %}
+        <div class="day_by_day_head">
+            <div class="day_detail_link"><a href="{{ url_for('day_by_day', day=day) }}">Back to Day By Day</a></div>
+            <div class="item small_padding">{{ day }}</div>
+            <div></div>
+        </div>
+        <div class="clear line"></div>
+        <div class="day_by_day_thumb"></div>
+        <div>Day Totals</div>
+        <div>Games Played: {{ num_games_played }}</div>
+        <div>Kills: {{ kills }}<br><i>{{ avg_kills }} / game</i></div>
+        <div>Wins: {{ total_wins }}</div>
+        <div>
+            Damage: {{ damage }}<br><i>{{ avg_damage }} / game</i>
+        </div>
+        <div>
+            XP: {{ xp }}<br><i>{{ avg_xp }} / game</i>
+        </div>
+        <div class="clear line"></div>
+        {% set games = view_controller.games %}
+        {% for game in games %}
+            {% set legend=game.legend_played %}
+            {% set xp_efficiency=(game.xp_progress / 100) | round(2) %}
+            <div class="day_by_day_thumb">
+                <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
+                     src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
+            </div>
+            <div style="flex-shrink: 0; flex-grow: 0">
+                WBR: {{ xp_efficiency }}
+            </div>
+            {{ macros.progress_container("Kills", game.kills, total_kills) }}
+            {{ macros.progress_container("Wins", game.wins, total_wins) }}
+            {{ macros.progress_container("Damage", game.damage, total_damage) }}
+            {{ macros.progress_container("XP", game.xp_progress, total_xp) }}
+            <div class="clear"></div>
+        {% endfor %}
+    </div>
+{% endblock %}

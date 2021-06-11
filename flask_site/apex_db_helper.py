@@ -3,17 +3,16 @@ import os
 import logging
 import datetime
 from logging import Logger
-from typing import List, Optional
+from typing import List
 
-import arrow
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import pymongo.database
 from pymongo.collection import Collection
-from apex_legends_api import ALPlayer
-from apex_legends_api.al_domain import GameEvent, DataTracker
 
-from models import BasicInfo, RankedGameEvent, RankedSplit, Player
+from event import EventCollection, GameEvent
+from models import BasicInfoCollection, BasicInfo
+from player import PlayerCollection
 
 load_dotenv()
 
@@ -51,111 +50,21 @@ class ApexDBHelper:  # noqa E0302
         self.client: MongoClient = MongoClient(uri)
         self.database: pymongo.database.Database = self.client.apex_legends
         self.basic_player_collection: Collection = self.database.basic_player
-        self.event_collection: Collection = self.database.event
-        self.player_collection: Collection = self.database.player
-        self._basic_info = None
+        self.event_collection: EventCollection = EventCollection(
+            event_collection=self.database.event,
+            basic_info_collection=self.database.basic_info,
+            tracker_info_collection=self.database.tracker_info
+        )
+        self.player_collection: PlayerCollection = PlayerCollection(self.database.player)
+        self.basic_info: BasicInfo = BasicInfoCollection(
+            self.database.basic_info
+        ).basic_info
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
         if not logger.handlers:
             logger.addHandler(LogHandler(self.client))
         self.logger = logger
         self._latest_event_timestamp: int = 0
-
-    @property
-    def basic_info(self) -> BasicInfo:
-        """ Factory method for BasicInfo data """
-        if getattr(self, '_basic_info', None) is None:
-            self._basic_info = BasicInfo.from_dict(self.database.basic_info.find_one({}))
-        return self._basic_info
-
-    def get_ranked_games(self,
-                         player_uid: int = 0,
-                         season_number: int = 0,
-                         split_number: int = 0
-                         ) -> List[RankedGameEvent]:
-        """
-        Returns a list of 'filtered' games based on season / split (current if none given)
-        Args:
-            player_uid:  Player UID for ranked games (default all players)
-            season_number: Season number must be less than or equal to the current season
-            split_number: Split number (cannot be zero of season given)
-
-        Returns:
-            List of all ranked game events
-        """
-        basic_info: BasicInfo = self.basic_info
-        if season_number:
-            assert split_number
-            assert season_number <= basic_info.current_season
-        current_ranked_split: RankedSplit = basic_info.get_ranked_split(
-            season_number=season_number,
-            split_number=split_number
-        )
-        start_date = arrow.get(current_ranked_split.start_date).to('US/Pacific')
-        end_date = arrow.get(current_ranked_split.end_date).to('US/Pacific')
-        start_timestamp = start_date.int_timestamp
-        end_timestamp = end_date.int_timestamp
-
-        query_filter: dict = {
-            "eventType": "Game",
-            "rankScoreChange": {
-                "$ne": "0"
-            },
-            "currentRankScore": {
-                "$exists": True
-            },
-            "timestamp": {
-                "$gt": start_timestamp,
-                "$lt": end_timestamp
-            }
-        }
-        if player_uid:
-            query_filter['uid'] = str(player_uid)
-
-        game_list: list = list(
-            self.event_collection.find(query_filter).sort('timestamp', pymongo.ASCENDING)
-        )
-        ranked_game_list: List[RankedGameEvent] = []
-        for game in game_list:
-            ranked_game_list.append(RankedGameEvent.from_dict(game))
-        return ranked_game_list
-
-    def get_player_by_uid(self, uid: int) -> ALPlayer:
-        """
-        Retrieve the ALPlayer object populated with data from the api.
-
-        NOTE:
-            Player must exist, method will return None if the player cannot be found
-
-        :parameter uid: UID of the player
-        :return: a single player or None if no player is found
-        """
-        basic_player_stats: dict = self.basic_player_collection.find_one(
-            {"global.uid": uid}, sort=[("global.internalUpdateCount", -1)]
-        )
-        event_info: list = list(self.event_collection.find({'uid': str(uid)}))
-        return ALPlayer(basic_player_stats_data=basic_player_stats, events=event_info)
-
-    def get_tracked_players(self) -> list[Player]:
-        """ Return a list of dictionaries containing each player's data"""
-        player_list: List[Player] = list()
-        for player_data in self.player_collection.find():
-            player_list.append(Player.from_dict(player_data))
-        return player_list
-
-    def get_tracked_player_by_uid(self, uid: int) -> Player:
-        """ Returns one player given a uid """
-        player_data = self.player_collection.find_one(
-            filter={'uid': uid}
-        )
-        return Player.from_dict(player_data)
-
-    def get_player_by_discord_id(self, discord_id: int) -> Optional[Player]:
-        """ Returns one `Player` given a discord id / None if no match"""
-        player_dict: dict = self.player_collection.find_one({'discord_id': discord_id})
-        if player_dict:
-            return Player.from_dict(player_dict)
-        return None
 
     def save_basic_player_data(self, player_data: dict):
         """ Saves a player_data record into `basic_player` if it's changed """
@@ -166,52 +75,8 @@ class ApexDBHelper:  # noqa E0302
             filter=key, update={"$set": player_data}, upsert=True
         )
 
-    def save_player(self, player: Player):
-        """ Saves player to database """
-        key = {'uid': player.uid}
-        self.player_collection.update_one(
-            filter=key,
-            update={"$set": player.to_dict(omit_none=True)},
-            upsert=True
-        )
 
-    def save_event_data(self, event_data: dict):
-        """ Saves any 'new' event data record """
-        uid = event_data['uid']
-        timestamp = event_data['timestamp']
-        event_type = event_data['eventType']
-        db_data = self.event_collection.find_one(
-            {"uid": uid, "timestamp": timestamp, "eventType": event_type}
-        )
-        if not db_data:
-            self.logger.info(
-                "Adding event for %s", event_data['player'])
-            self.event_collection.insert_one(event_data)
-
-
-class ApexDBGameEvent(GameEvent):
-    """ Class for wrapping a game event """
-
-    def __init__(self, event_dict: dict):
-        super().__init__(event_dict)
-        self.day = arrow.get(self.timestamp).to('US/Pacific').format('YYYY-MM-DD')
-        self._categories: dict = {}
-        tracker: DataTracker
-        for tracker in self.game_data_trackers:
-            self._categories[tracker.category] = tracker.value
-        self._categories['xp'] = self.xp_progress
-
-    def category_total(self, category: str):
-        """ returns the category total """
-        total: int = self._categories.get(category)
-        return total if total else 0
-
-    def has_category(self, category: str) -> bool:
-        """ Returns true if the game has a given category tracker """
-        return category in self._categories
-
-
-def filter_game_list(game_list: list,
+def filter_game_list(game_list: List[GameEvent],
                      category: str = None,
                      day: str = None,
                      legend: str = None,
@@ -219,14 +84,14 @@ def filter_game_list(game_list: list,
                      ) -> list:
     """ Returns a list of the games played on a specific day """
     filtered_list: list = []
-    game: ApexDBGameEvent
+    game: GameEvent
     for game in game_list:
         found: bool = True
-        if day and game.day != day:
+        if day and game.day_of_event != day:
             found = False
         if legend and game.legend_played != legend:
             found = False
-        if category and not game.has_category(category):
+        if category and not hasattr(game, category):
             found = False
         if uid and int(game.uid) != uid:
             found = False

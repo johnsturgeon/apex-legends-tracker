@@ -20,7 +20,9 @@
                 <div class="clear"></div>
             {% endif %}
             <div class="day_by_day_head">
+                <div class="day_detail_link"><a href="{{ url_for('day_detail', day=day, player_uid=player.uid) }}">Day Detail</a></div>
                 <div class="item small_padding">{{ day }}</div>
+                <div></div>
             </div>
             <div class="clear line"></div>
             <div class="day_by_day_thumb"></div>
