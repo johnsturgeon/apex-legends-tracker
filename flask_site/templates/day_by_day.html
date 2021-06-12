@@ -5,14 +5,14 @@
 {% block content %}
     {% for day in view_controller.days_played()%}
         <div class="day_by_day">
-            {% set num_games_played=view_controller.games_played(day) | length -%}
+            {% set num_games_played=view_controller.games_played(day=day) | length -%}
             {% set kills=view_controller.category_total(day=day, category='kills') -%}
             {% set avg_kills=view_controller.category_average(day=day, category = 'kills') | round(2) -%}
             {% set wins=view_controller.category_total(day=day, category='wins') -%}
             {% set damage=view_controller.category_total(day=day, category='damage') -%}
             {% set avg_damage=view_controller.category_average(day=day, category='damage') | round(0) | int -%}
-            {% set xp=view_controller.category_total(day=day, category='xp') -%}
-            {% set avg_xp=view_controller.category_average(day=day, category='xp') | round(0) | int %}
+            {% set xp=view_controller.category_total(day=day, category='xp_progress') -%}
+            {% set avg_xp=view_controller.category_average(day=day, category='xp_progress') | round(0) | int %}
             {% if is_not_me and loop.index == 1%}
                 <div class="day_by_day_head">
                     <div class="item small_padding">{{ player.name }}</div>
@@ -20,7 +20,9 @@
                 <div class="clear"></div>
             {% endif %}
             <div class="day_by_day_head">
+                <div class="day_detail_link"><a href="{{ url_for('day_detail', day=day, player_uid=player.uid) }}">Day Detail</a></div>
                 <div class="item small_padding">{{ day }}</div>
+                <div></div>
             </div>
             <div class="clear line"></div>
             <div class="day_by_day_thumb"></div>
@@ -40,7 +42,7 @@
                 {% set legend_kills=view_controller.category_total(day=day, category='kills', legend=legend) -%}
                 {% set legend_wins=view_controller.category_total(day=day, category='wins', legend=legend) -%}
                 {% set legend_damage=view_controller.category_total(day=day, category='damage', legend=legend)  -%}
-                {% set legend_xp=view_controller.category_total(day=day, category='xp', legend=legend) -%}
+                {% set legend_xp=view_controller.category_total(day=day, category='xp_progress', legend=legend) -%}
                 {% set xp_efficiency=(legend_xp / legend_games / 100) | round(2) %}
                 <div class="day_by_day_thumb">
                     <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"

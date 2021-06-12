@@ -46,7 +46,7 @@
             {% set damage = player['damage_avg'] | round(0) | int -%}
             <div><!-- this is a row -->
                 <div class="{% if is_online %}online{% endif %}">
-                    <span><a href="{{ url_for('day_by_day', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                    <span><a href="{{ url_for('day_detail', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
                     <span class="{% if is_online %}online_small_font{% endif %}">
                         {% if is_online %}online{% endif %}
                     </span>
@@ -81,9 +81,10 @@
         }
         $(document).ready(function(){
             $('#{{ sort_key }}').append(' *')
-            $('.sortable').click(function(e) {
+            $('.sortable').click(function(_) {
                 sort_by_key($(this).attr('id'))
             });
 
-        });    </script>
+        });
+    </script>
 {% endblock %}

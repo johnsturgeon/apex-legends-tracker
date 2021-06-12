@@ -1,37 +1,12 @@
 """ A collection of utilities so I don't repeat myself """
-from typing import List
-from apex_db_helper import ApexDBHelper
-from models import Player
+from datetime import datetime
+from typing import Tuple
 
-db_helper = ApexDBHelper()
-
-
-def player_data_from_basic_player(basic_player_data: dict) -> Player:
-    """ Returns a player dict from basic player data """
-    global_info = basic_player_data.get('global')
-    assert global_info
-    realtime = basic_player_data.get('realtime')
-    assert realtime
-    battlepass_level = global_info['battlepass']['history'].get('season9')
-    if battlepass_level is None:
-        battlepass_level = -1
-    player_data = {
-        'name': global_info['name'],
-        'uid': global_info['uid'],
-        'platform': global_info['platform'],
-        'level': global_info['level'],
-        'is_online': realtime['isOnline'],
-        'selected_legend': realtime['selectedLegend'],
-        'battlepass_level': battlepass_level,
-        'discord_id': 0
-    }
-    db_player = db_helper.get_tracked_player_by_uid(player_data['uid'])
-    if db_player:
-        player_data['discord_id'] = db_player.discord_id
-    return Player.from_dict(player_data)
+import arrow
+from arrow import Arrow
 
 
-def players_sorted_by_key(tracked_players: List[Player], key: str):
+def players_sorted_by_key(tracked_players: list, key: str):
     """ returns back a list of players sorted by the category """
     if key == 'name':
         sorted_players = sorted(
@@ -44,3 +19,35 @@ def players_sorted_by_key(tracked_players: List[Player], key: str):
             key=lambda item: getattr(item, key), reverse=True
         )
     return sorted_players
+
+
+def get_arrow_date_prev_next_date_to_use(day: str) -> Tuple[Arrow, str, str, str]:
+    """ Returns arrow date, prev and next day strings
+    Args:
+        day: day to use for calculations
+    Returns:
+        Tuple[arrow_date_to_use, prev_day, next_day, current_day]
+    """
+    date_to_use = get_arrow_date_to_use(day)
+
+    if not day:
+        day = date_to_use.format('YYYY-MM-DD')
+    prev_day = date_to_use.shift(days=-1).format('YYYY-MM-DD')
+    today = arrow.now('US/Pacific')
+    next_day = None
+    if date_to_use < today.shift(days=-1):
+        next_day = date_to_use.shift(days=+1).format('YYYY-MM-DD')
+    return date_to_use, prev_day, next_day, day
+
+
+def get_arrow_date_to_use(day: str) -> Arrow:
+    """ Returns arrow date to use """
+    if day:
+        date_parts = day.split("-")
+        date_to_use = arrow.get(
+            datetime(int(date_parts[0]), int(date_parts[1]), int(date_parts[2])),
+            'US/Pacific'
+        )
+    else:
+        date_to_use = arrow.now('US/Pacific')
+    return date_to_use

@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-
+from pymongo.collection import Collection
 from mashumaro import DataClassDictMixin
 
 
@@ -89,3 +89,17 @@ class BasicInfo(DataClassDictMixin):
                 lower_rp = upper_rp
 
         return None
+
+
+class BasicInfoCollection:
+    """ Collection class for the 'basic_info' collection """
+    def __init__(self, collection: Collection):
+        self._collection = collection
+        self._basic_info: Optional[BasicInfo] = None
+
+    @property
+    def basic_info(self) -> BasicInfo:
+        """ Factory method for BasicInfo data """
+        if not self._basic_info:
+            self._basic_info = BasicInfo.from_dict(self._collection.find_one({}))
+        return self._basic_info

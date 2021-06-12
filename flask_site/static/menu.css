@@ -270,7 +270,7 @@ https://www.html5rocks.com/en/tutorials/speed/high-performance-animations/
 }
 
 #masthead.is-active .col:nth-child(1) {
-    -webkit-animation-delay: 0;
+    -webkit-animation-delay: 0s;
 }
 
 #masthead.is-active .col:nth-child(2) {

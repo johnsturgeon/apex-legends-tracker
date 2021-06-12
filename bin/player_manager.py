@@ -4,7 +4,6 @@ from typing import List
 
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
-from apex_utilities import player_data_from_basic_player
 from apex_legends_api import ALPlatform, ALAction, ALHTTPExceptionFromResponse
 
 from models import Player
@@ -16,7 +15,7 @@ log = apex_db_helper.logger
 
 def save_all_player_data():
     """ Loop through all players and save the data """
-    list_of_players = apex_db_helper.get_tracked_players()
+    list_of_players = apex_db_helper.player_collection.get_tracked_players()
     thread_method_with_player(save_one_player_data, list_of_players)
     thread_method_with_player(save_one_player_event_data, list_of_players)
 
@@ -49,8 +48,8 @@ def save_one_player_data(player: Player):
         basic_player_data = basic_player_data_list[0]
         log.debug("Saving Basic Player Data: %s", basic_player_data)
         apex_db_helper.save_basic_player_data(player_data=basic_player_data)
-        player = player_data_from_basic_player(basic_player_data)
-        apex_db_helper.save_player(player)
+        player = apex_db_helper.player_collection.player_data_from_basic_player(basic_player_data)
+        apex_db_helper.player_collection.save_player(player)
 
 
 def save_one_player_event_data(player: Player):
@@ -69,21 +68,23 @@ def save_one_player_event_data(player: Player):
     else:
         for event_data in event_data_list:
             log.debug("Saving Player %s Data: %s", player, event_data)
-            apex_db_helper.save_event_data(event_data=event_data)
+            apex_db_helper.event_collection.save_event_dict(event_data=event_data)
 
 
 def update_player_collection_from_api():
     """ Pulls current players from the API and populates their data from the api and updates
     the player DB """
-    tracked_players = apex_api_helper.get_tracked_players()
-    for player in tracked_players:
-        apex_db_helper.save_player(player=player)
+    tracked_players = apex_api_helper.basic_players_from_api
+    player_data: dict
+    for player_data in tracked_players:
+        player: Player = apex_db_helper.player_collection.player_data_from_basic_player(player_data)
+        apex_db_helper.player_collection.save_player(player=player)
 
 
 def is_anyone_online() -> bool:
     """ Returns TRUE if any player is currently online """
     player: Player
-    for player in apex_db_helper.get_tracked_players():
+    for player in apex_db_helper.player_collection.get_tracked_players():
         if player.is_online:
             return True
     return False

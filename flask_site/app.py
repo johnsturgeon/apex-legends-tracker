@@ -1,9 +1,7 @@
 """ Flask application for Apex Legends API Tracker """
 import os
-from datetime import datetime
 from typing import Optional, Tuple
 
-import arrow
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, render_template, \
     abort, send_from_directory, request, session
@@ -12,9 +10,10 @@ from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthor
 
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
-from apex_view_controllers import IndexViewController,\
-    DayByDayViewController, ProfileViewController, BattlePassViewController,\
-    ClaimProfileViewController
+from apex_utilities import get_arrow_date_prev_next_date_to_use
+from apex_view_controllers import IndexViewController, \
+    DayByDayViewController, ProfileViewController, BattlePassViewController, \
+    ClaimProfileViewController, DayDetailViewController
 from models import Player
 
 # timeout in seconds * minutes
@@ -65,7 +64,7 @@ def get_player_from_cookie() -> Optional[Player]:
     """ Gets the player from the browser cookie """
     discord_id = request.cookies.get('discord_id')
     if discord_id:
-        return apex_db_helper.get_player_by_discord_id(int(discord_id))
+        return apex_db_helper.player_collection.get_player_by_discord_id(int(discord_id))
     return None
 
 
@@ -73,7 +72,7 @@ def get_player_from_discord_login() -> Optional[Player]:
     """ Returns the currently logged in player, None if not logged in """
     discord_user = discord.fetch_user()
     if discord_user:
-        return apex_db_helper.get_player_by_discord_id(discord_user.id)
+        return apex_db_helper.player_collection.get_player_by_discord_id(discord_user.id)
 
     return None
 
@@ -145,7 +144,7 @@ def claim_profile():
     view_controller = ClaimProfileViewController(db_helper=apex_db_helper)
     if uid:
         player_uid: int = int(uid)
-        player: Player = apex_db_helper.get_tracked_player_by_uid(int(uid))
+        player: Player = apex_db_helper.player_collection.get_tracked_player_by_uid(int(uid))
         save_player_to_session(player)
         view_controller.claim_profile_with_discord_id(
             player_uid=player_uid,
@@ -179,30 +178,15 @@ def logout():
 @app.route('/<string:day>/<string:sort_key>')
 def index(day: str, sort_key: str):
     """ Default route """
-    if day:
-        date_parts = day.split("-")
-        date_to_use = arrow.get(
-            datetime(int(date_parts[0]), int(date_parts[1]), int(date_parts[2])),
-            'US/Pacific'
-        )
-    else:
-        date_to_use = arrow.now('US/Pacific')
-
+    date_to_use, prev_day, next_day, new_day = get_arrow_date_prev_next_date_to_use(day)
     starting_timestamp = date_to_use.floor('day').int_timestamp
     ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
     index_view_controller = IndexViewController(
         apex_db_helper, starting_timestamp, ending_timestamp
     )
-    if not day:
-        day = date_to_use.format('YYYY-MM-DD')
-    prev_day = date_to_use.shift(days=-1).format('YYYY-MM-DD')
-    today = arrow.now('US/Pacific')
-    next_day = None
-    if date_to_use < today.shift(days=-1):
-        next_day = date_to_use.shift(days=+1).format('YYYY-MM-DD')
     return render_template(
         'index.html',
-        day=day,
+        day=new_day,
         prev_day=prev_day,
         next_day=next_day,
         index_view_controller=index_view_controller,
@@ -222,6 +206,25 @@ def day_by_day():
         'day_by_day.html',
         view_controller=view_controller,
         is_not_me=is_not_me
+    )
+
+
+@app.route('/day_detail')
+def day_detail():
+    """ route for the day_detail page """
+    day = request.args.get('day')
+    date_to_use, prev_day, next_day, new_day = get_arrow_date_prev_next_date_to_use(day)
+    player, is_not_me = get_player_for_view(request.args.get('player_uid'))
+
+    view_controller = DayDetailViewController(apex_db_helper, player=player, day=date_to_use)
+
+    return render_template(
+        'day_detail.html',
+        view_controller=view_controller,
+        is_not_me=is_not_me,
+        day=new_day,
+        next_day=next_day,
+        prev_day=prev_day
     )
 
 
@@ -272,7 +275,7 @@ def get_player_for_view(player_uid: str) -> Tuple[Player, bool]:
     if auth_player and (auth_player.uid == int(player_uid)):
         return auth_player, False
 
-    return apex_db_helper.get_tracked_player_by_uid(int(player_uid)), True
+    return apex_db_helper.player_collection.get_tracked_player_by_uid(int(player_uid)), True
 
 
 if __name__ == '__main__':
