@@ -83,11 +83,11 @@
                         </div>
                         <div class="clear"></div>
                     {% else %}
+                        {% if game.wins %}
+                            <div class="winner"><img src="{{ url_for('static', filename='images/champion.png') }}"></div>
+                            <div class="clear"></div>
+                        {% endif %}
                         <div class="team_game_totals">
-                            {% if game.wins %}
-                                <div class="winner"><img src="{{ url_for('static', filename='images/champion.png') }}"></div>
-                                <div class="clear"></div>
-                            {% endif %}
                             <div>{{ formatted_date }}</div>
                             <div>Solo Game: {{ game.game_length }} minutes</div>
                             <div></div>
