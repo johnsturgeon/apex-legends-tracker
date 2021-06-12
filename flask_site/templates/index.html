@@ -46,7 +46,7 @@
             {% set damage = player['damage_avg'] | round(0) | int -%}
             <div><!-- this is a row -->
                 <div class="{% if is_online %}online{% endif %}">
-                    <span><a href="{{ url_for('day_detail', player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                    <span><a href="{{ url_for('day_detail', day=day, player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
                     <span class="{% if is_online %}online_small_font{% endif %}">
                         {% if is_online %}online{% endif %}
                     </span>
