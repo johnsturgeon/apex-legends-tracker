@@ -10,9 +10,7 @@ from pymongo import MongoClient
 import pymongo.database
 from pymongo.collection import Collection
 
-from models import EventCollection, GameEvent
-from models import BasicInfoCollection, BasicInfo
-from player import PlayerCollection
+from models import EventCollection, GameEvent, BasicInfoCollection, BasicInfo, PlayerCollection
 
 load_dotenv()
 
