@@ -4,6 +4,14 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2021-06-12
+### Added
+- Added new 'Day Detail' page.  You can get there by clicking on your player profile, or using the main menu.
+- Shows people you partied up with.  It might not be perfect, but it's pretty darned close.
+
+### Changed
+- Refactored a ton of the way that the model data is handled, this will make it much easier to make changes in the future
+
 ## [1.1.2] - 2021-06-10
 - Resolves #158 (profile page has error when there are zero ranked games)
 

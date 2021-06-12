@@ -2,7 +2,6 @@
 import os
 from typing import Optional, Tuple
 
-import arrow
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, render_template, \
     abort, send_from_directory, request, session
@@ -11,7 +10,7 @@ from flask_discord import DiscordOAuth2Session, requires_authorization, Unauthor
 
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
-from apex_utilities import get_arrow_date_to_use
+from apex_utilities import get_arrow_date_prev_next_date_to_use
 from apex_view_controllers import IndexViewController, \
     DayByDayViewController, ProfileViewController, BattlePassViewController, \
     ClaimProfileViewController, DayDetailViewController
@@ -179,22 +178,15 @@ def logout():
 @app.route('/<string:day>/<string:sort_key>')
 def index(day: str, sort_key: str):
     """ Default route """
-    date_to_use = get_arrow_date_to_use(day)
+    date_to_use, prev_day, next_day, new_day = get_arrow_date_prev_next_date_to_use(day)
     starting_timestamp = date_to_use.floor('day').int_timestamp
     ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
     index_view_controller = IndexViewController(
         apex_db_helper, starting_timestamp, ending_timestamp
     )
-    if not day:
-        day = date_to_use.format('YYYY-MM-DD')
-    prev_day = date_to_use.shift(days=-1).format('YYYY-MM-DD')
-    today = arrow.now('US/Pacific')
-    next_day = None
-    if date_to_use < today.shift(days=-1):
-        next_day = date_to_use.shift(days=+1).format('YYYY-MM-DD')
     return render_template(
         'index.html',
-        day=day,
+        day=new_day,
         prev_day=prev_day,
         next_day=next_day,
         index_view_controller=index_view_controller,
@@ -220,7 +212,8 @@ def day_by_day():
 @app.route('/day_detail')
 def day_detail():
     """ route for the day_detail page """
-    date_to_use = get_arrow_date_to_use(request.args.get('day'))
+    day = request.args.get('day')
+    date_to_use, prev_day, next_day, new_day = get_arrow_date_prev_next_date_to_use(day)
     player, is_not_me = get_player_for_view(request.args.get('player_uid'))
 
     view_controller = DayDetailViewController(apex_db_helper, player=player, day=date_to_use)
@@ -228,7 +221,10 @@ def day_detail():
     return render_template(
         'day_detail.html',
         view_controller=view_controller,
-        is_not_me=is_not_me
+        is_not_me=is_not_me,
+        day=new_day,
+        next_day=next_day,
+        prev_day=prev_day
     )
 
 

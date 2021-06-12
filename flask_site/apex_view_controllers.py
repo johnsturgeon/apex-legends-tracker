@@ -156,16 +156,16 @@ class DayDetailViewController:
         self.player = player
         start_day = day.format('YYYY-MM-DD')
         end_day = day.shift(days=+1).format('YYYY-MM-DD')
-        self.games: List[GameEvent] = db_helper.event_collection.get_games(
-            player.uid, (start_day, end_day), sort=pymongo.DESCENDING
+        self.all_games: List[GameEvent] = db_helper.event_collection.get_games(
+            start_end_day=(start_day, end_day), sort=pymongo.DESCENDING
         )
+        self.games: List[GameEvent] = filter_game_list(self.all_games, uid=player.uid)
 
     def category_total(self, category: str) -> int:
         """ Returns the category total """
         total = 0
         for game in self.games:
-            if hasattr(game, category):
-                total += getattr(game, category)
+            total += int(game.category_total(category))
         return total
 
     def category_average(self, category: str) -> float:
@@ -174,6 +174,55 @@ class DayDetailViewController:
         if total_games:
             return self.category_total(category) / total_games
         return 0
+
+    def avg_time_played(self):
+        """ Returns the average time played in minutes / seconds """
+        return_string: str = ""
+        total_time = self.category_total('game_length')
+        if len(self.games) > 0:
+            avg_minutes: float = total_time / len(self.games)
+            avg_seconds = avg_minutes * 60
+            minutes, seconds = divmod(avg_seconds, 60)
+            round_minutes = round(minutes)
+            round_seconds = round(seconds)
+            if round_minutes:
+                return_string += f"{round_minutes}m"
+            if round_seconds:
+                return_string += f" {round_seconds}s"
+        return return_string
+
+    def category_max(self, category: str) -> int:
+        """ Returns the max for the category"""
+        max_category: int = 0
+        for game in self.games:
+            max_category = max(game.category_total(category), max_category)
+        return max_category
+
+    def category_squad_total(self, in_game: GameEvent, category: str) -> int:
+        """ Returns the total of the squad for a game """
+        total: int = in_game.category_total(category)
+        for game in self.find_games_near_mine(in_game):
+            total += game.category_total(category)
+        return total
+
+    def find_games_near_mine(self, in_game: GameEvent) -> List[GameEvent]:
+        """Find games that might be people I played with """
+        games_found: List[GameEvent] = list()
+        gt_padding = 10
+        gl_padding = 1
+        gt_range = range(in_game.timestamp-gt_padding, in_game.timestamp+gt_padding)
+        gl_range = range(in_game.game_length-gl_padding, in_game.game_length+gl_padding)
+        for game in self.all_games:
+            if game.uid != in_game.uid:
+                if game.timestamp in gt_range and game.game_length in gl_range:
+                    games_found.append(game)
+        return games_found
+
+    def total_time_played(self) -> str:
+        """ Returns a formatted string for the total time played """
+        total_time = self.category_total('game_length')
+        hours, minutes = divmod(total_time, 60)
+        return f"{hours}h {minutes}m"
 
 
 class ProfileViewController:

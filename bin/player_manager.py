@@ -68,15 +68,16 @@ def save_one_player_event_data(player: Player):
     else:
         for event_data in event_data_list:
             log.debug("Saving Player %s Data: %s", player, event_data)
-            apex_db_helper.event_collection.save_event(event_data=event_data)
+            apex_db_helper.event_collection.save_event_dict(event_data=event_data)
 
 
 def update_player_collection_from_api():
     """ Pulls current players from the API and populates their data from the api and updates
     the player DB """
     tracked_players = apex_api_helper.basic_players_from_api
-    for player in tracked_players:
-        player: Player = apex_db_helper.player_collection.player_data_from_basic_player(player)
+    player_data: dict
+    for player_data in tracked_players:
+        player: Player = apex_db_helper.player_collection.player_data_from_basic_player(player_data)
         apex_db_helper.player_collection.save_player(player=player)
 
 

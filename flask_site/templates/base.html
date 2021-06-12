@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?{{ "" | append_version_number }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -60,7 +60,8 @@
                             <h4>Personal</h4>
                             <ul>
                                 <li><a href="{{ url_for('profile', player_uid=session_player.uid) }}">Profile Page</a></li>
-                                <li><a href="{{ url_for('day_by_day', player_uid=session_player.uid) }}">Day by Day Totals</a></li>
+                                <li><a href="{{ url_for('day_by_day', player_uid=session_player.uid) }}">Day by Day</a></li>
+                                <li><a href="{{ url_for('day_detail', player_uid=session_player.uid) }}">Single Day Detail</a></li>
                                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
                             </ul>
                         </div>
@@ -77,7 +78,8 @@
                             <h4>{{ player.name }}</h4>
                             <ul>
                                 <li><a href="{{ url_for('profile', player_uid=player.uid) }}">Profile Page</a></li>
-                                <li><a href="{{ url_for('day_by_day', player_uid=player.uid) }}">Day by Day Totals</a></li>
+                                <li><a href="{{ url_for('day_by_day', player_uid=player.uid) }}">Day by Day</a></li>
+                                <li><a href="{{ url_for('day_detail', player_uid=player.uid) }}">Single Day Detail</a></li>
                             </ul>
                         </div>
                     {% endif %}

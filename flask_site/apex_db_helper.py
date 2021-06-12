@@ -98,3 +98,11 @@ def filter_game_list(game_list: List[GameEvent],
         if found:
             filtered_list.append(game)
     return filtered_list
+
+
+if __name__ == "__main__":
+    db_helper: ApexDBHelper = ApexDBHelper()
+    event_objects = db_helper.event_collection.get_event_objects()
+    for event in event_objects:
+        if event.event_type.value == 'Rank':
+            print(event.event_type)

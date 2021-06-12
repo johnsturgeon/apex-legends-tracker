@@ -1,6 +1,7 @@
 """ Dataclass to represent basic_info collection """
 from dataclasses import dataclass, field
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any
+from enum import Enum
 import pymongo
 import arrow
 from mashumaro.config import BaseConfig, TO_DICT_ADD_OMIT_NONE_FLAG
@@ -13,30 +14,99 @@ from tracker_info import TrackerInfoCollection
 
 
 # pylint: disable=missing-class-docstring
+# pylint: disable=too-many-instance-attributes
+class EventType(Enum):
+    SESSION = 'Session'
+    GAME = 'Game'
+    LEVEL = 'Level'
+    RANK = 'Rank'
+
+
 @dataclass
-class GameTracker(DataClassDictMixin):
+class BaseEvent(DataClassDictMixin):
+    uid: str
+    player: str
+    timestamp: int
+    event_type: EventType = field(metadata=field_options(alias="eventType"))
+
+    class Config(BaseConfig):
+        code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]
+        serialize_by_alias = True
+
+
+@dataclass
+class RankEventDetail(DataClassDictMixin):
+    new_rank: str = field(metadata=field_options(alias="newRank"))
+    new_rank_img: str = field(metadata=field_options(alias="newRankImg"))
+
+    class Config(BaseConfig):
+        serialize_by_alias = True
+
+
+@dataclass
+class RankEvent(BaseEvent):
+    event: RankEventDetail
+
+
+@dataclass
+class LevelEventDetail(DataClassDictMixin):
+    new_level: int = field(metadata=field_options(alias="newLevel"))
+
+    class Config(BaseConfig):
+        serialize_by_alias = True
+
+
+@dataclass
+class LevelEvent(BaseEvent):
+    event: LevelEventDetail
+
+
+class SessionAction(Enum):
+    LEAVE = 'leave'
+    JOIN = 'join'
+
+
+@dataclass
+class SessionEventDetail(DataClassDictMixin):
+    action: SessionAction
+    session_duration: int = field(default=None, metadata=field_options(alias="sessionDuration"))
+
+    class Config(BaseConfig):
+        serialize_by_alias = True
+        code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]
+
+
+@dataclass
+class SessionEvent(BaseEvent):
+    event: SessionEventDetail
+
+
+@dataclass
+class GameEventDetail(DataClassDictMixin):
     value: int
     key: str
     name: str
 
 
-# pylint: disable=too-many-instance-attributes
 @dataclass
-class GameEvent(DataClassDictMixin):
-    uid: str
-    player: str
-    timestamp: int
-    event: List[GameTracker]
+class GameEvent(BaseEvent):
+    event: List[GameEventDetail]
     game_length: int = field(metadata=field_options(alias="gameLength"))
     legend_played: str = field(metadata=field_options(alias="legendPlayed"))
     rank_score_change: str = field(metadata=field_options(alias="rankScoreChange"))
     xp_progress: int = field(metadata=field_options(alias="xpProgress"))
-    event_type: str = field(metadata=field_options(alias="eventType"))
-    current_rank_score: str = field(default=-1, metadata=field_options(alias="currentRankScore"))
-    _day_of_event: str = None
+    current_rank_score: str = field(default=None, metadata=field_options(alias="currentRankScore"))
     kills: int = 0
     wins: int = 0
     damage: int = 0
+    _formatted_time: str = None
+    _day_of_event: str = None
+
+    def __post_serialize__(self, d: Dict[Any, Any]) -> Dict[Any, Any]:
+        d.pop('kills')
+        d.pop('wins')
+        d.pop('damage')
+        return d
 
     @property
     def day_of_event(self) -> str:
@@ -45,15 +115,26 @@ class GameEvent(DataClassDictMixin):
             self._day_of_event = arrow.get(self.timestamp).to('US/Pacific').format('YYYY-MM-DD')
         return self._day_of_event
 
+    @property
+    def formatted_time(self) -> str:
+        """ Returns the formatted time of the event in Pacific """
+        if not self._formatted_time:
+            self._formatted_time = arrow.get(self.timestamp).to('US/Pacific').format('h:mma')
+        return self._formatted_time
+
     def category_total(self, category) -> int:
         """ safely returns the category total - 0 if none exists """
         if hasattr(self, category):
-            return getattr(self, category)
+            total = getattr(self, category)
+            if not isinstance(total, int):
+                total = int(total)
+            return total
         return 0
 
     class Config(BaseConfig):
         """ Config class """
         code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]
+        serialize_by_alias = True
 
 
 class EventCollection:
@@ -100,7 +181,7 @@ class EventCollection:
         if additional_filter:
             query_filter.update(additional_filter)
 
-        event_list: list = self.get_event(query_filter, sort)
+        event_list: list = self._get_event_dict(query_filter, sort)
 
         game_list: List[GameEvent] = []
         for game in event_list:
@@ -149,7 +230,7 @@ class EventCollection:
 
     def update_game_category_totals(self, game: GameEvent):
         """ Checks the game event to see if it has the category, and adds it """
-        tracker: GameTracker
+        tracker: GameEventDetail
         for tracker in game.event:
             tracker_cat: str = self._tracker_info_collection.category_for_key(
                 tracker.key
@@ -158,7 +239,7 @@ class EventCollection:
                 setattr(game, tracker_cat, tracker.value)
         # Category not found
 
-    def get_event(self, query_filter: dict, sort_order: int = 0) -> list:
+    def _get_event_dict(self, query_filter: dict, sort_order: int = 0) -> list:
         """ Query the DB for events based on filter """
         assert sort_order in (pymongo.ASCENDING, 0, pymongo.DESCENDING)
         if sort_order:
@@ -167,12 +248,39 @@ class EventCollection:
             )
         return list(self._db_collection.find(query_filter))
 
-    def save_event(self, event_data: dict):
+    def save_event_dict(self, event_data: dict):
         """ Saves any 'new' event data record """
         uid = event_data['uid']
         timestamp = event_data['timestamp']
         event_type = event_data['eventType']
         query_filter = {"uid": uid, "timestamp": timestamp, "eventType": event_type}
-        db_data = self.get_event(query_filter)
+        db_data = self._get_event_dict(query_filter)
         if not db_data:
             self._db_collection.insert_one(event_data)
+
+    def get_event_objects(self) -> List[BaseEvent]:
+        """ Returns a list of Event objects, query their 'EventType' to get the structure """
+        event_list: List[BaseEvent] = list()
+        for event in self._get_event_dict(query_filter={}):
+            del event['_id']
+            if event['eventType'] == EventType.GAME.value:
+                event_class: GameEvent = GameEvent.from_dict(event)
+                event_list.append(event_class)
+                if event != event_class.to_dict(omit_none=True):
+                    assert False
+            if event['eventType'] == EventType.RANK.value:
+                event_class: RankEvent = RankEvent.from_dict(event)
+                event_list.append(event_class)
+                if event != event_class.to_dict(omit_none=True):
+                    assert False
+            if event['eventType'] == EventType.LEVEL.value:
+                event_class: LevelEvent = LevelEvent.from_dict(event)
+                event_list.append(event_class)
+                if event != event_class.to_dict(omit_none=True):
+                    assert False
+            if event['eventType'] == EventType.SESSION.value:
+                event_class: SessionEvent = SessionEvent.from_dict(event)
+                event_list.append(event_class)
+                if event != event_class.to_dict(omit_none=True):
+                    assert False
+        return event_list

@@ -3,55 +3,165 @@
 {% set player = view_controller.player %}
 {% set session_player = session.get('player') %}
 {% block content %}
-    <div class="day_by_day">
-        {% set num_games_played=view_controller.games | length -%}
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
+
+    <div class="day_detail">
+        {% set num_games_played=(view_controller.games|length) -%}
         {% set total_kills=view_controller.category_total(category='kills') -%}
-        {% set avg_kills=view_controller.category_average(category = 'kills') | round(2) -%}
+        {% set avg_kills=view_controller.category_average(category='kills') | round(2) -%}
+        {% set total_minutes=view_controller.category_total(category='game_length') %}
+        {% set avg_minutes=view_controller.category_average(category='game_length') | round(1)  %}
         {% set total_wins=view_controller.category_total(category='wins') -%}
         {% set total_damage=view_controller.category_total(category='damage') -%}
         {% set avg_damage=view_controller.category_average(category='damage') | round(0) | int -%}
-        {% set total_xp=view_controller.category_total(category='xp') -%}
-        {% set avg_xp=view_controller.category_average(category='xp') | round(0) | int %}
+        {% set total_xp=view_controller.category_total(category='xp_progress') -%}
+        {% set avg_xp=view_controller.category_average(category='xp_progress') | round(0) | int %}
+        {% set total_rp=view_controller.category_total(category='rank_score_change') %}
+        {% set max_kills=view_controller.category_max(category='kills') %}
+        {% set max_damage=view_controller.category_max(category='damage') %}
+        {% set max_xp=view_controller.category_max(category='xp_progress') %}
+        {% set max_minutes=view_controller.category_max(category='game_length') %}
+        {% set max_rp=view_controller.category_max(category='rank_score_change') %}
         {% if is_not_me %}
-            <div class="day_by_day_head">
+            <div class="day_detail_head">
                 <div class="item small_padding">{{ player.name }}</div>
             </div>
             <div class="clear"></div>
         {% endif %}
-        <div class="day_by_day_head">
-            <div class="day_detail_link"><a href="{{ url_for('day_by_day', day=day) }}">Back to Day By Day</a></div>
-            <div class="item small_padding">{{ day }}</div>
-            <div></div>
-        </div>
-        <div class="clear line"></div>
-        <div class="day_by_day_thumb"></div>
-        <div>Day Totals</div>
-        <div>Games Played: {{ num_games_played }}</div>
-        <div>Kills: {{ kills }}<br><i>{{ avg_kills }} / game</i></div>
-        <div>Wins: {{ total_wins }}</div>
-        <div>
-            Damage: {{ damage }}<br><i>{{ avg_damage }} / game</i>
-        </div>
-        <div>
-            XP: {{ xp }}<br><i>{{ avg_xp }} / game</i>
+        <div class="date_picker">
+            <div>
+                <a href="{{ url_for('day_detail', day=prev_day, player_uid=player.uid, sort_key=sort_key) }}"><!--
+                 --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
+             --></a>
+            </div>
+            <div><a href="#" id="date_picker">{{ day }}</a></div>
+            {% if next_day %}
+                <div>
+                    <a href="{{ url_for('day_detail', day=next_day, player_uid=player.uid, sort_key=sort_key) }}">
+                        <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                    </a>
+                </div>
+            {% else %}
+                <div>
+                    <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                </div>
+            {% endif %}
         </div>
         <div class="clear line"></div>
         {% set games = view_controller.games %}
-        {% for game in games %}
-            {% set legend=game.legend_played %}
-            {% set xp_efficiency=(game.xp_progress / 100) | round(2) %}
-            <div class="day_by_day_thumb">
-                <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
-                     src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
+        {% if not games %}
+            <div>No games played today</div>
+        {% else %}
+            <div class="one_day_totals">
+                <div>Games Played: {{ num_games_played }}</div>
+                <div>Wins: {{ total_wins }}</div>
+                <div>Time Played: {{ view_controller.total_time_played() }} <span class="avg">({{ view_controller.avg_time_played() }} / game)</span></div>
+                <div class="clear"></div>
+                <div>Kills: {{ total_kills }} <span class="avg">({{ avg_kills }} / game)</span></div>
+                <div>Damage: {{ total_damage }} <span class="avg">({{ avg_damage }} / game)</span></div>
+                <div>XP: {{ total_xp }} <span class="avg">({{ avg_xp }} / game)</span></div>
+                {% if total_rp %}
+                    <div>RP: {{ total_rp }} </div>
+                {% endif %}
             </div>
-            <div style="flex-shrink: 0; flex-grow: 0">
-                WBR: {{ xp_efficiency }}
-            </div>
-            {{ macros.progress_container("Kills", game.kills, total_kills) }}
-            {{ macros.progress_container("Wins", game.wins, total_wins) }}
-            {{ macros.progress_container("Damage", game.damage, total_damage) }}
-            {{ macros.progress_container("XP", game.xp_progress, total_xp) }}
-            <div class="clear"></div>
-        {% endfor %}
+            <div class="clear line"></div>
+            <div class="all_games">
+            {% for game in games %}
+                {% set games_near_me = view_controller.find_games_near_mine(game) %}
+                {% set formatted_date=game.formatted_time %}
+                <div class="one_game">
+                    {% if games_near_me %}
+                        {% if game.wins %}
+                            <div class="winner"><img src="{{ url_for('static', filename='images/champion.png') }}"></div>
+                            <div class="clear"></div>
+                        {% endif %}
+                        <div class="team_game_totals">
+                            <div>{{ formatted_date }}</div>
+                            <div>Team Kills: {{ view_controller.category_squad_total(game, 'kills') }}</div>
+                            <div>Team Damage: {{ view_controller.category_squad_total(game, 'damage') }}</div>
+                            <div>{{ game.game_length }} minutes</div>
+                        </div>
+                        <div class="clear"></div>
+                    {% else %}
+                        <div class="team_game_totals">
+                            {% if game.wins %}
+                                <div class="winner"><img src="{{ url_for('static', filename='images/champion.png') }}"></div>
+                                <div class="clear"></div>
+                            {% endif %}
+                            <div>{{ formatted_date }}</div>
+                            <div>Solo Game: {{ game.game_length }} minutes</div>
+                            <div></div>
+                            <div></div>
+                        </div>
+                        <div class="clear"></div>
+                    {% endif %}
+                    <div class="one_game_player_totals">
+                        {% set rp = game.rank_score_change | int %}
+                        {% set legend=game.legend_played %}
+                        <div class="day_detail_thumb">
+                            <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
+                                 src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
+                        </div>
+                        {% if games_near_me %}
+                            <div>{{ game.player }}</div>
+                        {% else %}
+                            {{ macros.progress_container("Minutes", game.game_length, max_minutes, show_total=False) }}
+                        {% endif %}
+                        {{ macros.progress_container("Kills", game.kills, max_kills, show_total=False) }}
+                        {{ macros.progress_container("Damage", game.damage, max_damage, show_total=False) }}
+                        {{ macros.progress_container("XP", game.xp_progress, max_xp, show_total=False) }}
+                        {% if total_rp %}
+                            {% if rp < 0 %}
+                                {% set color="#FF2621" %}
+                            {% endif %}
+                            {{ macros.progress_container("RP", rp, max_rp, show_total=False, total_color=color) }}
+                        {% endif %}
+                    </div> <!-- end 'one_game_player_totals' -->
+                    <div class="clear"></div>
+                    {% for game in games_near_me %}
+                        <div class="teammate_totals">
+                            {% set games_near_me = view_controller.find_games_near_mine(game) %}
+                            {% set rp = game.rank_score_change | int %}
+                            {% set legend=game.legend_played %}
+                            {% set formatted_date=game.formatted_time %}
+                            <div class="day_detail_thumb">
+                                <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
+                                     src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
+                            </div>
+                            <div>{{ game.player }}</div>
+                            <div>Kills: {{ game.kills }}</div>
+                            <div>Damage: {{ game.damage }}</div>
+                            <div>XP: {{ game.damage }}</div>
+                            {% if rp %}
+                                <div>RP: {{ game.rank_score_change }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="clear"></div>
+                    {% endfor %}
+                </div> <!-- end 'one_game' -->
+            {% endfor %}
+            </div> <!-- end 'all games' -->
+        {% endif %}
     </div>
+    <script>
+        const picker = new Litepicker({
+            element: document.getElementById('date_picker'),
+            highlightedDays: ['{{ day }}'],
+            maxDate: new Date()
+        });
+        picker.on('selected', (date1) => {
+            const myUrlWithParams = new URL(window.location.href);
+            myUrlWithParams.searchParams.delete("day")
+            myUrlWithParams.searchParams.append("day", date1.format('YYYY-MM-DD'))
+            window.location=myUrlWithParams
+        });
+        $(document).ready(function(){
+            $('#{{ sort_key }}').append(' *')
+            $('.sortable').click(function(_) {
+                sort_by_key($(this).attr('id'))
+            });
+
+        });
+    </script>
+
 {% endblock %}
