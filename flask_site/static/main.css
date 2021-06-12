@@ -191,9 +191,11 @@ DIV.one_day_totals {
     justify-content: space-evenly;
     display: flex;
     flex-wrap: wrap;
+    padding: 4pt;
 }
 
 DIV.one_day_totals > DIV {
+    padding: 2pt;
     font-size: 14pt;
 }
 
@@ -222,6 +224,7 @@ DIV.one_game {
     border: solid 1px wheat;
     border-radius: 8pt;
     margin-bottom: 5pt;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 DIV.one_game > DIV.one_game_player_totals, DIV.teammate_totals {
@@ -231,6 +234,9 @@ DIV.one_game > DIV.one_game_player_totals, DIV.teammate_totals {
 
 DIV.one_game_player_totals {
     background-color: rgba(245, 222, 179, 0.09);
+    border-top: solid 1px rgba(245, 222, 179, 0.5);
+    border-bottom: solid 1px rgba(245, 222, 179, 0.5);
+    border-radius: 6pt;
 }
 
 DIV.one_game_player_totals > DIV {
@@ -291,8 +297,8 @@ DIV.teammate_totals > DIV.day_detail_thumb {
 }
 
 DIV.clear {
-    flex-basis: 100%;
-    height: 0;
+    flex-basis: 100% !important;
+    height: 0 !important;
 }
 
 DIV.line {
