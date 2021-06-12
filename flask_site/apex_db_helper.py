@@ -10,7 +10,7 @@ from pymongo import MongoClient
 import pymongo.database
 from pymongo.collection import Collection
 
-from event import EventCollection, GameEvent
+from models import EventCollection, GameEvent
 from models import BasicInfoCollection, BasicInfo
 from player import PlayerCollection
 
