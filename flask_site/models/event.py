@@ -9,7 +9,8 @@ from mashumaro import DataClassDictMixin, field_options
 from pymongo.collection import Collection
 
 from apex_utilities import get_arrow_date_to_use
-from models import BasicInfoCollection, BasicInfo, RankedSplit, TrackerInfoCollection
+from models.tracker_info import TrackerInfoCollection
+from models import BasicInfoCollection, BasicInfo, RankedSplit
 
 
 # pylint: disable=missing-class-docstring
