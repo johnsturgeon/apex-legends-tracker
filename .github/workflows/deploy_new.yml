@@ -20,12 +20,12 @@ jobs:
         uses: ./.github/actions/lint
 
   deploy:
-    name: Deploy (production)
+    name: Deploy (Prod2)
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: Production
-      url: https://apex.goshdarnedhero.com
+      name: Prod2
+      url: https://208.113.129.246/
     steps:
       - name: Check out code
         uses: actions/checkout@v2

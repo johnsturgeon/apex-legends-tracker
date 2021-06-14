@@ -36,7 +36,6 @@ app.config["DISCORD_REDIRECT_URI"] = os.getenv('DISCORD_REDIRECT_URI')
 discord = DiscordOAuth2Session(app)
 
 api_key = os.getenv('APEX_LEGENDS_API_KEY')
-default_player = os.getenv('DEFAULT_PLAYER_NAME')
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
 Profiler(app)
