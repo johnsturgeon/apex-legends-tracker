@@ -210,8 +210,8 @@ class DayDetailViewController:
         games_found: List[GameEvent] = list()
         gt_padding = 10
         gl_padding = 1
-        gt_range = range(in_game.timestamp-gt_padding, in_game.timestamp+gt_padding)
-        gl_range = range(in_game.game_length-gl_padding, in_game.game_length+gl_padding)
+        gt_range = range(in_game.timestamp-gt_padding, in_game.timestamp+gt_padding+1)
+        gl_range = range(in_game.game_length-gl_padding, in_game.game_length+gl_padding+1)
         for game in self.all_games:
             if game.uid != in_game.uid:
                 if game.timestamp in gt_range and game.game_length in gl_range:
