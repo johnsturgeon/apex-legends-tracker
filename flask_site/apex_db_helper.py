@@ -42,10 +42,13 @@ class ApexDBHelper:  # noqa E0302
     """ Class for retrieving / saving data to the Apex Mongo DB """
 
     def __init__(self):
-        uri = f"mongodb+srv://{os.getenv('MONGO_USERNAME')}:{os.getenv('MONGO_PASSWORD')}"
-        uri += f"@{os.getenv('MONGO_HOST')}/{os.getenv('MONGO_DB')}"
-        uri += "?retryWrites=true&w=majority"
-        self.client: MongoClient = MongoClient(uri)
+        self.client: MongoClient = MongoClient(
+            host=os.getenv('MONGO_HOST'),
+            username=os.getenv('MONGO_USERNAME'),
+            password=os.getenv('MONGO_PASSWORD'),
+            authSource=os.getenv('MONGO_DB')
+        )
+
         self.database: pymongo.database.Database = self.client.apex_legends
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: EventCollection = EventCollection(
