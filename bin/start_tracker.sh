@@ -4,4 +4,4 @@ cd $SCRIPT_PATH
 cd ../flask_site
 export PYTHONPATH=`pwd`
 cd ..
-nohup env/bin/python /home/apex_stats/apex.goshdarnedhero.com/bin/save_api_data_to_db.py > nohup.out 2> nohup.err < /dev/null &
+nohup env/bin/python ${SCRIPT_PATH}/save_api_data_to_db.py > nohup.out 2> nohup.err < /dev/null &
