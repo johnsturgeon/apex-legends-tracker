@@ -20,7 +20,7 @@ jobs:
         uses: ./.github/actions/lint
 
   deploy:
-    name: Deploy (production)
+    name: Deploy (Production)
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -127,27 +127,22 @@ jobs:
           ARGS: -avz --delete
           SOURCE: ./bin/
 
-      - name: Rsync over production passenger file
-        uses: up9cloud/action-rsync@master
-        env:
-          HOST: ${{ secrets.REMOTE_HOST }}
-          KEY: ${{ secrets.SERVER_SSH_KEY }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}/passenger_wsgi.py
-
-          VERBOSE: true
-          USER: ${{ secrets.REMOTE_USER }}
-          ARGS: -avz
-          SOURCE: ./passenger_wsgi.py
-          POST_SCRIPT: |
-            rm ${{ secrets.REMOTE_TARGET }}/maintenance
-            touch ${{ secrets.REMOTE_TARGET }}/tmp/restart.txt
-
       - name: SSH - Restart db daemon
         uses: fifsky/ssh-action@master
         with:
           command: |
             cd ${{ secrets.REMOTE_TARGET }}
             bin/start_tracker.sh
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: SSH - Restart db daemon
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            rm ${{ secrets.REMOTE_TARGET }}/maintenance
+            sudo supervisorctl restart apex-legends-tracker
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
