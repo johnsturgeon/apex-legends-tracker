@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     {% include 'favicons.html' %}
-    <meta property="og:title" content="GDH Apex Tracker" />
+    <meta property="og:title" content="{{ page_title }}" />
     <meta property="og:image" content="{{ url_for('static', filename='images/preview_image.png') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?{{ "" | append_version_number }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
