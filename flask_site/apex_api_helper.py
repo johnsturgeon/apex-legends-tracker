@@ -26,6 +26,7 @@ class ApexAPIHelper:
                 )
             except ALHTTPExceptionFromResponse:
                 continue
-            list_of_players.append(basic_player)
+            assert len(basic_player) == 1
+            list_of_players.append(basic_player[0])
 
         return list_of_players

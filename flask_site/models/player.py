@@ -42,12 +42,14 @@ class PlayerCollection:
             player_list.append(Player.from_dict(player_data))
         return player_list
 
-    def get_tracked_player_by_uid(self, uid: int) -> Player:
+    def get_tracked_player_by_uid(self, uid: int) -> Optional[Player]:
         """ Returns one player given a uid """
         player_data = self._collection.find_one(
             filter={'uid': uid}
         )
-        return Player.from_dict(player_data)
+        if player_data:
+            return Player.from_dict(player_data)
+        return None
 
     def get_player_by_discord_id(self, discord_id: int) -> Optional[Player]:
         """ Returns one `Player` given a discord id / None if no match"""
