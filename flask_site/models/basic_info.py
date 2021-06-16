@@ -56,11 +56,12 @@ class BasicInfo(DataClassDictMixin):
     seasons: List[Season]
     ranked_division_info: RankedDivisionInfo
 
-    def get_ranked_split(self, season_number: int = 0, split_number: int = 0) -> RankedSplit:
+    def get_ranked_splits(self, season_number: int = 0) -> List[RankedSplit]:
         """ Returns the ranked split for given season / split (current if 0) """
         current_season: Season = self.get_season(season_number)
-        split_index = (split_number if split_number else self.current_split) - 1
-        return current_season.ranked_splits[split_index]
+        if current_season.ranked_splits:
+            return current_season.ranked_splits
+        return []
 
     def get_season(self, season_number: int = 0) -> Season:
         """ Returns the info for the given season (current season if 0) """
@@ -89,6 +90,20 @@ class BasicInfo(DataClassDictMixin):
                 lower_rp = upper_rp
 
         return None
+
+    def get_season_start_day(self, season_number: int = 0) -> str:
+        """ Returns the start date of the season """
+        season = self.get_season(season_number)
+        if len(season.ranked_splits) > 0:
+            return season.ranked_splits[0].start_date
+        return ""
+
+    def get_season_end_day(self, season_number: int = 0) -> str:
+        """ Returns the start date of the season """
+        season = self.get_season(season_number)
+        if len(season.ranked_splits) > 0:
+            return season.ranked_splits[-1].end_date
+        return ""
 
 
 class BasicInfoCollection:

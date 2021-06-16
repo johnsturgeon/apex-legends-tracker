@@ -8,7 +8,7 @@ import pymongo
 from arrow import Arrow
 
 from apex_db_helper import ApexDBHelper, filter_game_list
-from models import GameEvent, RankTier, Division, RankedDivisionInfo, Player
+from models import GameEvent, RankTier, Division, RankedDivisionInfo, Player, RankedSplit
 from apex_utilities import players_sorted_by_key
 import plotly.graph_objects as go
 import plotly.utils as ut
@@ -229,8 +229,12 @@ class ProfileViewController:
     """ View controller for the player detail page """
     def __init__(self, db_helper: ApexDBHelper, player: Player):
         self.player = player
-        self._ranked_games = db_helper.event_collection.get_ranked_games(player_uid=self.player.uid)
         self._basic_info = db_helper.basic_info
+        self.season_number: int = self._basic_info.current_season
+        self._ranked_games = db_helper.event_collection.get_ranked_games(
+            season_number=self.season_number,
+            player_uid=self.player.uid
+        )
 
     def get_platform_logo(self) -> str:
         """ Return friendly version of the player's platform"""
@@ -308,6 +312,34 @@ class ProfileViewController:
                               )
                 y_pos += step_increment
                 opacity += 0.06
+        # add vertical line for split
+        ranked_splits: List[RankedSplit] = self._basic_info.get_ranked_splits(
+            season_number=self.season_number
+        )
+        for split in ranked_splits:
+            if split != ranked_splits[-1]:
+                fig.add_vline(
+                    x=split.end_date,
+                    row="hi",
+                    col="col",
+                    line_dash="dash",
+                    line_width=1,
+                    line_color="#F5DEB3"
+                )
+                fig.add_annotation(
+                    x=split.end_date,
+                    text="New Split",
+                    yanchor="top",
+                    font_color="#F5DEB3",
+                    borderpad=3,
+                    bordercolor="#F5DEB3",
+                    bgcolor="#412020",
+                    align="center",
+                    valign="top",
+                    showarrow=False,
+                    yref="paper",
+                    y=1.1
+                )
 
     def ranked_plot(self):
         """ Create a spline smoothed chart """

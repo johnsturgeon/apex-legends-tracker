@@ -206,14 +206,20 @@ class EventCollection:
             List of all ranked game events
         """
         basic_info: BasicInfo = self._basic_info_collection.basic_info
-
         if season_number:
-            assert split_number
             assert season_number <= basic_info.current_season
-        current_ranked_split: RankedSplit = basic_info.get_ranked_split(
-            season_number=season_number,
-            split_number=split_number
+
+        current_ranked_splits: List[RankedSplit] = basic_info.get_ranked_splits(
+            season_number=season_number
         )
+        assert len(current_ranked_splits) >= 2
+        if not split_number:
+            start_date = basic_info.get_season_start_day(season_number)
+            end_date = basic_info.get_season_end_day(season_number)
+        else:
+            split_index: int = split_number - 1
+            start_date = current_ranked_splits[split_index].start_date
+            end_date = current_ranked_splits[split_index].end_date
         query_filter: dict = {
             "rankScoreChange": {
                 "$ne": "0"
@@ -224,7 +230,7 @@ class EventCollection:
         }
         return self.get_games(
             player_uid,
-            start_end_day=(current_ranked_split.start_date, current_ranked_split.end_date),
+            start_end_day=(start_date, end_date),
             additional_filter=query_filter
         )
 
