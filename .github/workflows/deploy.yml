@@ -35,8 +35,7 @@ jobs:
         with:
           command: |
             cd ${{ secrets.REMOTE_TARGET }}
-            touch maintenance
-            bin/stop_tracker.sh
+            bin/begin_deployment.sh
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
@@ -132,17 +131,7 @@ jobs:
         with:
           command: |
             cd ${{ secrets.REMOTE_TARGET }}
-            bin/start_tracker.sh
-          host: ${{ secrets.REMOTE_HOST }}
-          user: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-
-      - name: SSH - Restart db daemon
-        uses: fifsky/ssh-action@master
-        with:
-          command: |
-            rm ${{ secrets.REMOTE_TARGET }}/maintenance
-            sudo supervisorctl restart apex-legends-tracker
+            bin/end_deployment.sh
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
