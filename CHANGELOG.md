@@ -4,9 +4,14 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.12] - 2021-06-17
+### Fixed
+- Fixed a duplicate data bug (#182)
+- Fixed the maintenance script location
+
 ## [1.2.11] - 2021-06-16
 ### Added
-- Added metadatatags for preview of site when pasting in iphone
+- Added meta-data tags for preview of site when pasting in iphone
 
 ## [1.2.10] - 2021-06-16
 ### Fixed

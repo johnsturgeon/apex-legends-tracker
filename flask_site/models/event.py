@@ -260,7 +260,7 @@ class EventCollection:
         timestamp = event_data['timestamp']
         event_type = event_data['eventType']
         query_filter = {"uid": uid, "timestamp": timestamp, "eventType": event_type}
-        db_data = self._get_event_dict(query_filter)
+        db_data = self._db_collection.find_one(query_filter)
         if not db_data:
             self._db_collection.insert_one(event_data)
 
