@@ -72,9 +72,11 @@ class ApexDBHelper:  # noqa E0302
         uid = player_data['global']['uid']
         internal_update_count = player_data['global']['internalUpdateCount']
         key = {"global.uid": uid, "global.internalUpdateCount": internal_update_count}
-        self.basic_player_collection.update_one(
-            filter=key, update={"$set": player_data}, upsert=True
-        )
+        one_record = self.basic_player_collection.find_one(key)
+        if not one_record:
+            self.basic_player_collection.update_one(
+                filter=key, update={"$set": player_data}, upsert=True
+            )
 
 
 def filter_game_list(game_list: List[GameEvent],
@@ -103,7 +105,5 @@ def filter_game_list(game_list: List[GameEvent],
 
 if __name__ == "__main__":
     db_helper: ApexDBHelper = ApexDBHelper()
-    event_objects = db_helper.event_collection.get_event_objects()
-    for event in event_objects:
-        if event.event_type.value == 'Rank':
-            print(event.event_type)
+    for basic_player_data in db_helper.database.dup_basic_player.find({}):
+        db_helper.save_basic_player_data(basic_player_data)

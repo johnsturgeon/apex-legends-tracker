@@ -83,7 +83,7 @@ def before_request():
         player: Player = get_player_from_cookie()
         if player:
             save_player_to_session(player)
-    if os.path.exists("maintenance"):
+    if os.path.exists("../maintenance"):
         abort(503)
 
 
