@@ -29,6 +29,12 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+      - name: Set env
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Test
+        run: |
+          echo $RELEASE_VERSION
+          echo ${{ env.RELEASE_VERSION }}
 
       - name: SSH - Enter maintenance mode
         uses: fifsky/ssh-action@master
@@ -58,22 +64,11 @@ jobs:
             DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }}
             DISCORD_REDIRECT_URI=${{ secrets.DISCORD_REDIRECT_URI }}
             FLASK_APP_SECRET_KEY=${{ secrets.FLASK_APP_SECRET_KEY }}
+            VERSION=${{ env.RELEASE_VERSION }}
             EOF
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-
-      - name: Rsync over common env file
-        uses: up9cloud/action-rsync@master
-        env:
-          HOST: ${{ secrets.REMOTE_HOST }}
-          KEY: ${{ secrets.SERVER_SSH_KEY }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}/common.env
-
-          VERBOSE: true
-          USER: ${{ secrets.REMOTE_USER }}
-          ARGS: -avz
-          SOURCE: ./common.env
 
       - name: Rsync over requirements file
         uses: up9cloud/action-rsync@master

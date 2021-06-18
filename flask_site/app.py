@@ -22,7 +22,6 @@ days_for_timeout: int = 14
 COOKIE_TIME_OUT = days_for_timeout * seconds_in_one_day
 
 load_dotenv()
-load_dotenv('common.env')
 app = Flask(__name__, template_folder='templates')
 app.secret_key = os.getenv('FLASK_APP_SECRET_KEY')
 
