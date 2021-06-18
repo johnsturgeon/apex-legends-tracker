@@ -30,37 +30,13 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/v*/}" >> $GITHUB_ENV
       - name: SSH - Enter maintenance mode
         uses: fifsky/ssh-action@master
         with:
           command: |
             cd ${{ secrets.REMOTE_TARGET }}
             bin/begin_deployment.sh
-          host: ${{ secrets.REMOTE_HOST }}
-          user: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-
-      - name: SSH - Create .env file
-        uses: fifsky/ssh-action@master
-        with:
-          command: |
-            cat << EOF > ${{ secrets.REMOTE_TARGET }}/.env
-            APEX_LEGENDS_API_KEY=${{ secrets.APEX_LEGENDS_API_KEY }}
-            MONGO_HOST=${{ secrets.MONGO_HOST }}
-            MONGO_PORT=${{ secrets.MONGO_PORT }}
-            MONGO_DB=${{ secrets.MONGO_DB }}
-            MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}
-            MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
-            LOG_LEVEL=${{ secrets.LOG_LEVEL }}
-            LOG_COLLECTION=${{ secrets.LOG_COLLECTION }}
-            OAUTHLIB_INSECURE_TRANSPORT=${{ secrets.OAUTHLIB_INSECURE_TRANSPORT }}
-            DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}
-            DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }}
-            DISCORD_REDIRECT_URI=${{ secrets.DISCORD_REDIRECT_URI }}
-            FLASK_APP_SECRET_KEY=${{ secrets.FLASK_APP_SECRET_KEY }}
-            VERSION=${{ env.RELEASE_VERSION }}
-            EOF
           host: ${{ secrets.REMOTE_HOST }}
           user: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
@@ -101,8 +77,17 @@ jobs:
 
           VERBOSE: true
           USER: ${{ secrets.REMOTE_USER }}
-          ARGS: -avz --delete
+          ARGS: -avz --delete --exclude instance
           SOURCE: ./flask_site/
+
+      - name: SSH - Create .version file in the flask_site/instance
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            echo ${{ env.RELEASE_VERSION }} > ${{ secrets.REMOTE_TARGET }}/flask_site/instance/.version
+          host: ${{ secrets.REMOTE_HOST }}
+          user: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
 
       - name: Rsync bin to production
         uses: up9cloud/action-rsync@master

@@ -5,14 +5,14 @@ import datetime
 from logging import Logger
 from typing import List
 
-from dotenv import load_dotenv
 from pymongo import MongoClient
 import pymongo.database
 from pymongo.collection import Collection
 
 from models import EventCollection, GameEvent, BasicInfoCollection, BasicInfo, PlayerCollection
 
-load_dotenv()
+from instance.config import get_config
+config = get_config(os.getenv('FLASK_ENV'))
 
 
 class LogHandler(logging.Handler):
@@ -22,10 +22,10 @@ class LogHandler(logging.Handler):
 
     def __init__(self, client):
         """ Initialize the logger """
-        level = getattr(logging, os.getenv('LOG_LEVEL'))
+        level = getattr(logging, config.LOG_LEVEL)
         logging.Handler.__init__(self, level)
         database: pymongo.database.Database = client.apex_legends
-        self.log_collection: Collection = database.get_collection(os.getenv('LOG_COLLECTION'))
+        self.log_collection: Collection = database.get_collection(config.LOG_COLLECTION)
 
     def emit(self, record):
         """ Override of the logger method """
@@ -43,10 +43,10 @@ class ApexDBHelper:  # noqa E0302
 
     def __init__(self):
         self.client: MongoClient = MongoClient(
-            host=os.getenv('MONGO_HOST'),
-            username=os.getenv('MONGO_USERNAME'),
-            password=os.getenv('MONGO_PASSWORD'),
-            authSource=os.getenv('MONGO_DB')
+            host=config.MONGO_HOST,
+            username=config.MONGO_USERNAME,
+            password=config.MONGO_PASSWORD,
+            authSource=config.MONGO_DB
         )
 
         self.database: pymongo.database.Database = self.client.apex_legends
@@ -61,7 +61,7 @@ class ApexDBHelper:  # noqa E0302
             self.database.basic_info
         ).basic_info
         logger: Logger = logging.getLogger('apex_logger')
-        logger.setLevel(getattr(logging, os.getenv('LOG_LEVEL')))
+        logger.setLevel(getattr(logging, config.LOG_LEVEL))
         if not logger.handlers:
             logger.addHandler(LogHandler(self.client))
         self.logger = logger

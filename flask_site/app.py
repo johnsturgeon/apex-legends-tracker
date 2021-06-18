@@ -2,7 +2,6 @@
 import os
 from typing import Optional, Tuple
 
-from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, render_template, \
     abort, send_from_directory, request, session
 from flask_profile import Profiler
@@ -15,26 +14,24 @@ from apex_view_controllers import IndexViewController, \
     DayByDayViewController, ProfileViewController, BattlePassViewController, \
     ClaimProfileViewController, DayDetailViewController
 from models import Player
+from instance.config import get_config
+config = get_config(os.getenv('FLASK_ENV'))
 
 # timeout in seconds * minutes
 seconds_in_one_day: int = 60*60*24
 days_for_timeout: int = 14
 COOKIE_TIME_OUT = days_for_timeout * seconds_in_one_day
 
-load_dotenv()
 app = Flask(__name__, template_folder='templates')
-app.secret_key = os.getenv('FLASK_APP_SECRET_KEY')
+app.instance_path = app.root_path + '/instance'
 
-# OAuth2 must make use of HTTPS in production environment.
-# !! Only in development environment.
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = os.getenv('OAUTHLIB_INSECURE_TRANSPORT')
-app.config["DISCORD_CLIENT_ID"] = os.getenv('DISCORD_CLIENT_ID')
-app.config["DISCORD_CLIENT_SECRET"] = os.getenv('DISCORD_CLIENT_SECRET')
-app.config["DISCORD_REDIRECT_URI"] = os.getenv('DISCORD_REDIRECT_URI')
-
+app.config.from_object(config)
+with app.open_instance_resource('.version') as v:
+    app.config['VERSION'] = v.read().decode("utf-8")
+os.environ['DISCORD_REDIRECT_URI'] = config.DISCORD_REDIRECT_URI
+os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = config.OAUTHLIB_INSECURE_TRANSPORT
 discord = DiscordOAuth2Session(app)
 
-api_key = os.getenv('APEX_LEGENDS_API_KEY')
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
 Profiler(app)
@@ -255,7 +252,7 @@ def battlepass():
 @app.template_filter('append_version_number')
 def append_version_number(value):
     """Jinja filter returns the current version """
-    return f"{value}{os.getenv('VERSION')}"
+    return f"{value}{app.config['VERSION']}"
 
 
 def get_player_for_view(player_uid: str) -> Tuple[Player, bool]:
