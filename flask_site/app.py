@@ -14,6 +14,7 @@ from apex_view_controllers import IndexViewController, \
     DayByDayViewController, ProfileViewController, BattlePassViewController, \
     ClaimProfileViewController, DayDetailViewController
 from models import Player
+# pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 
