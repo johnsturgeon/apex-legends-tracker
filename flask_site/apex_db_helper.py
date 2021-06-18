@@ -11,6 +11,7 @@ from pymongo.collection import Collection
 
 from models import EventCollection, GameEvent, BasicInfoCollection, BasicInfo, PlayerCollection
 
+# pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 

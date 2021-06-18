@@ -4,6 +4,7 @@ from typing import List
 
 from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlatform, ALAction
 
+# pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 
