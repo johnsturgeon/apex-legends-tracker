@@ -2,16 +2,17 @@
 import os
 from typing import List
 
-from dotenv import load_dotenv
 from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlatform, ALAction
 
-load_dotenv()
+# pylint: disable=import-error
+from instance.config import get_config
+config = get_config(os.getenv('FLASK_ENV'))
 
 
 class ApexAPIHelper:
     """ Wrapper class for the Apex API to add a few helper methods """
     def __init__(self):
-        self.api: ApexLegendsAPI = ApexLegendsAPI(api_key=os.getenv('APEX_LEGENDS_API_KEY'))
+        self.api: ApexLegendsAPI = ApexLegendsAPI(api_key=config.APEX_LEGENDS_API_KEY)
 
     @property
     def basic_players_from_api(self) -> List[dict]:
