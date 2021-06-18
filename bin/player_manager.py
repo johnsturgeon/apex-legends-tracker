@@ -42,6 +42,9 @@ def save_one_player_data(player: Player):
     except ALHTTPExceptionFromResponse:
         log.warning("Player: %s not found", player)
         return
+    except ConnectionError as con_error:
+        log.warning("Connection Error Saving 'player data'.\nError message: %s", con_error)
+        return
     else:
         assert isinstance(basic_player_data_list, list)
         assert len(basic_player_data_list) == 1
@@ -64,6 +67,9 @@ def save_one_player_event_data(player: Player):
         log.debug("Got events by UID for player %s ", player)
     except ALHTTPExceptionFromResponse:
         log.warning("Player: %s not found", player)
+        return
+    except ConnectionError as con_error:
+        log.warning("Connection Error Saving 'event'.\nError message: %s", con_error)
         return
     else:
         for event_data in event_data_list:

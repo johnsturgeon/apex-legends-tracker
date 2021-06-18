@@ -4,6 +4,11 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.17] - 2021-06-18
+### Fixed
+- I'm now catching errors when connections go bad to the api server.
+- Resolves #193
+
 ## [1.2.16] - 2021-06-17
 ### Fixed
 - One more small deployment issue
