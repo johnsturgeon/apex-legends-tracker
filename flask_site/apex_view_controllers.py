@@ -8,7 +8,7 @@ import pymongo
 from arrow import Arrow
 
 from apex_db_helper import ApexDBHelper, filter_game_list
-from config import Config
+from models.config import Config
 from models import GameEvent, RankTier, Division, RankedDivisionInfo, Player, Season
 from apex_utilities import players_sorted_by_key
 import plotly.graph_objects as go
