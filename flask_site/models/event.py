@@ -7,7 +7,7 @@ import arrow
 from pydantic import BaseModel, Field, PrivateAttr
 
 from models.tracker_info import TrackerInfoCollection
-from season import Season
+from models.season import Season
 from apex_utilities import get_arrow_date_to_use
 
 
