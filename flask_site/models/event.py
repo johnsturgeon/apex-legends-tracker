@@ -1,112 +1,88 @@
-""" Dataclass to represent basic_info collection """
-from dataclasses import dataclass, field
-from typing import List, Tuple, Dict, Any
+""" Dataclass to represent event collection """
+from typing import List, Tuple, Optional
 from enum import Enum
 import pymongo
+import pymongo.database
 import arrow
-from mashumaro.config import BaseConfig, TO_DICT_ADD_OMIT_NONE_FLAG
-from mashumaro import DataClassDictMixin, field_options
-from pymongo.collection import Collection
+from pydantic import BaseModel, Field, PrivateAttr
 
-from apex_utilities import get_arrow_date_to_use
 from models.tracker_info import TrackerInfoCollection
-from models import BasicInfoCollection, BasicInfo, RankedSplit
+from season import Season
+from apex_utilities import get_arrow_date_to_use
 
 
 # pylint: disable=missing-class-docstring
 # pylint: disable=too-many-instance-attributes
-class EventType(Enum):
+class EventType(str, Enum):
     SESSION = 'Session'
     GAME = 'Game'
     LEVEL = 'Level'
     RANK = 'Rank'
 
 
-@dataclass
-class BaseEvent(DataClassDictMixin):
+class BaseEvent(BaseModel):
     uid: str
     player: str
     timestamp: int
-    event_type: EventType = field(metadata=field_options(alias="eventType"))
+    event_type: EventType = Field(alias='eventType')
 
-    class Config(BaseConfig):
-        code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]
-        serialize_by_alias = True
-
-
-@dataclass
-class RankEventDetail(DataClassDictMixin):
-    new_rank: str = field(metadata=field_options(alias="newRank"))
-    new_rank_img: str = field(metadata=field_options(alias="newRankImg"))
-
-    class Config(BaseConfig):
-        serialize_by_alias = True
+    def dict(self, **kwargs):
+        return super().dict(
+            by_alias=True,
+            exclude_none=True,
+            **kwargs
+        )
 
 
-@dataclass
+class RankEventDetail(BaseModel):
+    new_rank: str = Field(alias='newRank')
+    new_rank_img: str = Field(alias='newRankImg')
+
+
 class RankEvent(BaseEvent):
     event: RankEventDetail
 
 
-@dataclass
-class LevelEventDetail(DataClassDictMixin):
-    new_level: int = field(metadata=field_options(alias="newLevel"))
-
-    class Config(BaseConfig):
-        serialize_by_alias = True
+class LevelEventDetail(BaseModel):
+    new_level: int = Field(alias='newLevel')
 
 
-@dataclass
 class LevelEvent(BaseEvent):
     event: LevelEventDetail
 
 
-class SessionAction(Enum):
+class SessionAction(str, Enum):
     LEAVE = 'leave'
     JOIN = 'join'
 
 
-@dataclass
-class SessionEventDetail(DataClassDictMixin):
+class SessionEventDetail(BaseModel):
     action: SessionAction
-    session_duration: int = field(default=None, metadata=field_options(alias="sessionDuration"))
-
-    class Config(BaseConfig):
-        serialize_by_alias = True
-        code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]
+    session_duration: Optional[int] = Field(alias='sessionDuration')
 
 
-@dataclass
 class SessionEvent(BaseEvent):
     event: SessionEventDetail
 
 
-@dataclass
-class GameEventDetail(DataClassDictMixin):
+class GameEventDetail(BaseModel):
     value: int
     key: str
     name: str
 
 
-@dataclass
 class GameEvent(BaseEvent):
     event: List[GameEventDetail]
-    game_length: int = field(metadata=field_options(alias="gameLength"))
-    legend_played: str = field(metadata=field_options(alias="legendPlayed"))
-    rank_score_change: str = field(metadata=field_options(alias="rankScoreChange"))
-    xp_progress: int = field(metadata=field_options(alias="xpProgress"))
-    current_rank_score: str = field(default=None, metadata=field_options(alias="currentRankScore"))
+    game_length: int = Field(alias='gameLength')
+    legend_played: str = Field(alias='legendPlayed')
+    rank_score_change: str = Field(alias='rankScoreChange')
+    xp_progress: int = Field(alias='xpProgress')
     kills: int = 0
     wins: int = 0
     damage: int = 0
-    _formatted_time: str = None
-    _day_of_event: str = None
-
-    def __post_serialize__(self, d: Dict[Any, Any]) -> Dict[Any, Any]:
-        d.pop('kills')
-        d.pop('wins')
-        d.pop('damage')
-        return d
+    _day_of_event: str = PrivateAttr(None)
+    _formatted_time: str = PrivateAttr(None)
+    current_rank_score: Optional[str] = Field(alias='currentRankScore')
 
     @property
     def day_of_event(self) -> str:
@@ -131,26 +107,16 @@ class GameEvent(BaseEvent):
             return total
         return 0
 
-    class Config(BaseConfig):
-        """ Config class """
-        code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]
-        serialize_by_alias = True
+    def dict(self, **kwargs):
+        return super().dict(exclude={'kills', 'damage', 'wins'}, **kwargs)
 
 
 class EventCollection:
     """ Class for abstracting the event collection """
-    def __init__(self,
-                 event_collection: Collection,
-                 basic_info_collection: Collection,
-                 tracker_info_collection: Collection
-                 ):
-        self._db_collection: Collection = event_collection
-        self._basic_info_collection: BasicInfoCollection = BasicInfoCollection(
-            basic_info_collection
-        )
-        self._tracker_info_collection: TrackerInfoCollection = TrackerInfoCollection(
-            tracker_info_collection
-        )
+
+    def __init__(self, db: pymongo.database.Database):
+        self._event_collection: pymongo.collection.Collection = db.event
+        self._tracker_info_collection: TrackerInfoCollection = TrackerInfoCollection(db)
 
     def get_games(self,
                   player_uid: int = 0,
@@ -185,41 +151,32 @@ class EventCollection:
 
         game_list: List[GameEvent] = []
         for game in event_list:
-            game_event: GameEvent = GameEvent.from_dict(game)
+            game_event: GameEvent = GameEvent(**game)
             self.update_game_category_totals(game_event)
             game_list.append(game_event)
         return game_list
 
     def get_ranked_games(self,
                          player_uid: int = 0,
-                         season_number: int = 0,
+                         season: Optional[Season] = None,
                          split_number: int = 0
                          ) -> List[GameEvent]:
         """
         Returns a list of 'filtered' games based on season / split (current if none given)
         Args:
             player_uid:  Player UID for ranked games (default all players)
-            season_number: Season number must be less than or equal to the current season
+            season: Season to get ranked games for
             split_number: Split number (cannot be zero of season given)
 
         Returns:
             List of all ranked game events
         """
-        basic_info: BasicInfo = self._basic_info_collection.basic_info
-        if season_number:
-            assert season_number <= basic_info.current_season
-
-        current_ranked_splits: List[RankedSplit] = basic_info.get_ranked_splits(
-            season_number=season_number
-        )
-        assert len(current_ranked_splits) >= 2
         if not split_number:
-            start_date = basic_info.get_season_start_day(season_number)
-            end_date = basic_info.get_season_end_day(season_number)
+            start_date = season.start_date
+            end_date = season.end_date
         else:
-            split_index: int = split_number - 1
-            start_date = current_ranked_splits[split_index].start_date
-            end_date = current_ranked_splits[split_index].end_date
+            start_date, end_date = season.get_ranked_split_dates(split_number=split_number)
+
         query_filter: dict = {
             "rankScoreChange": {
                 "$ne": "0"
@@ -250,9 +207,9 @@ class EventCollection:
         assert sort_order in (pymongo.ASCENDING, 0, pymongo.DESCENDING)
         if sort_order:
             return list(
-                self._db_collection.find(query_filter).sort('timestamp', sort_order)
+                self._event_collection.find(query_filter).sort('timestamp', sort_order)
             )
-        return list(self._db_collection.find(query_filter))
+        return list(self._event_collection.find(query_filter))
 
     def save_event_dict(self, event_data: dict):
         """ Saves any 'new' event data record """
@@ -260,33 +217,6 @@ class EventCollection:
         timestamp = event_data['timestamp']
         event_type = event_data['eventType']
         query_filter = {"uid": uid, "timestamp": timestamp, "eventType": event_type}
-        db_data = self._db_collection.find_one(query_filter)
+        db_data = self._event_collection.find_one(query_filter)
         if not db_data:
-            self._db_collection.insert_one(event_data)
-
-    def get_event_objects(self) -> List[BaseEvent]:
-        """ Returns a list of Event objects, query their 'EventType' to get the structure """
-        event_list: List[BaseEvent] = list()
-        for event in self._get_event_dict(query_filter={}):
-            del event['_id']
-            if event['eventType'] == EventType.GAME.value:
-                event_class: GameEvent = GameEvent.from_dict(event)
-                event_list.append(event_class)
-                if event != event_class.to_dict(omit_none=True):
-                    assert False
-            if event['eventType'] == EventType.RANK.value:
-                event_class: RankEvent = RankEvent.from_dict(event)
-                event_list.append(event_class)
-                if event != event_class.to_dict(omit_none=True):
-                    assert False
-            if event['eventType'] == EventType.LEVEL.value:
-                event_class: LevelEvent = LevelEvent.from_dict(event)
-                event_list.append(event_class)
-                if event != event_class.to_dict(omit_none=True):
-                    assert False
-            if event['eventType'] == EventType.SESSION.value:
-                event_class: SessionEvent = SessionEvent.from_dict(event)
-                event_list.append(event_class)
-                if event != event_class.to_dict(omit_none=True):
-                    assert False
-        return event_list
+            self._event_collection.insert_one(event_data)

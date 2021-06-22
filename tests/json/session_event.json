@@ -1,0 +1,116 @@
+[{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035a"
+  },
+  "eventType": "Session",
+  "timestamp": 1619236851,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 11
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035b"
+  },
+  "eventType": "Session",
+  "timestamp": 1619236196,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035c"
+  },
+  "eventType": "Session",
+  "timestamp": 1619234810,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 1
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035e"
+  },
+  "eventType": "Session",
+  "timestamp": 1619234751,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035f"
+  },
+  "eventType": "Session",
+  "timestamp": 1619234637,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 32
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900361"
+  },
+  "eventType": "Session",
+  "timestamp": 1619232770,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900363"
+  },
+  "eventType": "Session",
+  "timestamp": 1619062970,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 37
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036a"
+  },
+  "eventType": "Session",
+  "timestamp": 1619060750,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036b"
+  },
+  "eventType": "Session",
+  "timestamp": 1618978670,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 101
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490037a"
+  },
+  "eventType": "Session",
+  "timestamp": 1618972611,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+}]

@@ -1,0 +1,560 @@
+[{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035d"
+  },
+  "eventType": "Game",
+  "timestamp": 1619234751,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 274,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    },
+    {
+      "value": 1,
+      "key": "wins_season_8",
+      "name": "Season 8 wins"
+    }
+  ],
+  "gameLength": 21,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 4500
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900360"
+  },
+  "eventType": "Game",
+  "timestamp": 1619233490,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 265,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 10,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 2160
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900362"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062970,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 159,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 3,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900364"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062670,
+  "uid": "1000132741950",
+  "event": [],
+  "gameLength": 2,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 0
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900365"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062430,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 250,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 2,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900366"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062250,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 236,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 9,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 2160
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900367"
+  },
+  "eventType": "Game",
+  "timestamp": 1619061530,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 34,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 4,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 540
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900368"
+  },
+  "eventType": "Game",
+  "timestamp": 1619061230,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 44,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 2,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900369"
+  },
+  "eventType": "Game",
+  "timestamp": 1619061051,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 29,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 5,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036c"
+  },
+  "eventType": "Game",
+  "timestamp": 1618978611,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 244,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 16,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 3600
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036f"
+  },
+  "eventType": "Level",
+  "timestamp": 1618976690,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 56
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900385"
+  },
+  "eventType": "Level",
+  "timestamp": 1618889090,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 55
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900399"
+  },
+  "eventType": "Level",
+  "timestamp": 1618802753,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 54
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c209162649003b0"
+  },
+  "eventType": "Level",
+  "timestamp": 1618716110,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 53
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c209162649003c6"
+  },
+  "eventType": "Level",
+  "timestamp": 1618539832,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 52
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c209162649003da"
+  },
+  "eventType": "Level",
+  "timestamp": 1618358572,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 51
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900400"
+  },
+  "eventType": "Level",
+  "timestamp": 1617589013,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 50
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490040f"
+  },
+  "eventType": "Level",
+  "timestamp": 1617493492,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 49
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900424"
+  },
+  "eventType": "Level",
+  "timestamp": 1617402172,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 48
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900438"
+  },
+  "eventType": "Level",
+  "timestamp": 1617249353,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 47
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23c5c20916264900520"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618723914,
+  "uid": "2535435642984821",
+  "event": {
+    "newRank": "Diamond 4",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Blandhound"
+},{
+  "_id": {
+    "$oid": "6084d23e5c209162649006e6"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618723912,
+  "uid": "2535460772553808",
+  "event": {
+    "newRank": "Diamond 4",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTV H0L0rage"
+},{
+  "_id": {
+    "$oid": "6084d23e5c20916264900706"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618638534,
+  "uid": "2535460772553808",
+  "event": {
+    "newRank": "Platinum 1",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTV H0L0rage"
+},{
+  "_id": {
+    "$oid": "6084d23e5c209162649007a8"
+  },
+  "eventType": "Rank",
+  "timestamp": 1617683814,
+  "uid": "2535460772553808",
+  "event": {
+    "newRank": "Platinum 2",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTV H0L0rage"
+},{
+  "_id": {
+    "$oid": "6084d2405c20916264900ae2"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616733955,
+  "uid": "2533274796482191",
+  "event": {
+    "newRank": "Bronze 1",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Basicide"
+},{
+  "_id": {
+    "$oid": "6084d2405c20916264900ae6"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616732335,
+  "uid": "2533274796482191",
+  "event": {
+    "newRank": "Bronze 2",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Basicide"
+},{
+  "_id": {
+    "$oid": "6084d2415c20916264900aec"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616729335,
+  "uid": "2533274796482191",
+  "event": {
+    "newRank": "Bronze 3",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Basicide"
+},{
+  "_id": {
+    "$oid": "6084d2425c20916264900c7e"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616909574,
+  "uid": "2533274809927419",
+  "event": {
+    "newRank": "Bronze 3",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Warblade"
+},{
+  "_id": {
+    "$oid": "6084d2435c20916264900daa"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618723910,
+  "uid": "2533274947905327",
+  "event": {
+    "newRank": "Diamond 4",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTVKn0cktane"
+},{
+  "_id": {
+    "$oid": "6084d2435c20916264900e54"
+  },
+  "eventType": "Rank",
+  "timestamp": 1617856432,
+  "uid": "2533274947905327",
+  "event": {
+    "newRank": "Platinum 1",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTVKn0cktane"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035a"
+  },
+  "eventType": "Session",
+  "timestamp": 1619236851,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 11
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035b"
+  },
+  "eventType": "Session",
+  "timestamp": 1619236196,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035c"
+  },
+  "eventType": "Session",
+  "timestamp": 1619234810,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 1
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035e"
+  },
+  "eventType": "Session",
+  "timestamp": 1619234751,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035f"
+  },
+  "eventType": "Session",
+  "timestamp": 1619234637,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 32
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900361"
+  },
+  "eventType": "Session",
+  "timestamp": 1619232770,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900363"
+  },
+  "eventType": "Session",
+  "timestamp": 1619062970,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 37
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036a"
+  },
+  "eventType": "Session",
+  "timestamp": 1619060750,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036b"
+  },
+  "eventType": "Session",
+  "timestamp": 1618978670,
+  "uid": "1000132741950",
+  "event": {
+    "action": "leave",
+    "sessionDuration": 101
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490037a"
+  },
+  "eventType": "Session",
+  "timestamp": 1618972611,
+  "uid": "1000132741950",
+  "event": {
+    "action": "join"
+  },
+  "player": "GoshDarnedHero"
+}]

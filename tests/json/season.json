@@ -1,0 +1,70 @@
+[{
+  "_id": {
+    "$oid": "60d08f951315c01576031009"
+  },
+  "season_number": 1,
+  "start_date": "2019-03-19",
+  "end_date": "2019-07-01"
+},{
+  "_id": {
+    "$oid": "60d08f951315c0157603100a"
+  },
+  "season_number": 2,
+  "start_date": "2019-07-02",
+  "end_date": "2019-09-30"
+},{
+  "_id": {
+    "$oid": "60d08f951315c0157603100b"
+  },
+  "season_number": 3,
+  "start_date": "2019-10-01",
+  "end_date": "2020-02-03"
+},{
+  "_id": {
+    "$oid": "60d08f951315c0157603100c"
+  },
+  "season_number": 4,
+  "start_date": "2020-02-04",
+  "ranked_split_date": "2020-03-24",
+  "end_date": "2020-05-11"
+},{
+  "_id": {
+    "$oid": "60d08f951315c0157603100d"
+  },
+  "season_number": 5,
+  "start_date": "2020-05-12",
+  "ranked_split_date": "2020-06-30",
+  "end_date": "2020-08-17"
+},{
+  "_id": {
+    "$oid": "60d08f951315c0157603100e"
+  },
+  "season_number": 6,
+  "start_date": "2020-08-18",
+  "ranked_split_date": "2020-09-29",
+  "end_date": "2020-11-03"
+},{
+  "_id": {
+    "$oid": "60d08f951315c0157603100f"
+  },
+  "season_number": 7,
+  "start_date": "2020-11-04",
+  "ranked_split_date": "2020-12-15",
+  "end_date": "2021-02-20"
+},{
+  "_id": {
+    "$oid": "60d08f951315c01576031010"
+  },
+  "season_number": 8,
+  "start_date": "2021-02-21",
+  "ranked_split_date": "2021-03-23",
+  "end_date": "2021-05-03"
+},{
+  "_id": {
+    "$oid": "60d08f951315c01576031011"
+  },
+  "season_number": 9,
+  "start_date": "2021-05-04",
+  "ranked_split_date": "2021-06-15",
+  "end_date": "2021-08-02"
+}]

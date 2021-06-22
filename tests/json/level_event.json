@@ -1,0 +1,111 @@
+[{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036f"
+  },
+  "eventType": "Level",
+  "timestamp": 1618976690,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 56
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900385"
+  },
+  "eventType": "Level",
+  "timestamp": 1618889090,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 55
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900399"
+  },
+  "eventType": "Level",
+  "timestamp": 1618802753,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 54
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c209162649003b0"
+  },
+  "eventType": "Level",
+  "timestamp": 1618716110,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 53
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c209162649003c6"
+  },
+  "eventType": "Level",
+  "timestamp": 1618539832,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 52
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c209162649003da"
+  },
+  "eventType": "Level",
+  "timestamp": 1618358572,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 51
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900400"
+  },
+  "eventType": "Level",
+  "timestamp": 1617589013,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 50
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490040f"
+  },
+  "eventType": "Level",
+  "timestamp": 1617493492,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 49
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900424"
+  },
+  "eventType": "Level",
+  "timestamp": 1617402172,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 48
+  },
+  "player": "GoshDarnedHero"
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900438"
+  },
+  "eventType": "Level",
+  "timestamp": 1617249353,
+  "uid": "1000132741950",
+  "event": {
+    "newLevel": 47
+  },
+  "player": "GoshDarnedHero"
+}]

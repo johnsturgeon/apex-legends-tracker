@@ -1,21 +1,22 @@
 """ All model objects """
 # pylint: disable=import-error
-from .basic_info import BasicInfo, RankedDivisionInfo, RankedSplit, RankTier, Division,\
-    BasicInfoCollection
+from .config import Config, RankedDivisionInfo, ConfigCollection, RankTier, Division
 from .event import GameEvent, EventCollection
 from .player import Player, PlayerCollection
 from .tracker_info import TrackerInfo, TrackerInfoCollection
+from .season import SeasonCollection, Season
 __all__ = [
-    'BasicInfo',
-    'GameEvent',
-    'EventCollection',
-    'RankedDivisionInfo',
-    'RankedSplit',
-    'RankTier',
+    'Config',
+    'ConfigCollection',
     'Division',
+    'EventCollection',
+    'GameEvent',
     'Player',
     'PlayerCollection',
+    'RankTier',
+    'RankedDivisionInfo',
+    'Season',
+    'SeasonCollection',
     'TrackerInfo',
-    'TrackerInfoCollection',
-    'BasicInfoCollection'
+    'TrackerInfoCollection'
 ]

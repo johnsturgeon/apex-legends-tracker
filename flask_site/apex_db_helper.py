@@ -9,10 +9,12 @@ from pymongo import MongoClient
 import pymongo.database
 from pymongo.collection import Collection
 
-from models import EventCollection, GameEvent, BasicInfoCollection, BasicInfo, PlayerCollection
+from models import EventCollection, GameEvent, Config, PlayerCollection, ConfigCollection
+from models import SeasonCollection
 
 # pylint: disable=import-error
 from instance.config import get_config
+
 config = get_config(os.getenv('FLASK_ENV'))
 
 
@@ -52,15 +54,10 @@ class ApexDBHelper:  # noqa E0302
 
         self.database: pymongo.database.Database = self.client.apex_legends
         self.basic_player_collection: Collection = self.database.basic_player
-        self.event_collection: EventCollection = EventCollection(
-            event_collection=self.database.event,
-            basic_info_collection=self.database.basic_info,
-            tracker_info_collection=self.database.tracker_info
-        )
-        self.player_collection: PlayerCollection = PlayerCollection(self.database.player)
-        self.basic_info: BasicInfo = BasicInfoCollection(
-            self.database.basic_info
-        ).basic_info
+        self.event_collection: EventCollection = EventCollection(self.database)
+        self.player_collection: PlayerCollection = PlayerCollection(self.database)
+        self.season_collection: SeasonCollection = SeasonCollection(self.database)
+        self.config: Config = ConfigCollection(self.database).config
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, config.LOG_LEVEL))
         if not logger.handlers:
