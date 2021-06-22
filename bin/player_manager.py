@@ -46,8 +46,18 @@ def save_one_player_data(player: Player):
         log.warning("Connection Error Saving 'player data'.\nError message: %s", con_error)
         return
     else:
-        assert isinstance(basic_player_data_list, list)
-        assert len(basic_player_data_list) == 1
+        if not isinstance(basic_player_data_list, list):
+            log.warning(
+                "basic_player_data_list is not a list, here's what we got: %s",
+                basic_player_data_list
+            )
+            return
+        if not len(basic_player_data_list) == 1:
+            log.warning(
+                "basic_player_data_list is not just one, here's what it is: %s",
+                basic_player_data_list
+            )
+            return
         basic_player_data = basic_player_data_list[0]
         log.debug("Saving Basic Player Data: %s", basic_player_data)
         apex_db_helper.save_basic_player_data(player_data=basic_player_data)
