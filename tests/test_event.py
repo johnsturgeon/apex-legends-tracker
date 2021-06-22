@@ -1,7 +1,5 @@
 """ event model tests """
-from typing import List
-
-from models.event import BaseEvent, GameEvent, LevelEvent, RankEvent, SessionEvent, EventType
+from models.event import GameEvent, LevelEvent, RankEvent, SessionEvent
 
 
 # pylint: disable=missing-function-docstring
