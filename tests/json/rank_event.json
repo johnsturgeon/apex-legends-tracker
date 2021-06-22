@@ -1,0 +1,121 @@
+[{
+  "_id": {
+    "$oid": "6084d23c5c20916264900520"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618723914,
+  "uid": "2535435642984821",
+  "event": {
+    "newRank": "Diamond 4",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Blandhound"
+},{
+  "_id": {
+    "$oid": "6084d23e5c209162649006e6"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618723912,
+  "uid": "2535460772553808",
+  "event": {
+    "newRank": "Diamond 4",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTV H0L0rage"
+},{
+  "_id": {
+    "$oid": "6084d23e5c20916264900706"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618638534,
+  "uid": "2535460772553808",
+  "event": {
+    "newRank": "Platinum 1",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTV H0L0rage"
+},{
+  "_id": {
+    "$oid": "6084d23e5c209162649007a8"
+  },
+  "eventType": "Rank",
+  "timestamp": 1617683814,
+  "uid": "2535460772553808",
+  "event": {
+    "newRank": "Platinum 2",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTV H0L0rage"
+},{
+  "_id": {
+    "$oid": "6084d2405c20916264900ae2"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616733955,
+  "uid": "2533274796482191",
+  "event": {
+    "newRank": "Bronze 1",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Basicide"
+},{
+  "_id": {
+    "$oid": "6084d2405c20916264900ae6"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616732335,
+  "uid": "2533274796482191",
+  "event": {
+    "newRank": "Bronze 2",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Basicide"
+},{
+  "_id": {
+    "$oid": "6084d2415c20916264900aec"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616729335,
+  "uid": "2533274796482191",
+  "event": {
+    "newRank": "Bronze 3",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Basicide"
+},{
+  "_id": {
+    "$oid": "6084d2425c20916264900c7e"
+  },
+  "eventType": "Rank",
+  "timestamp": 1616909574,
+  "uid": "2533274809927419",
+  "event": {
+    "newRank": "Bronze 3",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "Warblade"
+},{
+  "_id": {
+    "$oid": "6084d2435c20916264900daa"
+  },
+  "eventType": "Rank",
+  "timestamp": 1618723910,
+  "uid": "2533274947905327",
+  "event": {
+    "newRank": "Diamond 4",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTVKn0cktane"
+},{
+  "_id": {
+    "$oid": "6084d2435c20916264900e54"
+  },
+  "eventType": "Rank",
+  "timestamp": 1617856432,
+  "uid": "2533274947905327",
+  "event": {
+    "newRank": "Platinum 1",
+    "newRankImg": "http://api.apexlegendsstatus.com/assets/ranks/.png"
+  },
+  "player": "TTVKn0cktane"
+}]

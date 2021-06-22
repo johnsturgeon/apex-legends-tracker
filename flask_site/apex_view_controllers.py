@@ -8,7 +8,8 @@ import pymongo
 from arrow import Arrow
 
 from apex_db_helper import ApexDBHelper, filter_game_list
-from models import GameEvent, RankTier, Division, RankedDivisionInfo, Player, RankedSplit
+from config import Config
+from models import GameEvent, RankTier, Division, RankedDivisionInfo, Player, Season
 from apex_utilities import players_sorted_by_key
 import plotly.graph_objects as go
 import plotly.utils as ut
@@ -229,10 +230,10 @@ class ProfileViewController:
     """ View controller for the player detail page """
     def __init__(self, db_helper: ApexDBHelper, player: Player):
         self.player = player
-        self._basic_info = db_helper.basic_info
-        self.season_number: int = self._basic_info.current_season
+        self._config = db_helper.config
+        self.season: Season = db_helper.season_collection.get_current_season()
         self._ranked_games = db_helper.event_collection.get_ranked_games(
-            season_number=self.season_number,
+            season=self.season,
             player_uid=self.player.uid
         )
 
@@ -256,7 +257,7 @@ class ProfileViewController:
         prev_rank: int = 0
         distance_to_next: int = 0
         for day, rank_info in rank_dict.items():
-            rank_tier: RankTier = self._basic_info.get_rank_div_tier(
+            rank_tier: RankTier = self._config.get_rank_div_tier_for_points(
                 rank_info.end_of_day_score
             )
             distance_token: str = '🟢'
@@ -294,7 +295,7 @@ class ProfileViewController:
     def add_rank_bands_to_fig(self, fig):
         """ adds a rank band to the figure """
         y_pos = 0
-        div_info: RankedDivisionInfo = self._basic_info.ranked_division_info
+        div_info: RankedDivisionInfo = self._config.ranked_division_info
         division: Division
         for division in div_info.divisions:
             opacity = 0.05
@@ -313,33 +314,30 @@ class ProfileViewController:
                 y_pos += step_increment
                 opacity += 0.06
         # add vertical line for split
-        ranked_splits: List[RankedSplit] = self._basic_info.get_ranked_splits(
-            season_number=self.season_number
-        )
-        for split in ranked_splits:
-            if split != ranked_splits[-1]:
-                fig.add_vline(
-                    x=split.end_date,
-                    row="hi",
-                    col="col",
-                    line_dash="dash",
-                    line_width=1,
-                    line_color="#F5DEB3"
-                )
-                fig.add_annotation(
-                    x=split.end_date,
-                    text="New Split",
-                    yanchor="top",
-                    font_color="#F5DEB3",
-                    borderpad=3,
-                    bordercolor="#F5DEB3",
-                    bgcolor="#412020",
-                    align="center",
-                    valign="top",
-                    showarrow=False,
-                    yref="paper",
-                    y=1.1
-                )
+        if self.season.ranked_split_date:
+            _, end_date = self.season.first_ranked_split_dates
+            fig.add_vline(
+                x=end_date,
+                row="hi",
+                col="col",
+                line_dash="dash",
+                line_width=1,
+                line_color="#F5DEB3"
+            )
+            fig.add_annotation(
+                x=end_date,
+                text="New Split",
+                yanchor="top",
+                font_color="#F5DEB3",
+                borderpad=3,
+                bordercolor="#F5DEB3",
+                bgcolor="#412020",
+                align="center",
+                valign="top",
+                showarrow=False,
+                yref="paper",
+                y=1.1
+            )
 
     def ranked_plot(self):
         """ Create a spline smoothed chart """
@@ -356,7 +354,7 @@ class ProfileViewController:
         tick_values: list = [y_tick_value]
         tick_text: list = ['']
         division: Division
-        for division in self._basic_info.ranked_division_info.divisions:
+        for division in self._config.ranked_division_info.divisions:
             y_tick_value = y_tick_value + (division.rp_between_tiers * 4)
             tick_values.append(y_tick_value - 1)
             tick_text.append(division.name)
@@ -390,14 +388,16 @@ class BattlePassViewController:
 
     def __init__(self, db_helper: ApexDBHelper):
         self.tracked_players: List[Player] = db_helper.player_collection.get_tracked_players()
-        self.battlepass_info = db_helper.basic_info.get_season().battlepass_info
+        self.config: Config = db_helper.config
+        self.season: Season = db_helper.season_collection.get_current_season()
         self.battlepass_data: dict = dict()
-        start_date = arrow.get(self.battlepass_info.start_date)
-        end_date = arrow.get(self.battlepass_info.end_date)
+        start_date = arrow.get(self.season.start_date)
+        end_date = arrow.get(self.season.end_date)
         today = arrow.now('US/Pacific')
-        battlepass_max = self.battlepass_info.goal_battlepass
+        battlepass_max = self.config.battlepass_goal
         days_progressed = (today - start_date).days
         days_in_season = (end_date - start_date).days
+        self.battlepass_data['battlepass_goal'] = self.config.battlepass_goal
         self.battlepass_data['days_in_season'] = days_in_season
         self.battlepass_data['days_progressed'] = days_progressed
         level_per_day_rate = battlepass_max / days_in_season

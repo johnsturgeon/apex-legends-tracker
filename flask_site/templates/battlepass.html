@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 {% set page_title="Friends of the Apex Legends API: Battle Pass" %}
-{% set bp_info = view_controller.battlepass_info %}
 {% set bp_data = view_controller.battlepass_data %}
-{% set max_battlepass = bp_info.goal_battlepass %}
+{% set max_battlepass = bp_data.battlepass_goal %}
 {% set goal_level = bp_data.goal_levels | round(0) | int%}
 {% set cur_day = bp_data.days_progressed%}
 {% set total_days = bp_data.days_in_season %}

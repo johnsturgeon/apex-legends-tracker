@@ -1,13 +1,11 @@
 """ Dataclass to represent tracker_info collection """
-from dataclasses import dataclass
 from typing import List
-from pymongo.collection import Collection
 
-from mashumaro import DataClassDictMixin
+from pydantic import BaseModel
+import pymongo.database
 
 
-@dataclass
-class TrackerInfo (DataClassDictMixin):
+class TrackerInfo (BaseModel):
     """ Tracker Info Class """
     tracker_key: str
     grouping: str
@@ -20,18 +18,17 @@ class TrackerInfo (DataClassDictMixin):
 
 class TrackerInfoCollection:
     """ Class for aggregate tracker info methods"""
-    def __init__(self, collection: Collection):
-        self._collection = collection
-        self._tracker_info_collection: List[TrackerInfo] = list()
+    def __init__(self, db: pymongo.database.Database):
+        self._collection = db.tracker_info
+        self._tracker_info_list: List[TrackerInfo] = list()
 
     @property
     def tracker_info_collection(self) -> List[TrackerInfo]:
         """ Lazy init for tracker info """
-        if not self._tracker_info_collection:
-            self._tracker_info_collection: List[TrackerInfo] = list()
+        if not self._tracker_info_list:
             for item in self._collection.find({}):
-                self._tracker_info_collection.append(TrackerInfo.from_dict(item))
-        return self._tracker_info_collection
+                self._tracker_info_list.append(TrackerInfo(**item))
+        return self._tracker_info_list
 
     def category_for_key(self, key: str) -> str:
         """ Returns the category for the key """

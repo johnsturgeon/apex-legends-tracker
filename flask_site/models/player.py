@@ -1,16 +1,13 @@
 """ Dataclass to represent player collection """
-from dataclasses import dataclass
 from typing import Optional, List
-from pymongo.collection import Collection
 
+import pymongo.database
 
-from mashumaro import DataClassDictMixin
-from mashumaro.config import BaseConfig, TO_DICT_ADD_OMIT_NONE_FLAG
+from pydantic import BaseModel
 
 
 # pylint: disable=too-many-instance-attributes
-@dataclass
-class Player(DataClassDictMixin):
+class Player(BaseModel):
     """ Player data class """
     uid: int
     is_online: int
@@ -25,21 +22,23 @@ class Player(DataClassDictMixin):
     wins: Optional[int] = None
     damage_avg: Optional[float] = None
 
-    class Config(BaseConfig):
-        """ Config class """
-        code_generation_options = [TO_DICT_ADD_OMIT_NONE_FLAG]
+    def dict(self, **kwargs):
+        return super().dict(
+            exclude_none=True,
+            **kwargs
+        )
 
 
 class PlayerCollection:
     """ Player Collection class """
-    def __init__(self, collection: Collection):
-        self._collection = collection
+    def __init__(self, db: pymongo.database.Database):
+        self._collection = db.player
 
     def get_tracked_players(self) -> list[Player]:
         """ Return a list of dictionaries containing each player's data"""
         player_list: List[Player] = list()
         for player_data in self._collection.find():
-            player_list.append(Player.from_dict(player_data))
+            player_list.append(Player(**player_data))
         return player_list
 
     def get_tracked_player_by_uid(self, uid: int) -> Optional[Player]:
@@ -48,14 +47,14 @@ class PlayerCollection:
             filter={'uid': uid}
         )
         if player_data:
-            return Player.from_dict(player_data)
+            return Player(**player_data)
         return None
 
     def get_player_by_discord_id(self, discord_id: int) -> Optional[Player]:
         """ Returns one `Player` given a discord id / None if no match"""
         player_dict: dict = self._collection.find_one({'discord_id': discord_id})
         if player_dict:
-            return Player.from_dict(player_dict)
+            return Player(**player_dict)
         return None
 
     def save_player(self, player: Player):
@@ -63,7 +62,7 @@ class PlayerCollection:
         key = {'uid': player.uid}
         self._collection.update_one(
             filter=key,
-            update={"$set": player.to_dict(omit_none=True)},
+            update={"$set": player.dict()},
             upsert=True
         )
 
@@ -89,4 +88,4 @@ class PlayerCollection:
         db_player = self.get_tracked_player_by_uid(player_data['uid'])
         if db_player:
             player_data['discord_id'] = db_player.discord_id
-        return Player.from_dict(player_data)
+        return Player(**player_data)

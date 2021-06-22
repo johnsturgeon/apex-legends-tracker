@@ -4,6 +4,18 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.19] - 2021-06-22
+This is a pretty massive change to the back end code, I'll detail a bit below:
+## Changed
+- Moved Event Player from Mashumaro to Pydantic
+- Reduced dependencies between the DB Helper and the Model objects, I now just pass a DB into to the collection, and it 'does the right thing'
+- Moved just a bit closer to making the db_helper class a simple storage object for the database connection Should always be passed to view controllers
+- Continued to move domain specific knowledge into the object classes
+- Split up the object model a bit for seasons and general 'config' information instead of a strange basic_info collection
+- Simplified the season start / end / split dates (only one truth).
+- Battlepass info comes from config
+- Wrote more unit tests
+
 ## [1.2.18] - 2021-06-18
 ### Changed
 - Moved the configuration information to be read from 'instance' folder

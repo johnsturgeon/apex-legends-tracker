@@ -47,13 +47,13 @@ app.config["flask_profiler"] = {
 def get_player_from_session() -> Optional[Player]:
     """ Instantiate a player from existing session data Return None if can't be found """
     if session.get('player'):
-        return Player.from_dict(session.get('player'))
+        return Player(**session.get('player'))
     return None
 
 
 def save_player_to_session(player: Player):
     """ Saves the player to the session """
-    session['player'] = player.to_dict()
+    session['player'] = player.dict()
 
 
 def get_player_from_cookie() -> Optional[Player]:
@@ -253,7 +253,8 @@ def battlepass():
 @app.template_filter('append_version_number')
 def append_version_number(value):
     """Jinja filter returns the current version """
-    return f"{value}{app.config['VERSION']}"
+    version = app.config['VERSION'].removeprefix('refs/tags/v')
+    return f"{value}{version}"
 
 
 def get_player_for_view(player_uid: str) -> Tuple[Player, bool]:

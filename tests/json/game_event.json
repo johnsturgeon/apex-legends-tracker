@@ -1,0 +1,215 @@
+[{
+  "_id": {
+    "$oid": "6084d23b5c2091626490035d"
+  },
+  "eventType": "Game",
+  "timestamp": 1619234751,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 274,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    },
+    {
+      "value": 1,
+      "key": "wins_season_8",
+      "name": "Season 8 wins"
+    }
+  ],
+  "gameLength": 21,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 4500
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900360"
+  },
+  "eventType": "Game",
+  "timestamp": 1619233490,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 265,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 10,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 2160
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900362"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062970,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 159,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 3,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900364"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062670,
+  "uid": "1000132741950",
+  "event": [],
+  "gameLength": 2,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 0
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900365"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062430,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 250,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 2,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900366"
+  },
+  "eventType": "Game",
+  "timestamp": 1619062250,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 236,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 9,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 2160
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900367"
+  },
+  "eventType": "Game",
+  "timestamp": 1619061530,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 34,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 4,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 540
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900368"
+  },
+  "eventType": "Game",
+  "timestamp": 1619061230,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 44,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 2,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c20916264900369"
+  },
+  "eventType": "Game",
+  "timestamp": 1619061051,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 29,
+      "key": "damage",
+      "name": "Damage"
+    }
+  ],
+  "gameLength": 5,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 360
+},{
+  "_id": {
+    "$oid": "6084d23b5c2091626490036c"
+  },
+  "eventType": "Game",
+  "timestamp": 1618978611,
+  "uid": "1000132741950",
+  "event": [
+    {
+      "value": 244,
+      "key": "damage",
+      "name": "Damage"
+    },
+    {
+      "value": 1,
+      "key": "kills_season_8",
+      "name": "Season 8 kills"
+    }
+  ],
+  "gameLength": 16,
+  "legendPlayed": "Bloodhound",
+  "player": "GoshDarnedHero",
+  "rankScoreChange": "0",
+  "xpProgress": 3600
+}]
