@@ -253,7 +253,8 @@ def battlepass():
 @app.template_filter('append_version_number')
 def append_version_number(value):
     """Jinja filter returns the current version """
-    return f"{value}{app.config['VERSION']}"
+    version = app.config['VERSION'].removeprefix('refs/tags/v')
+    return f"{value}{version}"
 
 
 def get_player_for_view(player_uid: str) -> Tuple[Player, bool]:
