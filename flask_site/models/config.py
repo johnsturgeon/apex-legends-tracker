@@ -1,7 +1,6 @@
 """ Data model for the apex_info collection """
 from typing import List, Optional
 
-import pymongo.database
 from pydantic import BaseModel
 
 

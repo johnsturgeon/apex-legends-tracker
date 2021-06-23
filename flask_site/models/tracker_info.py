@@ -2,7 +2,6 @@
 from typing import List
 
 from pydantic import BaseModel
-import pymongo.database
 
 
 class TrackerInfo (BaseModel):
