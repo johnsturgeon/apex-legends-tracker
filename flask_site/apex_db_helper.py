@@ -67,6 +67,9 @@ class ApexDBHelper:  # noqa E0302
 
     def save_basic_player_data(self, player_data: dict):
         """ Saves a player_data record into `basic_player` if it's changed """
+        if not player_data.get('global'):
+            self.logger.warning("'global' not found in player data: %s", player_data)
+            return
         uid = player_data['global']['uid']
         internal_update_count = player_data['global']['internalUpdateCount']
         key = {"global.uid": uid, "global.internalUpdateCount": internal_update_count}
