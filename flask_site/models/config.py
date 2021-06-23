@@ -53,5 +53,5 @@ class Config(BaseModel):
 
 class ConfigCollection:
     """ Collection class for the 'basic_info' collection """
-    def __init__(self, db: pymongo.database.Database):
-        self.config: Config = Config(**db.config.find_one({}))
+    def __init__(self, config_dict: dict):
+        self.config: Config = Config(**config_dict)

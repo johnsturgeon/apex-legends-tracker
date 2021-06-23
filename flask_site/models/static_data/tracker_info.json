@@ -1,0 +1,1156 @@
+{
+    "trackers": [
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c8d"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "5",
+            "tracker_key": "kills_season_5"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c7e"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "kills",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "specialEvent_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c90"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "8",
+            "tracker_key": "kills_season_8"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c91"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "9",
+            "tracker_key": "kills_season_9"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca1"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "6",
+            "tracker_key": "wins_season_6"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb3"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Fuse",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "grenades_distance"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cba"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Lifeline",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "doc_drone_healing"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c8e"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "6",
+            "tracker_key": "kills_season_6"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c99"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "top_3"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb2"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "Fuse",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "bombardment_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb9"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Horizon",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "ultimate_damage"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc0"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Mirage",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "bamboozles"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c84"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "airdrops_looted"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c7c"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "kills",
+            "legend": "-",
+            "mode": "Arena",
+            "season": "any",
+            "tracker_key": "arenas_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c89"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "games_played"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c94"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "pistol_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c9c"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "1",
+            "tracker_key": "wins_season_1"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc3"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Octane",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "distance_on_stim"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc7"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Pathfinder",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "grapple_travel_distance"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c95"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "revives"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca9"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Bloodhound",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "enemies_scanned"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cbd"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Loba",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "pinged_passive_loot"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cbe"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Loba",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "tactical_tp_distance"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc6"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Pathfinder",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "beacons_scanned"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd1"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Valkyrie",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "vtol_distance_travelled"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c7d"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "kills",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c9b"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "wins_as_full_squad"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c92"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "lmg_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c93"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "marksman_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ccb"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Rampart",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "ultimate_bullets_fired"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd2"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Wattson",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "detected_breaches"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cad"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Caustic",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "noxgassed_enemies_killed"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd4"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Wattson",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "shields_charged"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c85"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "ar_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c81"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "damage",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "damage"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c98"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "sniper_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca2"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "7",
+            "tracker_key": "wins_season_7"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc4"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Octane",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "passive_health_regen"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc8"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Pathfinder",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "ziplines_used_by_squad"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc9"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Rampart",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "bullets_amped"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd0"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Valkyrie",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "skyward_dive_allies_repositioned"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca3"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "8",
+            "tracker_key": "wins_season_8"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca8"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "Bloodhound",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "beast_of_the_hunt_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb6"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Gibraltar",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "gunshield_damage_blocked"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd6"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Wraith",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "rifts_squadmates_phased"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c83"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "damage",
+            "legend": "Pathfinder",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "grandsoiree_damage"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c8a"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "headshots"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c86"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "care_package_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c88"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "executions"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cab"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Caustic",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "noxgas_damage_dealt"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cae"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Crypto",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "motherlode_captured"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cbf"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Loba",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "ultimate_loot_taken"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cce"
+            },
+            "active": false,
+            "category": "",
+            "grouping": "",
+            "legend": "Revenant",
+            "mode": "",
+            "season": "",
+            "tracker_key": "silenced_targets"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd5"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Wraith",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "phase_walk_time"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c8c"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "1",
+            "tracker_key": "kills_season_1"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca0"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "5",
+            "tracker_key": "wins_season_5"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb4"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Fuse",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "knuckle_cluster_hits"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb5"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Gibraltar",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "dome_damage_blocked"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc5"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Octane",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "squadmates_use_jumppad"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ccf"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Valkyrie",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "missile_swarm_enemies_hit"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c97"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "smg_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c79"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "wins",
+            "legend": "-",
+            "mode": "Arena",
+            "season": "any",
+            "tracker_key": "arenas_wins"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca4"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "9",
+            "tracker_key": "wins_season_9"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca5"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Bangalore",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "creeping_barrage_damage"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca7"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Bangalore",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "smoke_grenade_enemies_hit"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ccc"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Revenant",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "death_totems"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd3"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Wattson",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "ordnance_destroyed"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c80"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "damage",
+            "legend": "-",
+            "mode": "Arena",
+            "season": "any",
+            "tracker_key": "arenas_damage"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c9a"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "winning_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c9e"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "3",
+            "tracker_key": "wins_season_3"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c9f"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "4",
+            "tracker_key": "wins_season_4"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ca6"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Bangalore",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "double_time_distance"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb8"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Horizon",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "teammates_lifted"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd8"
+            },
+            "active": false,
+            "category": "",
+            "grouping": "",
+            "legend": "",
+            "mode": "",
+            "season": "",
+            "tracker_key": "empty"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb7"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Horizon",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "soft_landings"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c7f"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "kills",
+            "legend": "Pathfinder",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "grandsoiree_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc2"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Mirage",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "encore_execution_escaped"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cca"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Rampart",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "damage_blocked"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9ccd"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "Revenant",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "silenced_targets_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cd7"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Wraith",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "voice_warnings_heard"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c8b"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "kills_as_kill_leader"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c8f"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "7",
+            "tracker_key": "kills_season_7"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c9d"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "2",
+            "tracker_key": "wins_season_2"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9caa"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Bloodhound",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "traps_scanned"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cbb"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Lifeline",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "dropped_items_for_squadmates"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c7a"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "wins",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "specialEvent_wins"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c7b"
+            },
+            "active": true,
+            "category": "wins",
+            "grouping": "wins",
+            "legend": "Pathfinder",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "grandsoiree_wins"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cac"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Caustic",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "noxgas_times_activated"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb0"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Crypto",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "shield_damage"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cb1"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Crypto",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "traps_destroyed"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c82"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "damage",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "specialEvent_damage"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c87"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "1",
+            "tracker_key": "damage_season_1"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9c96"
+            },
+            "active": true,
+            "category": "kills",
+            "grouping": "",
+            "legend": "-",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "shotgun_kills"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9caf"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Crypto",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "passive_enemies_scanned"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cbc"
+            },
+            "active": true,
+            "category": "damage",
+            "grouping": "",
+            "legend": "Lifeline",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "revive_shield_damage_blocked"
+        },
+        {
+            "_id": {
+                "$oid": "6099be59acbe91878a6c9cc1"
+            },
+            "active": true,
+            "category": "",
+            "grouping": "",
+            "legend": "Mirage",
+            "mode": "BR",
+            "season": "any",
+            "tracker_key": "decoys_spawned"
+        }
+    ]
+}

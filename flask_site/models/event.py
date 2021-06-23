@@ -114,9 +114,11 @@ class GameEvent(BaseEvent):
 class EventCollection:
     """ Class for abstracting the event collection """
 
-    def __init__(self, db: pymongo.database.Database):
+    def __init__(self, db: pymongo.database.Database, tracker_info_data: dict):
         self._event_collection: pymongo.collection.Collection = db.event
-        self._tracker_info_collection: TrackerInfoCollection = TrackerInfoCollection(db)
+        self._tracker_info_collection: TrackerInfoCollection = TrackerInfoCollection(
+            tracker_info_data
+        )
 
     def get_games(self,
                   player_uid: int = 0,

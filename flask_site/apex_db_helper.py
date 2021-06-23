@@ -1,4 +1,5 @@
 """ Helper module for """
+import json
 import os
 import logging
 import datetime
@@ -54,16 +55,28 @@ class ApexDBHelper:  # noqa E0302
 
         self.database: pymongo.database.Database = self.client.apex_legends
         self.basic_player_collection: Collection = self.database.basic_player
-        self.event_collection: EventCollection = EventCollection(self.database)
+        self.event_collection: EventCollection = EventCollection(
+            self.database,
+            tracker_info_data=self.load_data('tracker_info.json')
+        )
         self.player_collection: PlayerCollection = PlayerCollection(self.database)
-        self.season_collection: SeasonCollection = SeasonCollection(self.database)
-        self.config: Config = ConfigCollection(self.database).config
+        self.season_collection: SeasonCollection = SeasonCollection(self.load_data('season.json'))
+        self.config: Config = ConfigCollection(self.load_data('config.json')).config
         logger: Logger = logging.getLogger('apex_logger')
         logger.setLevel(getattr(logging, config.LOG_LEVEL))
         if not logger.handlers:
             logger.addHandler(LogHandler(self.client))
         self.logger = logger
         self._latest_event_timestamp: int = 0
+
+    @staticmethod
+    def load_data(filename: str) -> dict:
+        """ Returns a dictionary representation of a json file"""
+        file_path = os.path.dirname(os.path.abspath(__file__))
+        filepath = os.path.abspath(file_path + "/models/static_data/" + filename)
+
+        with open(filepath) as json_file:
+            return json.load(json_file)
 
     def save_basic_player_data(self, player_data: dict):
         """ Saves a player_data record into `basic_player` if it's changed """

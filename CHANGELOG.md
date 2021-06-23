@@ -4,6 +4,12 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2021-06-23
+### Fixed
+- Fixing some technical debt
+- Moved three mongodb collections to static json files (they just don't change that often)
+  Resolved #200
+
 ## [1.2.21] - 2021-06-22
 ### Fixed
 - Fixed exception being thrown in `save player` to log a warning now instead
