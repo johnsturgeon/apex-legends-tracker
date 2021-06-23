@@ -1,0 +1,38 @@
+{
+    "ranked_division_info": {
+        "divisions": [
+            {
+                "name": "Bronze",
+                "color": "#937B44",
+                "rp_between_tiers": 300
+            },
+            {
+                "name": "Silver",
+                "color": "#ddd",
+                "rp_between_tiers": 400
+            },
+            {
+                "name": "Gold",
+                "color": "#A2A200",
+                "rp_between_tiers": 500
+            },
+            {
+                "name": "Platinum",
+                "color": "#ACDFE5",
+                "rp_between_tiers": 600
+            },
+            {
+                "name": "Diamond",
+                "color": "#01DAE5",
+                "rp_between_tiers": 700
+            }
+        ],
+        "tiers": [
+            "IV",
+            "III",
+            "II",
+            "I"
+        ]
+    },
+    "battlepass_goal": 100
+}

@@ -4,8 +4,6 @@ from typing import Optional, Tuple, List
 import arrow
 from pydantic import BaseModel
 
-import pymongo.database
-
 
 # pylint: disable=missing-class-docstring
 class SeasonInvalidSplitNumber(Exception):
@@ -61,9 +59,9 @@ class Season(BaseModel):
 
 
 class SeasonCollection:
-    def __init__(self, database: pymongo.database.Database):
+    def __init__(self, season_dict: dict):
         self.seasons: List[Season] = list()
-        for season in database.season.find({}):
+        for season in season_dict['seasons']:
             self.seasons.append(Season(**season))
 
     def get_current_season(self) -> Season:
