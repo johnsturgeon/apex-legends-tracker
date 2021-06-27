@@ -1,3 +1,4 @@
+""" Celery app start up script """
 from celery import Celery
 
 app = Celery('respawn_data_ingestor',

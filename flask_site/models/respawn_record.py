@@ -1,11 +1,9 @@
 """ Dataclass to represent player collection """
 from __future__ import annotations
 
-from typing import Tuple, List, Optional
+from typing import Tuple
 
-import arrow
 import pymongo.database
-from pymongo import MongoClient
 from pydantic import BaseModel, Field
 
 from instance.config import get_config
@@ -13,16 +11,16 @@ config = get_config('development')
 
 
 class PlayerNotFoundException(Exception):
-    pass
+    """ Simple exception for when a player is not found """
 
 
 def key_value_for_cdata(cdata: str) -> Tuple[str, str]:
     """ returns the key, value pair for a given CDATA key """
     if isinstance(cdata, int):
         cdata = str(cdata)
-    cdata_map = load_data('cdata_map.json')
-    if cdata_map.get(cdata):
-        return tuple(cdata_map[cdata])
+    # cdata_map = load_data('cdata_map.json')
+    # if cdata_map.get(cdata):
+    #     return tuple(cdata_map[cdata])
     return 'unknown', cdata
 
 
@@ -108,6 +106,3 @@ class RespawnCollection:
     def save_respawn_record(self, obj: RespawnRecord):
         """ Saves one record to the respawn DB"""
         self._respawn_collection.insert_one(obj.dict())
-
-
-

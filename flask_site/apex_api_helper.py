@@ -62,4 +62,3 @@ class ApexAPIHelper:
             raise ALHTTPExceptionFromResponse(response)
 
         return response_text
-

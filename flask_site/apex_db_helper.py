@@ -11,11 +11,10 @@ import pymongo.database
 from pymongo.collection import Collection
 
 from models import EventCollection, GameEvent, Config, PlayerCollection, ConfigCollection
-from models import SeasonCollection
+from models import SeasonCollection, RespawnCollection
 
 # pylint: disable=import-error
 from instance.config import get_config
-from models import RespawnCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
 

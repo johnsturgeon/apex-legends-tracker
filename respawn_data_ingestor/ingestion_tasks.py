@@ -2,15 +2,17 @@
 import time
 from typing import List
 import arrow
-from .celery import app
 
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
+
 from models import Player, RespawnRecord, RespawnCollection
 from models.respawn_record import PlayerNotFoundException
+from .celery import app
 
 
 def get_respawn_obj_from_stryder(player_uid: int, platform: str) -> RespawnRecord:
+    """ Queries respawn, and returns a respawn object """
     respawn_data: dict = ApexAPIHelper.get_stryder_data(
         player_uid=player_uid,
         platform=platform
@@ -22,24 +24,42 @@ def get_respawn_obj_from_stryder(player_uid: int, platform: str) -> RespawnRecor
     )
 
 
-def is_player_being_monitored(player_uid: int):
+def is_player_being_monitored(player_uid: int) -> bool:
+    """
+    Returns True if there is currently a celery job monitoring this player
+    Args:
+        player_uid ():
+
+    Returns:
+        Returns True if there is currently a celery job monitoring this player
+    """
     print(f"checking to see if {player_uid} is online")
     i = app.control.inspect()
-    for key, value in i.active().items():
-        for v in value:
-            if len(v['args']):
-                if player_uid == v['args'][0]:
+    for _, value in i.active().items():
+        for job in value:
+            if len(job['args']):
+                if player_uid == job['args'][0]:
                     return True
     return False
 
 
 @app.on_after_finalize.connect
-def setup_periodic_tasks(sender, **kwargs):
+def setup_periodic_tasks(sender, **_):
+    """ Sets up the periodic tasks for celery 'beat' """
     sender.add_periodic_task(60.0, check_online_status.s(), name='check online every 60')
 
 
 @app.task(bind=True)
 def ingest_respawn_data(self, player_uid: int, player_name: str, platform: str):
+    """
+    Long running task that adds any changed respawn data to the table for a given player
+    while they're online
+    Args:
+        self ():
+        player_uid (): uid of the player to track
+        player_name (): name of the player (makes flower easier to see who's being tracked)
+        platform (): necessary for respawn call
+    """
     print("Ingest Respawn Data")
     apex_db_helper = ApexDBHelper()
     collection: RespawnCollection = RespawnCollection(apex_db_helper.database)
@@ -85,4 +105,3 @@ def check_online_status():
         )
         if respawn_data['userInfo']['online']:
             ingest_respawn_data.delay(player.uid, player.name, player.platform)
-
