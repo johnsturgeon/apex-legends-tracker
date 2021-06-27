@@ -24,18 +24,18 @@ def get_respawn_obj_from_stryder(player_uid: int, platform: str) -> RespawnRecor
     )
 
 
-def is_player_being_monitored(player_uid: int) -> bool:
+def is_player_being_monitored(running_jobs: list, player_uid: int) -> bool:
     """
     Returns True if there is currently a celery job monitoring this player
     Args:
-        player_uid ():
+        running_jobs (): list of running jobs from celery inspection
+        player_uid (): UID of the player to check
 
     Returns:
         Returns True if there is currently a celery job monitoring this player
     """
     print(f"checking to see if {player_uid} is online")
-    i = app.control.inspect()
-    for _, value in i.active().items():
+    for _, value in running_jobs:
         for job in value:
             if len(job['args']):
                 if player_uid == job['args'][0]:
@@ -93,9 +93,11 @@ def check_online_status():
     apex_db_helper = ApexDBHelper()
     print("checking online status")
     players: List[Player] = apex_db_helper.player_collection.get_tracked_players()
+    running_jobs: list = list(app.control.inspect().active().items())
+
     for player in players:
         # First, let's check to see if we need to remove any ingestion jobs from the db
-        if is_player_being_monitored(player_uid=player.uid):
+        if is_player_being_monitored(running_jobs=running_jobs, player_uid=player.uid):
             print(f"There is a task monitoring {player.name} already running")
             continue
 
