@@ -6,6 +6,7 @@ from typing import Tuple
 import pymongo.database
 from pydantic import BaseModel, Field
 
+# pylint: disable=import-error
 from instance.config import get_config
 config = get_config('development')
 
