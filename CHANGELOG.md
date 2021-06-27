@@ -4,6 +4,11 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.24] - 2021-06-27
+## Fixed
+- Resolves #210
+- Fix the deployment scripts to deploy the respawn ingestion folder
+
 ## [1.2.23] - 2021-06-27
 Pretty massive bit of work on the backend, I'm slowly pulling in code to migrate to my own respawn data ingestion scripts
 
