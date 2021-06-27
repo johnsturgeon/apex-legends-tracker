@@ -5,6 +5,7 @@ from .event import GameEvent, EventCollection
 from .player import Player, PlayerCollection
 from .tracker_info import TrackerInfo, TrackerInfoCollection
 from .season import SeasonCollection, Season
+from .respawn_record import RespawnCollection, RespawnRecord
 __all__ = [
     'Config',
     'ConfigCollection',
@@ -15,6 +16,8 @@ __all__ = [
     'PlayerCollection',
     'RankTier',
     'RankedDivisionInfo',
+    'RespawnCollection',
+    'RespawnRecord',
     'Season',
     'SeasonCollection',
     'TrackerInfo',

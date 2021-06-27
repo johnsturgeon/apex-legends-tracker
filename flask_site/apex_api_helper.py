@@ -1,7 +1,9 @@
 """ A helper module for the apex legends API """
+import json
 import os
 from typing import List
 
+import requests
 from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlatform, ALAction
 
 # pylint: disable=import-error
@@ -31,3 +33,33 @@ class ApexAPIHelper:
             list_of_players.append(basic_player[0])
 
         return list_of_players
+
+    @staticmethod
+    def get_stryder_data(player_uid: int, platform: str):
+        """ Get the raw CDATA json response from Respawn """
+        headers = {'User-Agent': 'Respawn HTTPS/1.0'}
+
+        url: str = config.STRYDER_URL
+        params: dict = {
+            'qt': 'user-getinfo',
+            'getinfo': 1,
+            'json': 1,
+            'uid': player_uid,
+            'hardware': platform
+        }
+        response: requests.Response = requests.get(
+            url=url,
+            params=params,
+            headers=headers,
+            timeout=5
+        )
+        if response.status_code == 200:
+            try:
+                response_text = json.loads(response.text)
+            except ValueError:
+                response_text = response.text
+        else:
+            raise ALHTTPExceptionFromResponse(response)
+
+        return response_text
+

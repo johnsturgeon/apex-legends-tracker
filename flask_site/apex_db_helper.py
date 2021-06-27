@@ -15,6 +15,7 @@ from models import SeasonCollection
 
 # pylint: disable=import-error
 from instance.config import get_config
+from models import RespawnCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
 
@@ -60,6 +61,7 @@ class ApexDBHelper:  # noqa E0302
             tracker_info_data=self.load_data('tracker_info.json')
         )
         self.player_collection: PlayerCollection = PlayerCollection(self.database)
+        self.respawn_collection: RespawnCollection = RespawnCollection(self.database)
         self.season_collection: SeasonCollection = SeasonCollection(self.load_data('season.json'))
         self.config: Config = ConfigCollection(self.load_data('config.json')).config
         logger: Logger = logging.getLogger('apex_logger')
