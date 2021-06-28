@@ -8,6 +8,7 @@ from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlat
 from httpx import AsyncClient, Response, ReadTimeout, ConnectTimeout
 
 from apex_db_helper import ApexDBHelper
+# pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 
