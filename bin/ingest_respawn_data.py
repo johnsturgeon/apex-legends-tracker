@@ -1,3 +1,4 @@
+""" Ingest respawn data every 3 seconds """
 import os
 import time
 import asyncio
@@ -26,8 +27,7 @@ async def get_respawn_obj_from_stryder(player_uid: int, platform: str) -> Option
         return (RespawnRecord(
             timestamp=timestamp, **respawn_data['userInfo']
         ))
-    else:
-        return None
+    return None
 
 
 async def get_respawn_data_for_players(players: List[Player]):
@@ -40,6 +40,7 @@ async def get_respawn_data_for_players(players: List[Player]):
 
 
 async def main():
+    """ Main loop = NEVER STOPS! :) """
     players: List[Player] = db_helper.player_collection.get_tracked_players()
     previous_respawn_records = await get_respawn_data_for_players(players)
     collection: RespawnCollection = RespawnCollection(db_helper.database)
@@ -58,7 +59,11 @@ async def main():
             prev_dict: dict = previous_record.dict(exclude={'timestamp'})
             fetched_dict: dict = fetched_record.dict(exclude={'timestamp'})
             if prev_dict != fetched_dict:
-                value = {k: fetched_dict[k] for k, _ in set(fetched_dict.items()) - set(prev_dict.items())}
+                value = {
+                    k: fetched_dict[k] for k, _ in set(
+                        fetched_dict.items()
+                    ) - set(prev_dict.items())
+                }
                 print(f"UPDATING: Player record changed: {value} {previous_record.name}")
                 collection.save_respawn_record(fetched_record)
             previous_respawn_records = fetched_respawn_records
