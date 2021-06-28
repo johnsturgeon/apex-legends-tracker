@@ -4,7 +4,14 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.26] - 2021-06-28
+Moved from `celery` `rabbitMQ` based ingestion to `asyncio` `httpx`
+### Changed
+- Celery wasn't working for me, so after chatting with some folks in the python discord, I landed on
+`asyncio` and `httpx` (async http library).  Early results are that it looks really good.
+
 ## [1.2.25] - 2021-06-27
+### Fixed
 - Fix it so that celery saves the ‘instance’ and queries it in one loop.
 - Resolves #212
 

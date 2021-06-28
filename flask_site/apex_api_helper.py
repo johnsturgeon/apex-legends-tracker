@@ -1,12 +1,13 @@
 """ A helper module for the apex legends API """
-import json
 import os
-from typing import List
+from typing import List, Optional
 
-import requests
+import httpx
 from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlatform, ALAction
 
-# pylint: disable=import-error
+from httpx import AsyncClient, Response, ReadTimeout, ConnectTimeout
+
+from apex_db_helper import ApexDBHelper
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 
@@ -35,7 +36,7 @@ class ApexAPIHelper:
         return list_of_players
 
     @staticmethod
-    def get_stryder_data(player_uid: int, platform: str):
+    async def get_stryder_data(player_uid: int, platform: str) -> Optional[dict]:
         """ Get the raw CDATA json response from Respawn """
         headers = {'User-Agent': 'Respawn HTTPS/1.0'}
 
@@ -47,18 +48,23 @@ class ApexAPIHelper:
             'uid': player_uid,
             'hardware': platform
         }
-        response: requests.Response = requests.get(
-            url=url,
-            params=params,
-            headers=headers,
-            timeout=5
-        )
-        if response.status_code == 200:
+        client: AsyncClient
+        async with httpx.AsyncClient(headers=headers, params=params, timeout=5) as client:
             try:
-                response_text = json.loads(response.text)
-            except ValueError:
-                response_text = response.text
-        else:
-            raise ALHTTPExceptionFromResponse(response)
+                response: Response = await client.get(url)
+            except (ReadTimeout, ConnectTimeout) as timeout_error:
+                db_helper = ApexDBHelper()
+                db_helper.logger.error(
+                    "Timeout fetching respawn data -- continuing: %s",
+                    timeout_error
+                )
+                return None
+            if response.status_code == 200:
+                try:
+                    response_text = response.json()
+                except ValueError:
+                    return None
+            else:
+                raise ALHTTPExceptionFromResponse(response)
 
         return response_text

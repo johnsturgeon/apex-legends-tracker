@@ -80,18 +80,6 @@ jobs:
           ARGS: -avz --delete --exclude instance
           SOURCE: ./flask_site/
 
-      - name: Rsync respawn ingestion scripts to production
-        uses: up9cloud/action-rsync@master
-        env:
-          HOST: ${{ secrets.REMOTE_HOST }}
-          KEY: ${{ secrets.SERVER_SSH_KEY }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}/respawn_data_ingestor/
-
-          VERBOSE: true
-          USER: ${{ secrets.REMOTE_USER }}
-          ARGS: -avz --delete --exclude instance
-          SOURCE: ./respawn_data_ingestor/
-
       - name: SSH - Create .version file in the flask_site/instance
         uses: fifsky/ssh-action@master
         with:
