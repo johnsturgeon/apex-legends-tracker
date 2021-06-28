@@ -11,3 +11,4 @@ export PYTHONPATH=`pwd`
 export FLASK_ENV='production'
 cd ..
 nohup env/bin/python ${SCRIPT_PATH}/save_api_data_to_db.py > logs/old_scraper.out 2> logs/old_scraper.err < /dev/null &
+nohup env/bin/python ${SCRIPT_PATH}/ingest_respawn_data.py > logs/respawn_scraper.out 2> logs/respawn_scraper.err < /dev/null &
