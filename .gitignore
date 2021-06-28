@@ -3,6 +3,7 @@ conf/settings.json
 flask_profiler.sql
 sync_database.py
 flask_site/instance
+rpak
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
