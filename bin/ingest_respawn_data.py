@@ -9,10 +9,10 @@ import arrow
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
 from models import Player, RespawnRecord, RespawnCollection
-from instance.config import get_config
-
 # pylint: disable=import-error
+from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
+
 db_helper = ApexDBHelper()
 
 
