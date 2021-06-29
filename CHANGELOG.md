@@ -4,11 +4,16 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.27] - 2021-06-29
+### Changed
+- Got a 'slow down' error from Respawn, so now I'm a bit freaked out.  This patch adds some slow down
+logic.  It also adds a new method for tracking each player
+
 ## [1.2.26] - 2021-06-28
 Moved from `celery` `rabbitMQ` based ingestion to `asyncio` `httpx`
 ### Changed
 - Celery wasn't working for me, so after chatting with some folks in the python discord, I landed on
-`asyncio` and `httpx` (async http library).  Early results are that it looks really good.
+`asyncio` and `httpx` (async http library).  Early results are that it looks fantastic.
 
 ## [1.2.25] - 2021-06-27
 ### Fixed
@@ -29,14 +34,14 @@ Pretty massive bit of work on the backend, I'm slowly pulling in code to migrate
 ## [1.2.22] - 2021-06-23
 ### Fixed
 - Fixing some technical debt
-- Moved three mongodb collections to static json files (they just don't change that often
+- Moved three mongodb collections to static json files (they just don't change that often)
 - Resolved #200
 
 ## [1.2.21] - 2021-06-22
 ### Fixed
-- Fixed exception being thrown in `save player` to log a warning now instead
+- Fixed exception thrown in `save player` to log a warning now instead
   Resolves #197
-- Fixed another exception being thrown in `save player` to log warning instead
+- Fixed another exception thrown in `save player` to log warning instead
   Resolves #199
   
 ## [1.2.20] - 2021-06-22
@@ -131,7 +136,7 @@ Octane release: "Must. Go. Faster"
 - Shows people you partied up with.  It might not be perfect, but it's pretty darned close.
 
 ### Changed
-- Refactored a ton of the way that the model data is handled, this will make it much easier to make changes in the future
+- Refactored a ton of the way that the model data is done, this will make it much easier to make changes in the future
 
 ## [1.1.2] - 2021-06-10
 - Resolves #158 (profile page has error when there are zero ranked games)
@@ -154,7 +159,7 @@ Emergency fix saving cookie
 - Fixed 'claim my user' so that it will 'remember' your claim
 
 ## [1.0.0]
-Introducing version 1.0.0!  I'm introducing the concept of 'login via discord' and 'claim your profile'
+Introducing version 1.0.0!  I'm introducing the concept of 'login via discord' and 'claim your profile'.
 The way it works is that you will log in using your discord credentials, and then 'link' your profile to your discord account.
 Once you've done that you will just log in, and be able to see all your data
 
@@ -179,7 +184,7 @@ Internal updates only (no user facing differences)
 ## [0.9.2]
 ### Changed
 - Using a new method for accessing data models (dataclasses / desert JSON deserializer to dataclass)
-- Changed the ranked progression page to use the 'game' data for ranked progression which means that the old data is now gone
+- Changed the ranked progression page to use the 'game' data for ranked progression which means that there is no longer access to the old data
 - Fixed the battlepass tracker to max to 100 not 110
 
 ## [0.9.1]
@@ -226,7 +231,8 @@ Various small bug fixes that have been bothering me.
 
 ## [0.7.0]
 Taking three steps backwards and one step forwards.
-Pretty massive refactor here, I removed the tracker page since it was not quite right, and I really have to get it right, there are a lot of details with regards to the different kinds of trackers and how they can be reported, so I need to be a bit more deliberate before I bring it back.
+Pretty massive refactor here, I removed the tracker page since it was not quite right, and I really have to get it right,
+there are a lot of details, primarily how trackers are reported. how they can be reported, so I need to be a bit more deliberate before I bring it back.
 
 ### Removed
 - Removed the trackers from the profile page
@@ -285,7 +291,7 @@ page where you can go through your legends and enable trackers and get them up-t
 
 ### Added
 - Added `profile` page
-  - Page will show you some basic tracker stats and a 'preview' of a damage tracking chart (more to come)
+  - Page will show you some basic tracker stats as well as a 'preview' of a damage tracking chart (more to come)
   - Click on a tracker to see all the legend by legend detail of the tracker
 - Added `tracker detail` page
   - Tracker detail page is where you manage your tracker data.  This is a special new page that will walk you through the process of making sure your trackers are up to date
@@ -293,7 +299,7 @@ page where you can go through your legends and enable trackers and get them up-t
 
 ### Changed
 - Moved the 'day by day' page to a link off the main page
-- Clicking on a player from the leaderboard will bring you to their profile page, and not the day-by-day page an more
+- Clicking on a player from the leaderboard will bring you to their profile page, and not the day-by-day page anymore.
 
 
 ## [0.4.7] - 2021-05-09
@@ -319,7 +325,7 @@ page where you can go through your legends and enable trackers and get them up-t
 
 ## [0.4.2] - 2021-05-04
 - Added an 'online' indicator
-- Updated to latest apex legends api to support S9
+- Updated to the latest apex legends api to support S9
 
 ## [0.4.1] - 2021-05-03
 ### Added
