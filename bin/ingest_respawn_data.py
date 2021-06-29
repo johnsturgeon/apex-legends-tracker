@@ -1,6 +1,5 @@
 """ Ingest respawn data every 3 seconds """
 import os
-import time
 import asyncio
 from typing import List, Optional
 
@@ -17,6 +16,7 @@ db_helper = ApexDBHelper()
 
 
 class RespawnRecordNotFoundException(Exception):
+    """ Simple exception for passing when a Respawn Record is not found"""
     pass
 
 
