@@ -10,6 +10,7 @@ from apex_db_helper import ApexDBHelper
 from models import Player, RespawnRecord, RespawnCollection
 # pylint: disable=import-error
 from instance.config import get_config
+
 config = get_config(os.getenv('FLASK_ENV'))
 
 db_helper = ApexDBHelper()
@@ -17,7 +18,6 @@ db_helper = ApexDBHelper()
 
 class RespawnRecordNotFoundException(Exception):
     """ Simple exception for passing when a Respawn Record is not found"""
-    pass
 
 
 async def monitor_player(player: Player):
@@ -73,7 +73,7 @@ async def get_respawn_obj_from_stryder(
         player_uid: int,
         platform: str,
         delay: int = 0
-    ) -> Optional[RespawnRecord]:
+) -> Optional[RespawnRecord]:
     """ Queries respawn, and returns a respawn object """
     await asyncio.sleep(delay)
     respawn_data: Optional[dict] = await ApexAPIHelper.get_stryder_data(

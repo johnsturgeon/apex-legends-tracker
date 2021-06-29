@@ -14,7 +14,7 @@ config = get_config(os.getenv('FLASK_ENV'))
 
 
 class RespawnSlowDownException(Exception):
-    pass
+    """ A wrapper class for when respawn wants us to slow down """
 
 
 class ApexAPIHelper:
