@@ -13,6 +13,10 @@ from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 
 
+class RespawnSlowDownException(Exception):
+    """ A wrapper class for when respawn wants us to slow down """
+
+
 class ApexAPIHelper:
     """ Wrapper class for the Apex API to add a few helper methods """
     def __init__(self):
@@ -61,10 +65,13 @@ class ApexAPIHelper:
                 )
                 return None
             if response.status_code == 200:
-                try:
-                    response_text = response.json()
-                except ValueError:
-                    return None
+                response_text = response.json()
+            elif response.status_code == 429:
+                db_helper = ApexDBHelper()
+                db_helper.logger.error("SLOW DOWN from respawn (detail to follow)")
+                db_helper.logger.error(response)
+                db_helper.logger.error(response.headers)
+                raise RespawnSlowDownException(response)
             else:
                 raise ALHTTPExceptionFromResponse(response)
 
