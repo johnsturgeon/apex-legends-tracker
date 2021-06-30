@@ -22,7 +22,8 @@ class RespawnRecordNotFoundException(Exception):
 
 async def monitor_player(player: Player):
     """ daemon job that polls respawn """
-    db_helper.logger.info(f"Starting monitor for {player.name}")
+    message = f"Starting monitor for {player.name}"
+    db_helper.logger.info(message)
     previous_record: RespawnRecord = await get_respawn_obj_from_stryder(
         player.uid, player.platform
     )
@@ -34,9 +35,9 @@ async def monitor_player(player: Player):
     delay = 5.0 if previous_record.online else 30.0
     while True:
         if previous_record.online:
-            db_helper.logger.info(f"{player.name} is ONLINE (delay is {delay})")
+            db_helper.logger.info("%s is ONLINE (delay is %s)", player.name, delay)
         else:
-            db_helper.logger.info(f" -- {player.name} is offline (delay is {delay})")
+            db_helper.logger.info(" - %s is offline (delay is %s)", player.name, delay)
         await asyncio.sleep(delay + slowdown)
         try:
             fetched_record: Optional[RespawnRecord] = await get_respawn_obj_from_stryder(
@@ -62,7 +63,8 @@ async def monitor_player(player: Player):
                     fetched_dict.items()
                 ) - set(prev_dict.items())
             }
-            db_helper.logger.info(f"UPDATING {previous_record.name}: Player record changed: {value}")
+            message = f"UPDATING {previous_record.name}: Player record changed: {value}"
+            db_helper.logger.info(message)
             collection.save_respawn_record(fetched_record)
         previous_record = fetched_record
 
