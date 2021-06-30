@@ -7,7 +7,6 @@ from apex_legends_api import ApexLegendsAPI, ALHTTPExceptionFromResponse, ALPlat
 
 from httpx import AsyncClient, Response, ReadTimeout, ConnectTimeout
 
-from apex_db_helper import ApexDBHelper
 # pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
@@ -58,8 +57,8 @@ class ApexAPIHelper:
             try:
                 response: Response = await client.get(url)
             except (ReadTimeout, ConnectTimeout) as timeout_error:
-                db_helper = ApexDBHelper()
-                db_helper.logger.error(
+                logger = config.logger(os.path.basename(__file__))
+                logger.error(
                     "Timeout fetching respawn data for %s-- continuing: %s", player_uid,
                     timeout_error
                 )
@@ -67,10 +66,10 @@ class ApexAPIHelper:
             if response.status_code == 200:
                 response_text = response.json()
             elif response.status_code == 429:
-                db_helper = ApexDBHelper()
-                db_helper.logger.error("SLOW DOWN from respawn (detail to follow)")
-                db_helper.logger.error(response)
-                db_helper.logger.error(response.headers)
+                logger = config.logger(os.path.basename(__file__))
+                logger.error("SLOW DOWN from respawn (detail to follow)")
+                logger.error(response)
+                logger.error(response.headers)
                 raise RespawnSlowDownException(response)
             else:
                 raise ALHTTPExceptionFromResponse(response)
