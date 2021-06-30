@@ -22,7 +22,7 @@ class RespawnRecordNotFoundException(Exception):
 
 async def monitor_player(player: Player):
     """ daemon job that polls respawn """
-    print(f"Starting monitor for {player.name}")
+    db_helper.logger.info(f"Starting monitor for {player.name}")
     previous_record: RespawnRecord = await get_respawn_obj_from_stryder(
         player.uid, player.platform
     )
@@ -34,9 +34,9 @@ async def monitor_player(player: Player):
     delay = 5.0 if previous_record.online else 30.0
     while True:
         if previous_record.online:
-            print(f"{player.name} is ONLINE (delay is {delay})")
+            db_helper.logger.info(f"{player.name} is ONLINE (delay is {delay})")
         else:
-            print(f" -- {player.name} is offline (delay is {delay})")
+            db_helper.logger.info(f" -- {player.name} is offline (delay is {delay})")
         await asyncio.sleep(delay + slowdown)
         try:
             fetched_record: Optional[RespawnRecord] = await get_respawn_obj_from_stryder(
@@ -45,13 +45,11 @@ async def monitor_player(player: Player):
         except RespawnSlowDownException:
             slowdown += 20.0
             message = f"Slowing down from {delay} to {delay + slowdown}"
-            print(message)
             db_helper.logger.warning(message)
             continue
         if slowdown:
             slowdown -= .5
             message = f"Speeding up from {delay} to {delay + slowdown}"
-            print(message)
             db_helper.logger.warning(message)
         if not fetched_record:
             raise RespawnRecordNotFoundException
@@ -64,7 +62,7 @@ async def monitor_player(player: Player):
                     fetched_dict.items()
                 ) - set(prev_dict.items())
             }
-            print(f"UPDATING {previous_record.name}: Player record changed: {value}")
+            db_helper.logger.info(f"UPDATING {previous_record.name}: Player record changed: {value}")
             collection.save_respawn_record(fetched_record)
         previous_record = fetched_record
 
@@ -93,7 +91,7 @@ async def main():
     """ Returns a list of respawn players for given list of players """
     players: List[Player] = db_helper.player_collection.get_tracked_players()
     task_list: list = []
-    print("Getting respawn data")
+    db_helper.logger.info("Getting respawn data")
     for player in players:
         task_list.append(monitor_player(player))
     return await asyncio.gather(*task_list)
