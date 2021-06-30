@@ -6,6 +6,7 @@ from .player import Player, PlayerCollection
 from .tracker_info import TrackerInfo, TrackerInfoCollection
 from .season import SeasonCollection, Season
 from .respawn_record import RespawnCollection, RespawnRecord
+from .respawn_ingestion_task import RespawnIngestionTaskCollection
 __all__ = [
     'Config',
     'ConfigCollection',
@@ -17,6 +18,7 @@ __all__ = [
     'RankTier',
     'RankedDivisionInfo',
     'RespawnCollection',
+    'RespawnIngestionTaskCollection',
     'RespawnRecord',
     'Season',
     'SeasonCollection',

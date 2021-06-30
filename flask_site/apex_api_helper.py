@@ -53,7 +53,7 @@ class ApexAPIHelper:
             'hardware': platform
         }
         client: AsyncClient
-        async with httpx.AsyncClient(headers=headers, params=params, timeout=5) as client:
+        async with httpx.AsyncClient(headers=headers, params=params, timeout=10) as client:
             try:
                 response: Response = await client.get(url)
             except (ReadTimeout, ConnectTimeout) as timeout_error:
