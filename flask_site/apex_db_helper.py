@@ -1,9 +1,6 @@
 """ Helper module for """
 import json
 import os
-import logging
-import datetime
-from logging import Logger
 from typing import List
 
 from pymongo import MongoClient
@@ -17,29 +14,6 @@ from models import SeasonCollection, RespawnCollection
 from instance.config import get_config
 
 config = get_config(os.getenv('FLASK_ENV'))
-
-
-class LogHandler(logging.Handler):
-    """
-    A logging handler that will record messages to a capped MongoDB collection.
-    """
-
-    def __init__(self, client):
-        """ Initialize the logger """
-        level = getattr(logging, config.LOG_LEVEL)
-        logging.Handler.__init__(self, level)
-        database: pymongo.database.Database = client.apex_legends
-        self.log_collection: Collection = database.get_collection(config.LOG_COLLECTION)
-
-    def emit(self, record):
-        """ Override of the logger method """
-        self.log_collection.insert_one({
-            'when': datetime.datetime.now(),
-            'log_level': record.levelno,
-            'level_name': record.levelname,
-            'message': record.msg % record.args
-        })
-
 
 # pylint: disable=too-many-instance-attributes
 class ApexDBHelper:  # noqa E0302
@@ -63,11 +37,7 @@ class ApexDBHelper:  # noqa E0302
         self.respawn_collection: RespawnCollection = RespawnCollection(self.database)
         self.season_collection: SeasonCollection = SeasonCollection(self.load_data('season.json'))
         self.config: Config = ConfigCollection(self.load_data('config.json')).config
-        logger: Logger = logging.getLogger('apex_logger')
-        logger.setLevel(getattr(logging, config.LOG_LEVEL))
-        if not logger.handlers:
-            logger.addHandler(LogHandler(self.client))
-        self.logger = logger
+        self.logger = config.logger(__name__)
         self._latest_event_timestamp: int = 0
 
     @staticmethod

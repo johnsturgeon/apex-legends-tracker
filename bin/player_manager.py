@@ -1,4 +1,5 @@
 """ methods for retrieving and saving player data """
+import os
 from threading import Thread
 from typing import List
 
@@ -7,10 +8,13 @@ from apex_db_helper import ApexDBHelper
 from apex_legends_api import ALPlatform, ALAction, ALHTTPExceptionFromResponse
 
 from models import Player
+# pylint: disable=import-error
+from instance.config import get_config
+config = get_config(os.getenv('FLASK_ENV'))
 
 apex_api_helper = ApexAPIHelper()
 apex_db_helper = ApexDBHelper()
-log = apex_db_helper.logger
+logger = config.logger(os.path.basename(__file__))
 
 
 def save_all_player_data():
@@ -40,26 +44,26 @@ def save_one_player_data(player: Player):
             str(player.uid), ALPlatform(value=player.platform)
         )
     except ALHTTPExceptionFromResponse:
-        log.warning("Player: %s not found", player)
+        logger.warning("Player: %s not found", player)
         return
     except ConnectionError as con_error:
-        log.warning("Connection Error Saving 'player data'.\nError message: %s", con_error)
+        logger.warning("Connection Error Saving 'player data'.\nError message: %s", con_error)
         return
     else:
         if not isinstance(basic_player_data_list, list):
-            log.warning(
+            logger.warning(
                 "basic_player_data_list is not a list, here's what we got: %s",
                 basic_player_data_list
             )
             return
         if not len(basic_player_data_list) == 1:
-            log.warning(
+            logger.warning(
                 "basic_player_data_list is not just one, here's what it is: %s",
                 basic_player_data_list
             )
             return
         basic_player_data = basic_player_data_list[0]
-        log.debug("Saving Basic Player Data: %s", basic_player_data)
+        logger.debug("Saving Basic Player Data: %s", basic_player_data)
         apex_db_helper.save_basic_player_data(player_data=basic_player_data)
         player = apex_db_helper.player_collection.player_data_from_basic_player(basic_player_data)
         apex_db_helper.player_collection.save_player(player)
@@ -68,22 +72,22 @@ def save_one_player_data(player: Player):
 def save_one_player_event_data(player: Player):
     """ saves just one player's event data """
     try:
-        log.debug("Getting events by UID for player: %s: ", player)
+        logger.debug("Getting events by UID for player: %s: ", player)
         event_data_list = apex_api_helper.api.events_by_uid(
             uid=str(player.uid),
             platform=ALPlatform(value=player.platform),
             action=ALAction.GET
         )
-        log.debug("Got events by UID for player %s ", player)
+        logger.debug("Got events by UID for player %s ", player)
     except ALHTTPExceptionFromResponse:
-        log.warning("Player: %s not found", player)
+        logger.warning("Player: %s not found", player)
         return
     except ConnectionError as con_error:
-        log.warning("Connection Error Saving 'event'.\nError message: %s", con_error)
+        logger.warning("Connection Error Saving 'event'.\nError message: %s", con_error)
         return
     else:
         for event_data in event_data_list:
-            log.debug("Saving Player %s Data: %s", player, event_data)
+            logger.debug("Saving Player %s Data: %s", player, event_data)
             apex_db_helper.event_collection.save_event_dict(event_data=event_data)
 
 
