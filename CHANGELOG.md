@@ -4,6 +4,11 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.33] - 2021-06-30
+### Fixed
+- Fixed ingestion startup script
+Resolves #222
+
 ## [1.2.32] - 2021-06-30
 ### Fixed
 - Resolve #214 (Respawn error) - now we log and continue

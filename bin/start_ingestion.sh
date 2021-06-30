@@ -1,5 +1,5 @@
 #!/bin/bash
-PID=$(ps aux | grep 'save_api_data_to_db' | grep -v grep | awk '{print $2}')
+PID=$(ps aux | grep 'ingest_respawn_data' | grep -v grep | awk '{print $2}')
 if [[ $PID > 0 ]] ; then
   echo "Process is running already"
   exit 1
