@@ -8,7 +8,7 @@ import pymongo.database
 from pymongo.collection import Collection
 
 from models import EventCollection, GameEvent, Config, PlayerCollection, ConfigCollection
-from models import SeasonCollection, RespawnCollection
+from models import SeasonCollection, RespawnCollection, RespawnIngestionTaskCollection
 
 # pylint: disable=import-error
 from instance.config import get_config
@@ -35,6 +35,8 @@ class ApexDBHelper:  # noqa E0302
         )
         self.player_collection: PlayerCollection = PlayerCollection(self.database)
         self.respawn_collection: RespawnCollection = RespawnCollection(self.database)
+        self.respawn_ingestion_task_collection: RespawnIngestionTaskCollection =\
+            RespawnIngestionTaskCollection(self.database)
         self.season_collection: SeasonCollection = SeasonCollection(self.load_data('season.json'))
         self.config: Config = ConfigCollection(self.load_data('config.json')).config
         self.logger = config.logger(__name__)

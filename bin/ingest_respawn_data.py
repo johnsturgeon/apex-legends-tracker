@@ -1,18 +1,26 @@
 """ Ingest respawn data every 3 seconds """
 import os
 import asyncio
+from asyncio import Task
 from typing import List, Optional
 
 import arrow
 
 from apex_api_helper import ApexAPIHelper, RespawnSlowDownException
 from apex_db_helper import ApexDBHelper
-from models import Player, RespawnRecord, RespawnCollection
+from models import Player, RespawnRecord, RespawnCollection, RespawnIngestionTaskCollection
 # pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 logger = config.logger(os.path.basename(__file__))
 db_helper = ApexDBHelper()
+ingestion_task_collection: RespawnIngestionTaskCollection = RespawnIngestionTaskCollection(
+    db_helper.database
+)
+
+
+class TaskDiedException(Exception):
+    """ Simple exception thrown if a task dies, we die. """
 
 
 class RespawnRecordNotFoundException(Exception):
@@ -27,6 +35,7 @@ async def monitor_player(player: Player):
         player.uid, player.platform
     )
     if not previous_record:
+        ingestion_task_collection.fetch_error(player.name)
         raise RespawnRecordNotFoundException
 
     slowdown = 0.0
@@ -45,13 +54,16 @@ async def monitor_player(player: Player):
             slowdown += 20.0
             message = f"Slowing down from {delay} to {delay + slowdown}"
             logger.warning(message)
+            ingestion_task_collection.fetch_error(player.name)
             continue
         if slowdown:
             slowdown -= .5
             message = f"Speeding up from {delay} to {delay + slowdown}"
             logger.warning(message)
         if not fetched_record:
+            ingestion_task_collection.fetch_error(player.name)
             raise RespawnRecordNotFoundException
+        ingestion_task_collection.fetched_record(player.name)
         save_record_if_changed(previous_record, fetched_record)
         delay = 5.0 if fetched_record.online else 30.0
         previous_record = fetched_record
@@ -78,6 +90,7 @@ def save_record_if_changed(previous_record, fetched_record):
         }
         message = f"UPDATING {previous_record.name}: Player record changed: {value}"
         logger.info(message)
+        ingestion_task_collection.inserted_record(fetched_record.name)
         collection.save_respawn_record(fetched_record)
 
 
@@ -104,11 +117,20 @@ async def get_respawn_obj_from_stryder(
 async def main():
     """ Returns a list of respawn players for given list of players """
     players: List[Player] = db_helper.player_collection.get_tracked_players()
-    task_list: list = []
-    logger.info("Getting respawn data")
+    ingestion_task_collection.init_tasks(players)
+    task_list: List[Task] = list()
+    logger.info("Starting the Respawn Ingestion script")
     for player in players:
-        task_list.append(monitor_player(player))
-    return await asyncio.gather(*task_list)
+        task = asyncio.create_task(monitor_player(player))
+        task.set_name(player.name)
+        task_list.append(task)
+
+    while True:
+        await asyncio.sleep(120)
+        for task in task_list:
+            if task.done():
+                logger.error("Task died: %s", {task.get_name()})
+                raise TaskDiedException
 
 
 if __name__ == "__main__":
