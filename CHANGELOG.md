@@ -4,6 +4,10 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.32] - 2021-06-30
+### Fixed
+- Resolve #214 (Respawn error) - now we log and continue
+
 ## [1.2.31] - 2021-06-30
 ### Changed
 - Logging goes to a file, using Tasks from asyncio now to manage the respawn polling jobs.
