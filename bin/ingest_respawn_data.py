@@ -23,10 +23,6 @@ class TaskDiedException(Exception):
     """ Simple exception thrown if a task dies, we die. """
 
 
-class RespawnRecordNotFoundException(Exception):
-    """ Simple exception for passing when a Respawn Record is not found"""
-
-
 async def monitor_player(player: Player):
     """ daemon job that polls respawn """
     message = f"Starting monitor for {player.name}"
@@ -36,7 +32,7 @@ async def monitor_player(player: Player):
     )
     if not previous_record:
         ingestion_task_collection.fetch_error(player.name)
-        raise RespawnRecordNotFoundException
+        logger.error("Respawn record not found -- continuing")
 
     slowdown = 0.0
     delay = 5.0 if previous_record and previous_record.online else 30.0
@@ -62,7 +58,8 @@ async def monitor_player(player: Player):
             logger.warning(message)
         if not fetched_record:
             ingestion_task_collection.fetch_error(player.name)
-            raise RespawnRecordNotFoundException
+            logger.error("Respawn record not found -- continuing")
+            continue
         ingestion_task_collection.fetched_record(player.name)
         save_record_if_changed(previous_record, fetched_record)
         delay = 5.0 if fetched_record.online else 30.0
