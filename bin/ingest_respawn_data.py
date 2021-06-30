@@ -35,9 +35,9 @@ async def monitor_player(player: Player):
     delay = 5.0 if previous_record.online else 30.0
     while True:
         if previous_record.online:
-            db_helper.logger.info("%s is ONLINE (delay is %s)", player.name, delay)
+            db_helper.logger.debug("%s is ONLINE (delay is %s)", player.name, delay)
         else:
-            db_helper.logger.info(" - %s is offline (delay is %s)", player.name, delay)
+            db_helper.logger.debug(" - %s is offline (delay is %s)", player.name, delay)
         await asyncio.sleep(delay + slowdown)
         try:
             fetched_record: Optional[RespawnRecord] = await get_respawn_obj_from_stryder(
@@ -55,6 +55,12 @@ async def monitor_player(player: Player):
         if not fetched_record:
             raise RespawnRecordNotFoundException
 
+        if previous_record.online != fetched_record.online:
+            if previous_record.online:
+                message = f"{player.name} logging off!"
+            else:
+                message = f"{player.name} going ONLINE!"
+            db_helper.logger.info(message)
         prev_dict: dict = previous_record.dict(exclude={'timestamp'})
         fetched_dict: dict = fetched_record.dict(exclude={'timestamp'})
         if prev_dict != fetched_dict:

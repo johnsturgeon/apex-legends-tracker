@@ -60,7 +60,7 @@ class ApexAPIHelper:
             except (ReadTimeout, ConnectTimeout) as timeout_error:
                 db_helper = ApexDBHelper()
                 db_helper.logger.error(
-                    "Timeout fetching respawn data -- continuing: %s",
+                    "Timeout fetching respawn data for %s-- continuing: %s", player_uid,
                     timeout_error
                 )
                 return None
