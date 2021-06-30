@@ -30,7 +30,6 @@ async def monitor_player(player: Player):
     if not previous_record:
         raise RespawnRecordNotFoundException
 
-    collection: RespawnCollection = RespawnCollection(db_helper.database)
     slowdown = 0.0
     delay = 5.0 if previous_record.online else 30.0
     while True:
@@ -54,25 +53,30 @@ async def monitor_player(player: Player):
             db_helper.logger.warning(message)
         if not fetched_record:
             raise RespawnRecordNotFoundException
-
-        if previous_record.online != fetched_record.online:
-            if previous_record.online:
-                message = f"{player.name} logging off!"
-            else:
-                message = f"{player.name} going ONLINE!"
-            db_helper.logger.info(message)
-        prev_dict: dict = previous_record.dict(exclude={'timestamp'})
-        fetched_dict: dict = fetched_record.dict(exclude={'timestamp'})
-        if prev_dict != fetched_dict:
-            value = {
-                k: fetched_dict[k] for k, _ in set(
-                    fetched_dict.items()
-                ) - set(prev_dict.items())
-            }
-            message = f"UPDATING {previous_record.name}: Player record changed: {value}"
-            db_helper.logger.info(message)
-            collection.save_respawn_record(fetched_record)
+        save_record_if_changed(previous_record, fetched_record)
         previous_record = fetched_record
+
+
+def save_record_if_changed(previous_record, fetched_record):
+    """ Saves a record if it has changed """
+    collection: RespawnCollection = RespawnCollection(db_helper.database)
+    if previous_record.online != fetched_record.online:
+        if previous_record.online:
+            message = f"{previous_record.name} logging off!"
+        else:
+            message = f"{previous_record.name} going ONLINE!"
+        db_helper.logger.info(message)
+    prev_dict: dict = previous_record.dict(exclude={'timestamp'})
+    fetched_dict: dict = fetched_record.dict(exclude={'timestamp'})
+    if prev_dict != fetched_dict:
+        value = {
+            k: fetched_dict[k] for k, _ in set(
+                fetched_dict.items()
+            ) - set(prev_dict.items())
+        }
+        message = f"UPDATING {previous_record.name}: Player record changed: {value}"
+        db_helper.logger.info(message)
+        collection.save_respawn_record(fetched_record)
 
 
 async def get_respawn_obj_from_stryder(
