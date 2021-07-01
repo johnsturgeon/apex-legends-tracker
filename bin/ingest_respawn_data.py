@@ -18,6 +18,8 @@ ingestion_task_collection: RespawnIngestionTaskCollection = RespawnIngestionTask
     db_helper.database
 )
 
+ONLINE_DELAY = 15.0
+OFFLINE_DELAY = 60.0
 
 class TaskDiedException(Exception):
     """ Simple exception thrown if a task dies, we die. """
@@ -35,7 +37,7 @@ async def monitor_player(player: Player):
         logger.error("Respawn record not found -- continuing")
 
     slowdown = 0.0
-    delay = 5.0 if previous_record and previous_record.online else 30.0
+    delay = ONLINE_DELAY if previous_record and previous_record.online else OFFLINE_DELAY
     while True:
         if previous_record and previous_record.online:
             logger.debug("%s is ONLINE (delay is %s)", player.name, delay)
@@ -62,7 +64,7 @@ async def monitor_player(player: Player):
             continue
         ingestion_task_collection.fetched_record(player.name)
         save_record_if_changed(previous_record, fetched_record)
-        delay = 5.0 if fetched_record.online else 30.0
+        delay = ONLINE_DELAY if fetched_record.online else OFFLINE_DELAY
         previous_record = fetched_record
 
 
