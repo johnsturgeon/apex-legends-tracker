@@ -21,6 +21,7 @@ ingestion_task_collection: RespawnIngestionTaskCollection = RespawnIngestionTask
 ONLINE_DELAY = 15.0
 OFFLINE_DELAY = 60.0
 
+
 class TaskDiedException(Exception):
     """ Simple exception thrown if a task dies, we die. """
 
