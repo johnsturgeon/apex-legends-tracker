@@ -22,6 +22,11 @@
         {% set max_xp=view_controller.category_max(category='xp_progress') %}
         {% set max_minutes=view_controller.category_max(category='game_length') %}
         {% set max_rp=view_controller.category_max(category='rank_score_change') %}
+        {% if num_games_played > 0 %}
+            {% set avg_wbr=(total_xp / num_games_played / 100) | round(2) %}
+        {% else %}
+            {% set avg_wbr=0 %}
+        {% endif %}
         {% if is_not_me %}
             <div class="day_detail_head">
                 <div class="item small_padding">{{ player.name }}</div>
@@ -59,6 +64,7 @@
                 <div class="clear"></div>
                 <div>Kills: {{ total_kills }} <span class="avg">({{ avg_kills }} / game)</span></div>
                 <div>Damage: {{ total_damage }} <span class="avg">({{ avg_damage }} / game)</span></div>
+                <div>WBR: {{ avg_wbr }}</div>
                 <div>XP: {{ total_xp }} <span class="avg">({{ avg_xp }} / game)</span></div>
                 {% if total_rp %}
                     <div>RP: {{ total_rp }} </div>
