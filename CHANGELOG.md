@@ -432,9 +432,3 @@ page where you can go through your legends and enable trackers and get them up-t
 ## [0.1.0] - 2021-04-27
 ### Added
 - All basic functionality (documented in the [README.md](README.md))
-
-### Changed
-- Initial checkin
-
-### Removed
-- n/a

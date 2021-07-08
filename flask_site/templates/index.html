@@ -10,7 +10,7 @@
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
 
-    <div class="leaderboard">
+    <div class="index">
         <div class="date_picker">
             <div>
                 <a href="{{ url_for('index', day=prev_day, sort_key=sort_key) }}"><!--
@@ -34,14 +34,14 @@
         <div class="sortable" id="name">Player</div>
         <div class="sortable" id="games_played">Total Games</div>
         <div class="sortable" id="wins">Total Wins</div>
-        <div class="sortable" id="kill_avg">Kills / Game</div>
+        <div class="sortable" id="kills_avg">Kills / Game</div>
         <div class="sortable" id="damage_avg">Damage / Game</div>
         <div class="clear"></div>
         {% for player in index_view_controller.players_sorted_by_key(key=sort_key) %}
             {% set uid = player['uid'] %}
             {% set is_online = player['is_online'] %}
             {% set games_played = player['games_played'] %}
-            {% set kill_avg = player['kill_avg'] | round(2) %}
+            {% set kills_avg = player['kills_avg'] | round(2) %}
             {% set wins = player['wins'] %}
             {% set damage = player['damage_avg'] | round(0) | int -%}
             <div><!-- this is a row -->
@@ -54,7 +54,7 @@
             </div>
             {{ macros.progress_container("", games_played, max_games, show_total=False) }}
             {{ macros.progress_container("", wins, max_wins, highlight_max=True, show_total=False) }}
-            {{ macros.progress_container("", kill_avg, max_avg_kills, highlight_max=True, show_total=False) }}
+            {{ macros.progress_container("", kills_avg, max_avg_kills, highlight_max=True, show_total=False) }}
             {{ macros.progress_container("", damage, max_avg_damage, highlight_max=True, show_total=False) }}
             <div class="clear"></div>
         {% endfor %}

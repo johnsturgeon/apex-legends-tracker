@@ -92,25 +92,25 @@ DIV.battlepass > DIV.border {
     margin-bottom: 8pt;
 }
 
-DIV.leaderboard, DIV.battlepass {
+DIV.index, DIV.battlepass {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
 }
 
-DIV.battlepass > DIV, DIV.leaderboard > DIV {
+DIV.battlepass > DIV, DIV.index > DIV {
     flex-grow: 1;
     flex-basis: 0;
     min-width: 80pt;
     padding: 3pt 10pt 3pt 10pt;
 }
 
-DIV.battlepass > DIV.clear, DIV.leaderboard > DIV.clear {
+DIV.battlepass > DIV.clear, DIV.index > DIV.clear {
     flex-basis: 100%;
     height: 0;
 }
 
-DIV.leaderboard .online {
+DIV.index .online {
     overflow: hidden;
     background: rgba(181, 181, 181, 0.13) !important;
     border: solid 5px rgba(84, 39, 39, 0);
@@ -120,7 +120,7 @@ DIV.leaderboard .online {
     justify-content: space-between;
 }
 
-DIV.leaderboard .online_small_font {
+DIV.index .online_small_font {
     vertical-align: middle;
     font-family: "Arial", serif;
     font-size: 9pt
@@ -306,7 +306,52 @@ DIV.line {
     border-top: solid 1pt wheat;
 }
 
+DIV.leaderboard_panel {
+    display: flex;
+    flex-direction: column;
+    border: solid 1px wheat;
+    border-radius: 4pt;
+    padding: 5pt;
+}
 
+DIV.leaderboard_panel TH {
+    text-align: left;
+    font-weight: normal;
+    text-decoration: underline;
+    font-size: 14pt;
+}
+
+DIV.leaderboard_panel TD {
+    text-align: right;
+    font-size: 14pt;
+    padding: 1pt 4pt;
+}
+
+DIV.leaderboard_panel TD:first-child {
+    text-align: left;
+}
+
+DIV.leaderboard_panel CAPTION {
+    font-size: 18pt;
+    font-weight: bold;
+    border-radius: 3pt  ;
+    background-color: wheat;
+    color: rgba(84, 39, 39, 1);
+
+}
+
+DIV.leaderboard_row {
+    display: flex;
+    justify-content: space-between;
+}
+
+DIV.leaderboard_row > DIV {
+    padding: 0 4pt;
+    flex: 0 0 27pt;
+    flex-grow: 1;
+    border: solid 1px blue;
+    text-align: left;
+}
 DIV.day_detail .win {
     border: solid 1px green;
     background-color: #024f02;

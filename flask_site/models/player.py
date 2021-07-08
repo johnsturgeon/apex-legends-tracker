@@ -18,9 +18,13 @@ class Player(BaseModel):
     battlepass_level: int
     discord_id: int
     games_played: Optional[int] = None
-    kill_avg: Optional[float] = None
+    kills_avg: Optional[float] = None
+    kills_total: Optional[int] = None
     wins: Optional[int] = None
     damage_avg: Optional[float] = None
+    damage_total: Optional[int] = None
+    xp_total: Optional[int] = None
+    point_total: Optional[int] = None
 
     def dict(self, **kwargs):
         return super().dict(

@@ -1,5 +1,5 @@
 """ This module contains all the controllers for each of the views """
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import json
 from dataclasses import dataclass
 
@@ -78,7 +78,7 @@ class BaseGameViewController:
 class IndexViewController(BaseGameViewController):
     """ Class for performing stats on a set of games """
 
-    def __init__(self, db_helper: ApexDBHelper, start_timestamp, end_timestamp):
+    def __init__(self, db_helper: ApexDBHelper, start_timestamp: int, end_timestamp: int):
         query_filter: dict = {
             "eventType": "Game",
             "timestamp": {
@@ -92,7 +92,7 @@ class IndexViewController(BaseGameViewController):
         for player in self.tracked_players:
             uid = player.uid
             player.games_played = len(self.games_played(uid=uid))
-            player.kill_avg = self.category_average('kills', uid=uid)
+            player.kills_avg = self.category_average('kills', uid=uid)
             player.wins = self.category_total('wins', uid=uid)
             player.damage_avg = self.category_average('damage', uid=uid)
 
@@ -148,6 +148,52 @@ class DayByDayViewController(BaseGameViewController):
         for game in filter_game_list(self._game_list, category=None, day=day):
             legend_set.add(game.legend_played)
         return sorted(legend_set)
+
+
+class LeaderboardViewController(IndexViewController):
+    """ Class for showing the leaderboard for kills, wins, damage """
+    def __init__(self, db_helper: ApexDBHelper, start_timestamp: int, end_timestamp: int):
+        super().__init__(db_helper, start_timestamp, end_timestamp)
+
+        self.leader_player_list: List[Player] = list()
+        category_list = ['damage_total', 'kills_total', 'xp_total', 'wins']
+        for player in self.tracked_players:
+            if player.games_played:
+                player.damage_total = self.category_total('damage', uid=player.uid)
+                player.kills_total = self.category_total('kills', uid=player.uid)
+                player.xp_total = self.category_total('xp_progress', uid=player.uid)
+                self.leader_player_list.append(player)
+        for player in self.leader_player_list:
+            player.point_total = 0
+            for category in category_list:
+                player.point_total += self.points_for_category(category, player.uid)
+
+    def points_for_category(self, category: str, player_uid: int) -> int:
+        sorted_players: List[Player] = self.players_sorted_by_key(category)
+        max_points: int = len(sorted_players)
+        position_index: int = 0
+        current_player: Optional[Player] = None
+        for player in sorted_players:
+            if player.uid == player_uid:
+                current_player = player
+                break
+            position_index += 1
+        searching_for_players: bool = True
+        my_total = getattr(current_player, category)
+        if my_total == 0:
+            return 0
+        while position_index and searching_for_players:
+            player_above = sorted_players[position_index-1]
+            player_above_total = getattr(player_above, category)
+            if my_total == player_above_total:
+                position_index -= 1
+            else:
+                searching_for_players = False
+        return max_points - position_index
+
+    def players_sorted_by_key(self, key: str) -> List[Player]:
+        """ Wrapper for utility function """
+        return players_sorted_by_key(self.leader_player_list, key)
 
 
 class DayDetailViewController:
