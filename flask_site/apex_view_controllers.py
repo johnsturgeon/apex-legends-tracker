@@ -25,14 +25,22 @@ class RankedGameDay:
 class BaseGameViewController:
     """ Base controller for all views that deal with games """
 
-    def __init__(self, db_helper: ApexDBHelper, query_filter: dict):
+    def __init__(self,
+                 db_helper: ApexDBHelper,
+                 query_filter: dict,
+                 game_mode: Optional[str] = None):
         # we must convert this to a string for the db (for now)
         if query_filter.get('uid'):
             query_filter['uid'] = str(query_filter['uid'])
 
-        self._game_list = db_helper.event_collection.get_games(
+        game_list: List[GameEvent] = db_helper.event_collection.get_games(
             additional_filter=query_filter
         )
+        self._game_list: List[GameEvent] = list()
+        for game in game_list:
+            if game_mode and game_mode != game.game_mode:
+                continue
+            self._game_list.append(game)
 
     @property
     def game_list(self):
@@ -78,7 +86,11 @@ class BaseGameViewController:
 class IndexViewController(BaseGameViewController):
     """ Class for performing stats on a set of games """
 
-    def __init__(self, db_helper: ApexDBHelper, start_timestamp: int, end_timestamp: int):
+    def __init__(self,
+                 db_helper: ApexDBHelper,
+                 start_timestamp: int,
+                 end_timestamp: int,
+                 game_mode: str = None):
         query_filter: dict = {
             "eventType": "Game",
             "timestamp": {
@@ -86,7 +98,7 @@ class IndexViewController(BaseGameViewController):
                 "$lte": end_timestamp
             }
         }
-        super().__init__(db_helper, query_filter)
+        super().__init__(db_helper, query_filter, game_mode)
         self.tracked_players = db_helper.player_collection.get_tracked_players()
 
         for player in self.tracked_players:
@@ -153,8 +165,7 @@ class DayByDayViewController(BaseGameViewController):
 class LeaderboardViewController(IndexViewController):
     """ Class for showing the leaderboard for kills, wins, damage """
     def __init__(self, db_helper: ApexDBHelper, start_timestamp: int, end_timestamp: int):
-        super().__init__(db_helper, start_timestamp, end_timestamp)
-
+        super().__init__(db_helper, start_timestamp, end_timestamp, game_mode="BR")
         self.leader_player_list: List[Player] = list()
         category_list = ['damage_total', 'kills_total', 'xp_total', 'wins']
         for player in self.tracked_players:

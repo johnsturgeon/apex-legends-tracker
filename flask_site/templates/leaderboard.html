@@ -41,7 +41,25 @@
                 {% for player in view_controller.players_sorted_by_key('point_total') %}
                     {% set points = player.point_total %}
                     <tr>
-                        <td>{{ player.name }}</td><td>{{ points }}</td>
+                        <td>
+                            <div class="tooltip">{{ player.name }}{% if player.is_online %} <span class="online_ball">🟢</span>{% endif %}
+                                <div class="tooltiptext">
+                                    <table>
+
+                                        <tr>
+                                            <td>Games: </td><td>{{ player.games_played }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>PPG: </td><td>{{ (points / player.games_played) | round(2) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>WBR: </td><td>{{ (player.xp_total / player.games_played / 100) | round(2) }}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ points }}</td>
                     </tr>
                 {% endfor %}
             </table>
@@ -50,9 +68,9 @@
         <div class="leaderboard_panel">
             <table><caption>Kills</caption>
                 <thead>
-                    <tr>
-                        <th>Player</th><th>Kills</th><th>Points</th>
-                    </tr>
+                <tr>
+                    <th>Player</th><th>Kills</th><th>Points</th>
+                </tr>
                 </thead>
                 {% for player in view_controller.players_sorted_by_key('kills_total') %}
                     {% set points = view_controller.points_for_category('kills_total', player.uid) %}
@@ -108,6 +126,14 @@
             </table>
         </div>
     </div>
+    {% if not next_day %}
+        <script>
+            const seconds = 1000
+            setTimeout(function(){
+                location.reload();
+            }, 30 * seconds)
+        </script>
+    {% endif %}
     <script>
         const picker = new Litepicker({
             element: document.getElementById('date_picker'),
@@ -119,13 +145,6 @@
             myUrlWithParams.searchParams.delete("day")
             myUrlWithParams.searchParams.append("day", date1.format('YYYY-MM-DD'))
             window.location=myUrlWithParams
-        });
-        $(document).ready(function(){
-            $('#{{ sort_key }}').append(' *')
-            $('.sortable').click(function(_) {
-                sort_by_key($(this).attr('id'))
-            });
-
         });
     </script>
 

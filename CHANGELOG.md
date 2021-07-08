@@ -4,6 +4,14 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2021-07-08
+### Added
+- Several changes for the Leaderboard:
+  - Added a 'tooltip' to the leaderboard points leader with some summary information
+  - Added an 'online' indicator to the page
+  - Added auto page refresh (refreshes every 30 seconds)
+  - Filter out Arena games
+
 ## [1.4.0] - 2021-07-07
 ### Added
 - New Feature: LEADERBOARD!
