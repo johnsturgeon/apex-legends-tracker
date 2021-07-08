@@ -277,6 +277,7 @@ def get_player_for_view(player_uid: str) -> Tuple[Player, bool]:
 
 @app.route('/leaderboard/')
 def leaderboard():
+    """ New leaderboard! """
     day = request.args.get('day')
     date_to_use, prev_day, next_day, new_day = get_arrow_date_prev_next_date_to_use(day)
     starting_timestamp = date_to_use.floor('day').int_timestamp

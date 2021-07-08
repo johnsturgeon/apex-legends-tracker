@@ -169,6 +169,7 @@ class LeaderboardViewController(IndexViewController):
                 player.point_total += self.points_for_category(category, player.uid)
 
     def points_for_category(self, category: str, player_uid: int) -> int:
+        """ Returns the points for a given category """
         sorted_players: List[Player] = self.players_sorted_by_key(category)
         max_points: int = len(sorted_players)
         position_index: int = 0
