@@ -12,7 +12,7 @@ from apex_db_helper import ApexDBHelper
 from apex_utilities import get_arrow_date_prev_next_date_to_use
 from apex_view_controllers import IndexViewController, \
     DayByDayViewController, ProfileViewController, BattlePassViewController, \
-    ClaimProfileViewController, DayDetailViewController
+    ClaimProfileViewController, DayDetailViewController, LeaderboardViewController
 from models import Player
 # pylint: disable=import-error
 from instance.config import get_config
@@ -273,6 +273,29 @@ def get_player_for_view(player_uid: str) -> Tuple[Player, bool]:
         return auth_player, False
 
     return apex_db_helper.player_collection.get_tracked_player_by_uid(int(player_uid)), True
+
+
+@app.route('/leaderboard/')
+def leaderboard():
+    """ New leaderboard! """
+    day = request.args.get('day')
+    date_to_use, prev_day, next_day, new_day = get_arrow_date_prev_next_date_to_use(day)
+    starting_timestamp = date_to_use.floor('day').int_timestamp
+    ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
+
+    view_controller = LeaderboardViewController(
+        db_helper=apex_db_helper,
+        start_timestamp=starting_timestamp,
+        end_timestamp=ending_timestamp,
+    )
+    return render_template(
+        'leaderboard.html',
+        day=new_day,
+        prev_day=prev_day,
+        next_day=next_day,
+        view_controller=view_controller,
+        logged_in_player=None
+    )
 
 
 if __name__ == '__main__':

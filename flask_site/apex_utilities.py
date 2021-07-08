@@ -8,6 +8,11 @@ from arrow import Arrow
 
 def players_sorted_by_key(tracked_players: list, key: str):
     """ returns back a list of players sorted by the category """
+    def my_get_attr(item, key):
+        if hasattr(item, key):
+            return getattr(item, key)
+        return 0
+
     if key == 'name':
         sorted_players = sorted(
             tracked_players,
@@ -16,7 +21,7 @@ def players_sorted_by_key(tracked_players: list, key: str):
     else:
         sorted_players = sorted(
             tracked_players,
-            key=lambda item: getattr(item, key), reverse=True
+            key=lambda item: my_get_attr(item, key), reverse=True
         )
     return sorted_players
 
