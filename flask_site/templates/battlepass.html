@@ -16,6 +16,9 @@
         {% for player in view_controller.players_sorted_by_key(key='name') %}
             {% if player.battlepass_level > -1 %}
                 {% set battlepass_level = player['battlepass_level'] %}
+                {% if battlepass_level > max_battlepass %}
+                    {% set max_battlepass = battlepass_level %}
+                {% endif %}
                 {% set percent_to_goal = (player['battlepass_level'] / goal_level * 100) %}
                 {% set delta_from_goal = battlepass_level - goal_level  %}
                 {% set plus_sign = "" %}
