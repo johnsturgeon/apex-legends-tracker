@@ -632,8 +632,8 @@
             "category": "",
             "grouping": "",
             "legend": "Revenant",
-            "mode": "",
-            "season": "",
+            "mode": "BR",
+            "season": "any",
             "tracker_key": "silenced_targets"
         },
         {
@@ -884,8 +884,8 @@
             "category": "",
             "grouping": "",
             "legend": "",
-            "mode": "",
-            "season": "",
+            "mode": "BR",
+            "season": "any",
             "tracker_key": "empty"
         },
         {

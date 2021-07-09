@@ -152,7 +152,7 @@ DIV.day_by_day > DIV.day_by_day_thumb {
     min-width: 24pt;
 }
 
-.legend_thumb {
+DIV.legend_thumb {
     width: 32px;
     height: auto;
     filter: invert(100%);
@@ -315,10 +315,15 @@ DIV.leaderboard_panel {
 }
 
 DIV.leaderboard_panel TH {
-    text-align: left;
+    text-align: center;
     font-weight: normal;
     text-decoration: underline;
     font-size: 14pt;
+}
+
+DIV.leaderboard_panel TH:first-child {
+    text-align: left;
+    padding-left: 4pt;
 }
 
 DIV.leaderboard_panel TD {
@@ -486,6 +491,38 @@ DIV.claim_profile > .discord_info {
 .sortable {
     cursor: pointer;
 }
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted rgba(245, 222, 179, 0.53);
+}
+
+.tooltip .online_ball {
+    font-size: 4pt;
+    vertical-align: super;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: wheat;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
+
 
 :root {
     --dark-red: #542727;

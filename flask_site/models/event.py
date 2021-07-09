@@ -6,7 +6,7 @@ import pymongo.database
 import arrow
 from pydantic import BaseModel, Field, PrivateAttr
 
-from models.tracker_info import TrackerInfoCollection
+from models.tracker_info import TrackerInfoCollection, GameMode
 from models.season import Season
 from apex_utilities import get_arrow_date_to_use
 
@@ -80,6 +80,7 @@ class GameEvent(BaseEvent):
     kills: int = 0
     wins: int = 0
     damage: int = 0
+    game_mode: Optional[GameMode] = None
     _day_of_event: str = PrivateAttr(None)
     _formatted_time: str = PrivateAttr(None)
     current_rank_score: Optional[str] = Field(alias='currentRankScore')
@@ -108,7 +109,7 @@ class GameEvent(BaseEvent):
         return 0
 
     def dict(self, **kwargs):
-        return super().dict(exclude={'kills', 'damage', 'wins'}, **kwargs)
+        return super().dict(exclude={'game_mode', 'kills', 'damage', 'wins'}, **kwargs)
 
 
 class EventCollection:
@@ -120,9 +121,11 @@ class EventCollection:
             tracker_info_data
         )
 
+    # pylint: disable=too-many-arguments
     def get_games(self,
                   player_uid: int = 0,
                   start_end_day: Tuple[str, str] = None,
+                  game_mode: Optional[GameMode] = None,
                   additional_filter: dict = None,
                   sort: int = pymongo.ASCENDING) -> List[GameEvent]:
         """
@@ -131,6 +134,8 @@ class EventCollection:
             sort (): defines sort order 1 ascending -1 descending
             additional_filter (): query filter for the 'event' db
             start_end_day (): format 'YYYY-MM-DD'
+            game_mode (): BR for Battle Royale, Arena for Arena
+                (default is Both)
             player_uid (): filter by player (optional)
 
         Returns:
@@ -155,6 +160,9 @@ class EventCollection:
         for game in event_list:
             game_event: GameEvent = GameEvent(**game)
             self.update_game_category_totals(game_event)
+            self.update_game_mode(game_event)
+            if game_mode and game_mode != game.game_mode:
+                continue
             game_list.append(game_event)
         return game_list
 
@@ -203,6 +211,14 @@ class EventCollection:
             if hasattr(game, tracker_cat):
                 setattr(game, tracker_cat, tracker.value)
         # Category not found
+
+    def update_game_mode(self, game: GameEvent):
+        """ Adds the Game Mode (BR, or Arena) to the game"""
+        tracker: GameEventDetail
+        for tracker in game.event:
+            game.game_mode = self._tracker_info_collection.mode_for_key(
+                tracker.key
+            )
 
     def _get_event_dict(self, query_filter: dict, sort_order: int = 0) -> list:
         """ Query the DB for events based on filter """
