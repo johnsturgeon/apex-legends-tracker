@@ -505,7 +505,7 @@ DIV.claim_profile > .discord_info {
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
+    width: auto;
     background-color: black;
     color: wheat;
     text-align: center;
