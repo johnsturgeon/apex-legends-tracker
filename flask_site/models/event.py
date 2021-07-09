@@ -120,6 +120,7 @@ class EventCollection:
         self._tracker_info_collection: TrackerInfoCollection = TrackerInfoCollection(
             tracker_info_data
         )
+
     # pylint: disable=too-many-arguments
     def get_games(self,
                   player_uid: int = 0,
