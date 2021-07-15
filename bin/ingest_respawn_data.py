@@ -8,7 +8,7 @@ import arrow
 
 from apex_api_helper import ApexAPIHelper, RespawnSlowDownException
 from apex_db_helper import ApexDBHelper
-from models import Player, RespawnRecord, RespawnCollection, RespawnIngestionTaskCollection
+from models import Player, RespawnRecord, RespawnRecordCollection, RespawnIngestionTaskCollection
 # pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
@@ -71,7 +71,7 @@ async def monitor_player(player: Player):
 
 def save_record_if_changed(previous_record, fetched_record):
     """ Saves a record if it has changed """
-    collection: RespawnCollection = RespawnCollection(db_helper.database)
+    collection: RespawnRecordCollection = RespawnRecordCollection(db_helper.database)
     if not previous_record:
         return
     if previous_record.online != fetched_record.online:
