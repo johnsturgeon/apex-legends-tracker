@@ -10,7 +10,7 @@ from pymongo.collection import Collection
 
 
 # pylint: disable=missing-class-docstring
-class BaseDBModel(BaseModel):
+class BaseDBModel(BaseModel, ABC):
     collection: Collection
     uuid: UUID
     _exclude_attrs: set = {'collection'}
@@ -36,10 +36,10 @@ class BaseDBCollection(ABC):
         self.collection = collection
         super().__init__()
 
-    def find_one(self, uuid: UUID) -> dict:
+    def _find_one(self, uuid: UUID) -> dict:
         return self.collection.find_one({'uuid': uuid})
 
-    def find_many(self, criteria: dict = None):
+    def _find_many(self, criteria: dict = None):
         return self.collection.find(filter=criteria)
 
     @abstractmethod

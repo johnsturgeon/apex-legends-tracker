@@ -15,6 +15,10 @@ from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
 
 
+class RespawnCDataException(Exception):
+    pass
+
+
 # pylint: disable=missing-class-docstring
 class CDataLegend(str, Enum):
     ALL = "all"
@@ -73,14 +77,20 @@ class RespawnCDataCollection(BaseDBCollection):
     def retrieve_one(self, uuid: UUID) -> RespawnCData:
         return RespawnCData(
             collection=self.collection,
-            **self.find_one(uuid)
+            **self._find_one(uuid)
         )
 
     def retrieve_all(self, criteria: dict = None) -> List[RespawnCData]:
         retrieved_records: List[RespawnCData] = list()
-        for record in self.find_many(criteria):
+        for record in self._find_many(criteria):
             retrieved_records.append(RespawnCData(collection=self.collection, **record))
         return retrieved_records
+
+    def retrieve_one_from_c_data(self, c_data: int) -> RespawnCData:
+        found_records: List[RespawnCData] = self.retrieve_all({'c_data': c_data})
+        if len(found_records) != 1:
+            raise RespawnCDataException
+        return found_records[0]
 
 
 def try_cdata_test():

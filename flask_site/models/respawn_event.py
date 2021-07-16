@@ -76,5 +76,10 @@ def clean_up_respawn_event_db():
             )
 
 
+def get_games():
+    """ print each game"""
+    pass
+
+
 if __name__ == '__main__':
     clean_up_respawn_event_db()

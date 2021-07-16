@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import os
-from typing import List, Optional
+from typing import List
 from uuid import UUID, uuid4
 
 from pymongo.collection import Collection
@@ -11,12 +11,9 @@ from pydantic import Field
 # pylint: disable=import-error
 from base_db_model import BaseDBModel, BaseDBCollection
 from instance.config import get_config
+from respawn_cdata import RespawnCDataTracker
 
 config = get_config(os.getenv('FLASK_ENV'))
-
-
-class PlayerNotFoundException(Exception):
-    """ Simple exception for when a player is not found """
 
 
 # pylint: disable=missing-class-docstring
@@ -54,15 +51,15 @@ class RespawnRecord(BaseDBModel):
     party_full: int = Field(alias='partyFull')
     party_in_match: int = Field(alias='partyInMatch')
 
-    trackers: Optional[List[RespawnTracker]] = None
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self._exclude_attrs.add('trackers')
+    _respawn_cdata_trackers: List[RespawnCDataTracker] = None
 
     class Config:
         allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+
+    @property
+    def respawn_trackers(self) -> List[RespawnCDataTracker]:
+        if self._respawn_cdata_trackers is None:
+            return list()
 
 
 class RespawnRecordCollection(BaseDBCollection):
@@ -70,17 +67,17 @@ class RespawnRecordCollection(BaseDBCollection):
     def retrieve_one(self, uuid: UUID) -> RespawnRecord:
         return RespawnRecord(
             collection=self.collection,
-            **self.collection.find_one({'uuid': uuid})
+            **self._find_one(uuid)
         )
 
     def retrieve_all(self, criteria: dict = None) -> List[RespawnRecord]:
         retrieved_records: List[RespawnRecord] = list()
-        for record in self.collection.find(filter=criteria):
+        for record in self._find_many(criteria=criteria):
             retrieved_records.append(RespawnRecord(collection=self.collection, **record))
         return retrieved_records
 
 
-def clean_up_respawn_record_db():
+def add_uuid_to_respawn_record():
     """ Go through all the records that don't have UUID's and add them """
     from apex_db_helper import ApexDBHelper
 
@@ -97,5 +94,15 @@ def clean_up_respawn_record_db():
             )
 
 
+def print_records():
+    from apex_db_helper import ApexDBHelper
+    collection: Collection = ApexDBHelper().database.respawn_record
+    respawn_collection: RespawnRecordCollection = RespawnRecordCollection(collection)
+
+    for record in respawn_collection.retrieve_all({'timestamp': {"$gt": 1626246000}, 'name': 'GoshDarnedHero'}):
+        print(record)
+
+
 if __name__ == '__main__':
-    clean_up_respawn_record_db()
+    # add_uuid_to_respawn_record()
+    print_records()
