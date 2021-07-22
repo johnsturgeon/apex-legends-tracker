@@ -6,7 +6,8 @@ from .event import GameEvent, EventCollection
 from .player import Player, PlayerCollection
 from .tracker_info import TrackerInfo, TrackerInfoCollection
 from .season import SeasonCollection, Season
-from .respawn_record import RespawnRecordCollection, RespawnRecord
+from .respawn_cdata import CDataCollection
+from .respawn_record import RespawnRecordCollection, RespawnRecord, RespawnLegend
 from .respawn_ingestion_task import RespawnIngestionTaskCollection
 from .respawn_event import RespawnEvent
 __all__ = [
@@ -20,8 +21,10 @@ __all__ = [
     'PlayerCollection',
     'RankTier',
     'RankedDivisionInfo',
+    'CDataCollection',
     'RespawnEvent',
     'RespawnIngestionTaskCollection',
+    'RespawnLegend',
     'RespawnRecord',
     'RespawnRecordCollection',
     'Season',

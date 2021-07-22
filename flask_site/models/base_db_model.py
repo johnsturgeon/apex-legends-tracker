@@ -2,50 +2,66 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import List, Callable, TypeVar, NewType
 from uuid import UUID
 
 from pydantic import BaseModel
+from pymongo.database import Database
 from pymongo.collection import Collection
 
 
 # pylint: disable=missing-class-docstring
+
+
 class BaseDBModel(BaseModel, ABC):
-    collection: Collection
-    uuid: UUID
-    _exclude_attrs: set = {'collection'}
+    db: Database
+    _exclude = {'db'}
 
     class Config:
         arbitrary_types_allowed = True
 
     def dict(self, **kwargs):
-        return super().dict(exclude=self._exclude_attrs, **kwargs)
+        return super().dict(exclude=self.exclude_attrs, **kwargs)
 
     def save(self):
         """ Saves the record to the DB (update if it exists) """
         self.collection.update_one(
-            filter={'uuid': self.uuid},
+            filter=self.unique_key,
             update={"$set": self.dict()},
             upsert=True
         )
 
+    @property
+    @abstractmethod
+    def collection(self) -> Collection:
+        pass
+
+    @property
+    def exclude_attrs(self) -> set:
+        res = set()
+        for cls in type(self).mro():
+            res |= getattr(cls, '_exclude', set())
+        return res
+
+    @property
+    @abstractmethod
+    def unique_key(self) -> dict:
+        pass
+
 
 class BaseDBCollection(ABC):
+    db: Database
 
-    def __init__(self, collection: Collection):
-        self.collection = collection
-        super().__init__()
+    def __init__(self, db: Database):
+        self.db = db
 
-    def _find_one(self, uuid: UUID) -> dict:
-        return self.collection.find_one({'uuid': uuid})
+    def find_one(self, key: dict) -> dict:
+        return self.collection.find_one(key)
 
-    def _find_many(self, criteria: dict = None):
+    def find_many(self, criteria: dict = None):
         return self.collection.find(filter=criteria)
 
+    @property
     @abstractmethod
-    def retrieve_one(self, uuid: UUID):
+    def collection(self) -> Collection:
         pass
 
-    @abstractmethod
-    def retrieve_all(self, criteria: dict = None):
-        pass

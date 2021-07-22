@@ -1,7 +1,7 @@
 """ Helper module for """
 import json
 import os
-from typing import List
+from typing import List, Optional
 
 from pymongo import MongoClient
 import pymongo.database
@@ -37,6 +37,7 @@ class ApexDBHelper:  # noqa E0302
         self.respawn_ingestion_task_collection: RespawnIngestionTaskCollection =\
             RespawnIngestionTaskCollection(self.database)
         self.season_collection: SeasonCollection = SeasonCollection(self.load_data('season.json'))
+        self.cdata_collection: Optional[dict] = None
         self.config: Config = ConfigCollection(self.load_data('config.json')).config
         self.logger = config.logger(__name__)
         self._latest_event_timestamp: int = 0
