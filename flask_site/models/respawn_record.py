@@ -1,49 +1,64 @@
-""" Dataclass to represent player collection """
+""" Dataclass to represent respawn record collection """
 from __future__ import annotations
 
-from typing import Tuple
+import os
+from enum import Enum
+from functools import lru_cache
+from typing import List
+from uuid import UUID, uuid4
 
-import pymongo.database
-from pydantic import BaseModel, Field
+from pymongo.collection import Collection
+from pydantic import Field, PrivateAttr
 
 # pylint: disable=import-error
+from base_db_model import BaseDBModel, BaseDBCollection
 from instance.config import get_config
-config = get_config('development')
+from respawn_cdata import CData, CDataTrackerValue
+from models import CDataCollection, PlayerCollection
 
-
-class PlayerNotFoundException(Exception):
-    """ Simple exception for when a player is not found """
-
-
-def key_value_for_cdata(cdata: str) -> Tuple[str, str]:
-    """ returns the key, value pair for a given CDATA key """
-    if isinstance(cdata, int):
-        cdata = str(cdata)
-    # cdata_map = load_data('cdata_map.json')
-    # if cdata_map.get(cdata):
-    #     return tuple(cdata_map[cdata])
-    return 'unknown', cdata
+config = get_config(os.getenv('FLASK_ENV'))
 
 
 # pylint: disable=missing-class-docstring
-class RespawnRecord(BaseModel):
+# pylint: disable=missing-function-docstring
+class RespawnRecordException(Exception):
+    pass
+
+
+class RespawnLegend(str, Enum):
+    EMPTY = "empty"
+    BANGALORE = "bangalore"
+    BLOODHOUND = "bloodhound"
+    CAUSTIC = "caustic"
+    CRYPTO = "crypto"
+    FUSE = "fuse"
+    GIBRALTAR = "gibraltar"
+    HORIZON = "horizon"
+    LIFELINE = "lifeline"
+    LOBA = "loba"
+    MIRAGE = "mirage"
+    OCTANE = "octane"
+    PATHFINDER = "pathfinder"
+    RAMPART = "rampart"
+    REVENANT = "revenant"
+    SEER = "seer"
+    VALKYRIE = "valkyrie"
+    WATTSON = "wattson"
+    WRAITH = "wraith"
+
+
+class RespawnRecord(BaseDBModel):
+    cdata_collection: CDataCollection = Field(exclude=True)
+    player_collection: PlayerCollection = Field(exclude=True)
+    uuid: UUID
     timestamp: int
     uid: int
     hardware: str
     name: str
-    # kills: int
-    # wins: int
-    # matches: int
     ban_reason: int = Field(alias='banReason')
     ban_seconds: int = Field(alias='banSeconds')
-    # elite_streak: int = Field(alias='eliteStreak')
     rank_score: int = Field(alias='rankScore')
     arena_score: int = Field(alias='arenaScore')
-    # char_ver: int = Field(alias='charVer')
-    # char_idx: int = Field(alias='charIdx')
-    # privacy: str
-    # version: int = Field(alias='cdata0')
-    # unused01: int = Field(alias='cdata1')
     character: int = Field(alias='cdata2')
     character_skin: int = Field(alias='cdata3')
     banner_frame: int = Field(alias='cdata4')
@@ -61,49 +76,150 @@ class RespawnRecord(BaseModel):
     banner_tracker3: int = Field(alias='cdata16')
     banner_tracker3_value: int = Field(alias='cdata17')
     character_intro_quip: int = Field(alias='cdata18')
-    # unused19: int = Field(alias='cdata19')
-    # unused20: int = Field(alias='cdata20')
-    # unused21: int = Field(alias='cdata21')
-    # unused22: int = Field(alias='cdata22')
     account_level: int = Field(alias='cdata23')
     account_progress_int: int = Field(alias='cdata24')
-    # unused25: int = Field(alias='cdata25')
-    # unused26: int = Field(alias='cdata26')
-    # unused27: int = Field(alias='cdata27')
-    # unused28: int = Field(alias='cdata28')
-    # unused29: int = Field(alias='cdata29')
-    # unused30: int = Field(alias='cdata30')
     player_in_match: int = Field(alias='cdata31')
     online: int
     joinable: int
     party_full: int = Field(alias='partyFull')
     party_in_match: int = Field(alias='partyInMatch')
-    # time_since_server_change: int = Field(alias='timeSinceServerChange')
-    # endpoint: str
-    # communities: Dict[str, Any]
 
-    # @validator(
-    #     'character',
-    #     'character_skin',
-    #     'banner_frame',
-    #     'banner_stance',
-    #     'banner_badge1',
-    #     'banner_badge2',
-    #     'banner_badge3',
-    #     'banner_tracker1',
-    #     'banner_tracker2',
-    #     'banner_tracker3',
-    #     'character_intro_quip'
-    # )
-    # def validate_cdata(cls, v):
-    #     _, value = key_value_for_cdata(v)
-    #     return value
+    _cdata_trackers: List[CDataTrackerValue] = PrivateAttr(default=list())
+
+    class Config:
+        allow_population_by_field_name = True
+        exclude_unset = True
+
+    @property
+    def unique_key(self) -> dict:
+        return {'uuid': self.uuid}
+
+    @staticmethod
+    def fixed_value(value: int) -> int:
+        return int((value - 2) / 100)
+
+    @property
+    def tracker_values(self) -> List[CDataTrackerValue]:
+        if not self._cdata_trackers:
+            # pylint: disable=no-member
+            self._cdata_trackers = list()
+            self._cdata_trackers.append(CDataTrackerValue(
+                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                    self.banner_tracker1
+                ),
+                value=RespawnRecord.fixed_value(self.banner_tracker1_value)
+            ))
+            self._cdata_trackers.append(CDataTrackerValue(
+                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                    self.banner_tracker2
+                ),
+                value=RespawnRecord.fixed_value(self.banner_tracker2_value)
+            ))
+            self._cdata_trackers.append(CDataTrackerValue(
+                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                    self.banner_tracker3
+                ),
+                value=RespawnRecord.fixed_value(self.banner_tracker3_value)
+            ))
+        return self._cdata_trackers
+
+    @property
+    def legend(self) -> RespawnLegend:
+        """ Returns the respawn legend name """
+        # pylint: disable=no-member
+        legend_cdata: CData = self.cdata_collection.retrieve_legend(self.character)
+        character_name: str = legend_cdata.name.lower()
+        return RespawnLegend(value=character_name)
 
 
-class RespawnCollection:
-    def __init__(self, db: pymongo.database.Database):
-        self._respawn_collection: pymongo.collection.Collection = db.respawn_record
+class RespawnRecordCollection(BaseDBCollection):
 
-    def save_respawn_record(self, obj: RespawnRecord):
-        """ Saves one record to the respawn DB"""
-        self._respawn_collection.insert_one(obj.dict())
+    def __init__(self,
+                 db_collection: Collection,
+                 cdata_collection: CDataCollection,
+                 player_collection: PlayerCollection
+                 ):
+        super().__init__(db_collection)
+        self.cdata_collection = cdata_collection
+        self.player_collection = player_collection
+
+    def obj_from_record(self, record: dict) -> RespawnRecord:
+        return RespawnRecord(
+            db_collection=self.db_collection,
+            cdata_collection=self.cdata_collection,
+            player_collection=self.player_collection,
+            **record
+        )
+
+    @lru_cache
+    def retrieve_one(self, uuid: UUID) -> RespawnRecord:
+        return self.obj_from_record(self.retrieve_one_record(uuid))
+
+    @lru_cache
+    def retrieve_one_record(self, uuid: UUID) -> dict:
+        """ Guaranteed to return one record """
+        record = self.find_one({'uuid': uuid})
+        if not record:
+            raise RespawnRecordException(f"Record not found for uuid: {uuid}")
+        return record
+
+    @lru_cache
+    def retrieve_many(self,
+                      gt_timestamp: int = None,
+                      lt_timestamp: int = None,
+                      name: str = None) -> List[RespawnRecord]:
+        retrieved_records: List[RespawnRecord] = list()
+        criteria: dict = dict()
+        if gt_timestamp:
+            criteria.update({
+                'timestamp': {'$gt': gt_timestamp}
+            })
+        if lt_timestamp:
+            criteria.update({
+                'timestamp': {'$lt': gt_timestamp}
+            })
+        if name:
+            criteria.update({
+                'name': name
+            })
+        for record in self.find_many(criteria):
+            retrieved_records.append(
+                self.obj_from_record(record)
+            )
+        return retrieved_records
+
+
+def add_uuid_to_respawn_record():
+    """ Go through all the records that don't have UUID's and add them """
+    # pylint: disable=import-outside-toplevel
+    from apex_db_helper import ApexDBHelper
+    collection: Collection = ApexDBHelper().database.respawn_record
+    count: int = 1
+    for record in collection.find({'uuid': {'$exists': False}}):
+        if not record.get('uuid'):
+            print(f"Updating UUID: {count}")
+            count += 1
+            record['uuid'] = uuid4()
+            collection.update_one(
+                filter={'timestamp': record['timestamp'], 'uid': record['uid']},
+                update={"$set": record}
+            )
+
+
+def print_records():
+    # pylint: disable=import-outside-toplevel
+    from apex_db_helper import ApexDBHelper
+    db_helper: ApexDBHelper = ApexDBHelper()
+    records = db_helper.respawn_record_collection.retrieve_many(
+        gt_timestamp=1626246000,
+        name='GoshDarnedHero'
+    )
+    one_record = records[0]
+    print(one_record)
+    one_dict = one_record.dict()
+    print(one_dict)
+
+
+if __name__ == '__main__':
+    add_uuid_to_respawn_record()
+    print_records()

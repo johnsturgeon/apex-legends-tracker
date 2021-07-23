@@ -3,12 +3,13 @@ import os
 import asyncio
 from asyncio import Task
 from typing import List, Optional
+from uuid import uuid4
 
 import arrow
 
 from apex_api_helper import ApexAPIHelper, RespawnSlowDownException
 from apex_db_helper import ApexDBHelper
-from models import Player, RespawnRecord, RespawnCollection, RespawnIngestionTaskCollection
+from models import Player, RespawnRecord, RespawnIngestionTaskCollection
 # pylint: disable=import-error
 from instance.config import get_config
 config = get_config(os.getenv('FLASK_ENV'))
@@ -69,9 +70,8 @@ async def monitor_player(player: Player):
         previous_record = fetched_record
 
 
-def save_record_if_changed(previous_record, fetched_record):
+def save_record_if_changed(previous_record: RespawnRecord, fetched_record: RespawnRecord):
     """ Saves a record if it has changed """
-    collection: RespawnCollection = RespawnCollection(db_helper.database)
     if not previous_record:
         return
     if previous_record.online != fetched_record.online:
@@ -80,8 +80,8 @@ def save_record_if_changed(previous_record, fetched_record):
         else:
             message = f"{previous_record.name} going ONLINE!"
         logger.info(message)
-    prev_dict: dict = previous_record.dict(exclude={'timestamp'})
-    fetched_dict: dict = fetched_record.dict(exclude={'timestamp'})
+    prev_dict: dict = previous_record.dict(exclude={'timestamp', 'uuid'})
+    fetched_dict: dict = fetched_record.dict(exclude={'timestamp', 'uuid'})
     if prev_dict != fetched_dict:
         value = {
             k: fetched_dict[k] for k, _ in set(
@@ -91,7 +91,7 @@ def save_record_if_changed(previous_record, fetched_record):
         message = f"UPDATING {previous_record.name}: Player record changed: {value}"
         logger.info(message)
         ingestion_task_collection.inserted_record(fetched_record.name)
-        collection.save_respawn_record(fetched_record)
+        fetched_record.save()
 
 
 async def get_respawn_obj_from_stryder(
@@ -109,7 +109,12 @@ async def get_respawn_obj_from_stryder(
         utc_time = arrow.utcnow()
         timestamp = utc_time.int_timestamp
         return (RespawnRecord(
-            timestamp=timestamp, **respawn_data['userInfo']
+            db_collection=db_helper.database.respawn_record,
+            cdata_collection=db_helper.cdata_collection,
+            player_collection=db_helper.player_collection,
+            uuid=uuid4(),
+            timestamp=timestamp,
+            **respawn_data['userInfo']
         ))
     return None
 
