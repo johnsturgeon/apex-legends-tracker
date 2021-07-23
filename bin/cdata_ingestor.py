@@ -1,11 +1,10 @@
-import base64
-import json
 from typing import Optional
 
 import requests
 
 from models.respawn_cdata import CDataCategory, CDataTrackerGrouping, CDataTrackerMode
-from models.respawn_cdata import CData, CDataTracker, RespawnLegend
+from models.respawn_cdata import CData, CDataTracker
+from models.respawn_record import RespawnLegend
 
 from apex_db_helper import ApexDBHelper
 
@@ -114,10 +113,10 @@ def ingest_cdata():
         collection.delete_many({})
         for item in cdata:
             key: str = cdata[item][1]
-            value: str = cdata[item][0]
+            name: str = cdata[item][0]
             new_item: dict = dict()
             new_item['c_data']: int = int(item)
-            new_item['value']: str = value
+            new_item['name']: str = name
             new_item['key']: str = key
             new_item['legend']: str = get_legend(key).value
             new_item['category']: str = get_category(key).value
@@ -125,11 +124,11 @@ def ingest_cdata():
                 new_item['tracker_grouping']: str = get_tracker_grouping(key).value
                 new_item['tracker_mode']: str = get_tracker_mode(key).value
                 new_record: CDataTracker = CDataTracker(
-                    db=db_helper.database,
+                    db_collection=db_helper.database.respawn_cdata,
                     **new_item
                 )
             else:
-                new_record: CData = CData(db=db_helper.database, **new_item)
+                new_record: CData = CData(db_collection=db_helper.database.respawn_cdata, **new_item)
             new_record.save()
 
 

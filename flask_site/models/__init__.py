@@ -9,7 +9,7 @@ from .season import SeasonCollection, Season
 from .respawn_cdata import CDataCollection
 from .respawn_record import RespawnRecordCollection, RespawnRecord, RespawnLegend
 from .respawn_ingestion_task import RespawnIngestionTaskCollection
-from .respawn_event import RespawnEvent
+from .respawn_event import RespawnEvent, RespawnGameEventCollection
 __all__ = [
     'BaseDBModel',
     'Config',

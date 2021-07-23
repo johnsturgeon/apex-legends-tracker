@@ -2,13 +2,14 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 from enum import Enum
+from functools import lru_cache, cached_property
 from typing import List
 
-from pymongo.collection import Collection
-from pymongo.database import Database
-
 # pylint: disable=import-error
+from pydantic import BaseModel
+
 from base_db_model import BaseDBModel, BaseDBCollection
 from instance.config import get_config
 
@@ -53,7 +54,7 @@ class CDataTrackerMode(str, Enum):
 
 class CData(BaseDBModel):
     c_data: int
-    value: str
+    name: str
     key: str
     category: CDataCategory
 
@@ -61,27 +62,40 @@ class CData(BaseDBModel):
     def unique_key(self) -> dict:
         return {'c_data': self.c_data}
 
-    @property
-    def collection(self) -> Collection:
-        return self.db.respawn_cdata
-
 
 class CDataTracker(CData):
     tracker_grouping: CDataTrackerGrouping
     tracker_mode: CDataTrackerMode
 
 
+class CDataTrackerValue(BaseModel):
+    cdata_tracker: CDataTracker
+    value: int
+
+
 class CDataCollection(BaseDBCollection):
+    """
+    This is a collection class.  It's primary objective is to abstract the DB interface so that
+    the caller can just ask for objects from the CData MongoDB collection without knowing they're
+    dealing with a database.
+    """
+    def obj_from_record(self, record: dict):
+        return CData(
+            db_collection=self.db_collection,
+            **record
+        )
 
-    def __init__(self, db: Database):
-        super().__init__(db)
-        self._cached_records: dict = dict()
-        for record in self.collection.find():
-            self._cached_records[record['c_data']] = record
+    @cached_property
+    def all_records(self) -> dict:
+        cached_records: dict = dict()
+        for record in self.db_collection.find():
+            cached_records[record['c_data']] = record
+        return cached_records
 
+    @lru_cache
     def retrieve_one_record(self, c_data: int, category: CDataCategory = None) -> dict:
         """ Guaranteed to return one record """
-        record = self._cached_records.get(c_data)
+        record = self.all_records.get(c_data)
         if not record:
             raise CDataException("Record not found for c_data: %s", c_data)
         if category and record['category'] != category.value:
@@ -90,38 +104,54 @@ class CDataCollection(BaseDBCollection):
             )
         return record
 
-    def retrieve_many(self, criteria: dict = None) -> List[CData]:
+    @lru_cache
+    def retrieve_many(self) -> List[CData]:
         retrieved_records: List[CData] = list()
-        if criteria is None:
-            record_list = list(self._cached_records.values())
-        else:
-            record_list = list(self.find_many(criteria))
+        record_list = list(self.all_records.values())
         for record in record_list:
-            retrieved_records.append(CData(db=self.db, **record))
+            retrieved_records.append(self.obj_from_record(record))
         return retrieved_records
 
-    def retrieve_tracker(self, c_data: int) -> CDataTracker:
-        record = self.retrieve_one_record(c_data, CDataCategory.TRACKER)
-        return CDataTracker(db=self.db, **record)
+    @lru_cache
+    def retrieve_one(self, c_data: int) -> CData:
+        return self.obj_from_record(self.retrieve_one_record(c_data))
 
-    def retrieve_cdata(self, c_data: int) -> CData:
-        record = self.retrieve_one_record(c_data)
-        return CData(db=self.db, **record)
-
+    @lru_cache
     def retrieve_legend(self, c_data: int) -> CData:
-        record = self.retrieve_one_record(c_data, CDataCategory.CHARACTER)
-        return CData(db=self.db, **record)
+        return self.obj_from_record(self.retrieve_one_record(c_data, CDataCategory.CHARACTER))
 
-    @property
-    def collection(self) -> Collection:
-        return self.db.respawn_cdata
+    @cached_property
+    def tracker_collection(self) -> CDataTrackerCollection:
+        return CDataTrackerCollection(db_collection=self.db_collection)
+
+
+class CDataTrackerCollection(CDataCollection):
+
+    def obj_from_record(self, record: dict):
+        return CDataTracker(db_collection=self.db_collection, **record)
+
+    @lru_cache
+    def retrieve_one(self, c_data: int) -> CDataTracker:
+        return self.obj_from_record(self.retrieve_one_record(c_data, CDataCategory.TRACKER))
 
 
 def try_cdata_test():
     from apex_db_helper import ApexDBHelper
 
-    collection: CDataCollection = CDataCollection(ApexDBHelper().database)
+    collection: CDataCollection = CDataCollection(ApexDBHelper().database.respawn_cdata)
     record: CData
+    for record in collection.retrieve_many():
+        print(record)
+    print(len(collection.retrieve_many()))
+    for record in collection.retrieve_many():
+        print(record)
+    print(len(collection.retrieve_many()))
+    for record in collection.retrieve_many():
+        print(record)
+    print(len(collection.retrieve_many()))
+    for record in collection.retrieve_many():
+        print(record)
+    print(len(collection.retrieve_many()))
     for record in collection.retrieve_many():
         print(record)
     print(len(collection.retrieve_many()))

@@ -13,27 +13,23 @@ from pymongo.collection import Collection
 
 
 class BaseDBModel(BaseModel, ABC):
-    db: Database
-    _exclude = {'db'}
+    db_collection: Collection
+    _exclude = {'db_collection'}
 
     class Config:
         arbitrary_types_allowed = True
 
     def dict(self, **kwargs):
+        del kwargs['exclude']
         return super().dict(exclude=self.exclude_attrs, **kwargs)
 
     def save(self):
         """ Saves the record to the DB (update if it exists) """
-        self.collection.update_one(
+        self.db_collection.update_one(
             filter=self.unique_key,
             update={"$set": self.dict()},
             upsert=True
         )
-
-    @property
-    @abstractmethod
-    def collection(self) -> Collection:
-        pass
 
     @property
     def exclude_attrs(self) -> set:
@@ -49,19 +45,17 @@ class BaseDBModel(BaseModel, ABC):
 
 
 class BaseDBCollection(ABC):
-    db: Database
 
-    def __init__(self, db: Database):
-        self.db = db
+    def __init__(self, db_collection: Collection):
+        self.db_collection = db_collection
 
     def find_one(self, key: dict) -> dict:
-        return self.collection.find_one(key)
+        return self.db_collection.find_one(key)
 
     def find_many(self, criteria: dict = None):
-        return self.collection.find(filter=criteria)
+        return self.db_collection.find(filter=criteria)
 
-    @property
     @abstractmethod
-    def collection(self) -> Collection:
+    def obj_from_record(self, record: dict):
         pass
 

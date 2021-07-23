@@ -3,18 +3,17 @@ from __future__ import annotations
 
 import os
 from enum import Enum
-from typing import List, Optional, ClassVar
+from functools import lru_cache
+from typing import List
 from uuid import UUID, uuid4
 
 from pymongo.collection import Collection
 from pydantic import Field, PrivateAttr
 
 # pylint: disable=import-error
-from pymongo.database import Database
-
 from base_db_model import BaseDBModel, BaseDBCollection
 from instance.config import get_config
-from respawn_cdata import CDataTracker, CData
+from respawn_cdata import CDataTracker, CData, CDataTrackerValue
 from models import CDataCollection, PlayerCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
@@ -48,6 +47,9 @@ class RespawnLegend(str, Enum):
 
 class RespawnRecord(BaseDBModel):
     cdata_collection: CDataCollection
+    player_collection: PlayerCollection
+    _exclude = {'cdata_collection', 'player_collection'}
+
     uuid: UUID
     timestamp: int
     uid: int
@@ -82,72 +84,104 @@ class RespawnRecord(BaseDBModel):
     party_full: int = Field(alias='partyFull')
     party_in_match: int = Field(alias='partyInMatch')
 
-    _cdata_trackers: List[CDataTracker] = PrivateAttr(default=list())
-    _exclude = {'cdata_collection'}
+    _cdata_trackers: List[CDataTrackerValue] = PrivateAttr(default=list())
 
     class Config:
         allow_population_by_field_name = True
         exclude_unset = False
 
     @property
-    def collection(self) -> Collection:
-        return self.db.respawn_collection
-
-    @property
     def unique_key(self) -> dict:
         return {'uuid': self.uuid}
 
+    @staticmethod
+    def fixed_value(value: int) -> int:
+        return int((value - 2) / 100)
+
     @property
-    def trackers(self) -> List[CDataTracker]:
+    def tracker_values(self) -> List[CDataTrackerValue]:
         if not self._cdata_trackers:
             self._cdata_trackers = list()
-            self._cdata_trackers.append(
-                self.cdata_collection.retrieve_tracker(self.banner_tracker1)
-            )
-            self._cdata_trackers.append(
-                self.cdata_collection.retrieve_tracker(self.banner_tracker2)
-            )
-            self._cdata_trackers.append(
-                self.cdata_collection.retrieve_tracker(self.banner_tracker3)
-            )
+            self._cdata_trackers.append(CDataTrackerValue(
+                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                    self.banner_tracker1
+                ),
+                value=RespawnRecord.fixed_value(self.banner_tracker1_value)
+            ))
+            self._cdata_trackers.append(CDataTrackerValue(
+                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                    self.banner_tracker2
+                ),
+                value=RespawnRecord.fixed_value(self.banner_tracker2_value)
+            ))
+            self._cdata_trackers.append(CDataTrackerValue(
+                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                    self.banner_tracker3
+                ),
+                value=RespawnRecord.fixed_value(self.banner_tracker3_value)
+            ))
         return self._cdata_trackers
     
     @property
     def legend(self) -> RespawnLegend:
         legend_cdata: CData = self.cdata_collection.retrieve_legend(self.character)
-        character_name: str = legend_cdata.value.lower()
+        character_name: str = legend_cdata.name.lower()
         return RespawnLegend(value=character_name)
 
 
 class RespawnRecordCollection(BaseDBCollection):
 
-    def __init__(self, db: Database, cdata_collection: CDataCollection):
-        super().__init__(db)
+    def __init__(self,
+                 db_collection: Collection,
+                 cdata_collection: CDataCollection,
+                 player_collection: PlayerCollection
+                 ):
+        super().__init__(db_collection)
         self.cdata_collection = cdata_collection
+        self.player_collection = player_collection
 
-    def retrieve_one(self, uuid: UUID) -> RespawnRecord:
+    def obj_from_record(self, record: dict) -> RespawnRecord:
         return RespawnRecord(
-            db=self.db,
+            db_collection=self.db_collection,
             cdata_collection=self.cdata_collection,
-            **self.retrieve_one_record(uuid)
+            player_collection=self.player_collection,
+            **record
         )
 
-    @property
-    def collection(self) -> Collection:
-        return self.db.respawn_record
+    @lru_cache
+    def retrieve_one(self, uuid: UUID) -> RespawnRecord:
+        return self.obj_from_record(self.retrieve_one_record(uuid))
 
+    @lru_cache
     def retrieve_one_record(self, uuid: UUID) -> dict:
         """ Guaranteed to return one record """
         record = self.find_one({'uuid': uuid})
         if not record:
             raise RespawnRecordException("Record not found for uuid: %s", uuid)
         return record
-    
-    def retrieve_many(self, criteria: dict = None) -> List[RespawnRecord]:
+
+    @lru_cache
+    def retrieve_many(self,
+                      gt_timestamp: int = None,
+                      lt_timestamp: int = None,
+                      name: str = None) -> List[RespawnRecord]:
         retrieved_records: List[RespawnRecord] = list()
+        criteria: dict = dict()
+        if gt_timestamp:
+            criteria.update({
+                'timestamp': {'$gt': gt_timestamp}
+            })
+        if lt_timestamp:
+            criteria.update({
+                'timestamp': {'$lt': gt_timestamp}
+            })
+        if name:
+            criteria.update({
+                'name': name
+            })
         for record in self.find_many(criteria):
             retrieved_records.append(
-                RespawnRecord(db=self.db, cdata_collection=self.cdata_collection, **record)
+                self.obj_from_record(record)
             )
         return retrieved_records
 
@@ -170,15 +204,8 @@ def add_uuid_to_respawn_record():
 
 def print_records():
     from apex_db_helper import ApexDBHelper
-    db_helper = ApexDBHelper()
-    cdata_collection: CDataCollection = CDataCollection(db_helper.database)
-    respawn_collection: RespawnRecordCollection = RespawnRecordCollection(
-        db=db_helper.database,
-        cdata_collection=cdata_collection
-    )
-    records = respawn_collection.retrieve_many(
-        {'timestamp': {"$gt": 1626246000}, 'name': 'GoshDarnedHero'}
-    )
+    db_helper: ApexDBHelper = ApexDBHelper()
+    records = db_helper.respawn_record_collection.retrieve_many(gt_timestamp=1626246000, name='GoshDarnedHero')
     for record in records:
         print(record.trackers)
 

@@ -2,20 +2,26 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 from enum import Enum
-from typing import List, ClassVar, Any
+from functools import lru_cache, cached_property
+from typing import List
 from uuid import UUID, uuid4
 
 from pymongo.collection import Collection
 from pydantic import PrivateAttr
-from pymongo.database import Database
 
 from base_db_model import BaseDBModel, BaseDBCollection
 # pylint: disable=import-error
 from instance.config import get_config
-from models import RespawnRecord, RespawnRecordCollection, CDataCollection
+from models import RespawnRecord, RespawnRecordCollection, CDataCollection, PlayerCollection
+from respawn_cdata import CDataTracker, CDataTrackerValue
 
 config = get_config(os.getenv('FLASK_ENV'))
+
+
+class CDataTrackerException(Exception):
+    pass
 
 
 # pylint: disable=missing-class-docstring
@@ -29,7 +35,9 @@ class RespawnEventType(str, Enum):
 
 class RespawnEvent(BaseDBModel):
     respawn_record_collection: RespawnRecordCollection
-    _exclude = {'respawn_record_collection'}
+    cdata_collection: CDataCollection
+    player_collection: PlayerCollection
+    _exclude = {'respawn_record_collection', 'cdata_collection', 'player_collection'}
 
     uuid: UUID
     event_type: RespawnEventType
@@ -39,69 +47,102 @@ class RespawnEvent(BaseDBModel):
     _after_respawn_record: RespawnRecord = PrivateAttr(None)
 
     @property
-    def cdata_collection(self) -> CDataCollection:
-        return self.respawn_record_collection.cdata_collection
-
-    @property
-    def collection(self) -> Collection:
-        return self.db.respawn_event
-
-    @property
     def unique_key(self) -> dict:
         return {'uuid': self.uuid}
 
     @property
-    def event_length(self) -> int:
-        """ Returns the length of the event in seconds """
-        after_record: RespawnRecord = self.after_respawn_record
-        before_record: RespawnRecord = self.before_respawn_record
-        return after_record.timestamp - before_record.timestamp
-
-    @property
     def before_respawn_record(self) -> RespawnRecord:
         """ returns the actual Respawn Record """
-        if self._before_respawn_record is None:
-            record = self.respawn_record_collection.retrieve_one_record(self.before_event_record_uuid)
-            self._before_respawn_record = RespawnRecord(
-                db=self.db,
-                cdata_collection=self.cdata_collection,
-                **record
-            )
-        return self._before_respawn_record
+        return self.respawn_record_collection.retrieve_one(self.before_event_record_uuid)
 
     @property
     def after_respawn_record(self) -> RespawnRecord:
         """ returns the actual Respawn Record """
-        if self._after_respawn_record is None:
-            record = self.respawn_record_collection.retrieve_one_record(self.after_event_record_uuid)
-            cdata_col: CDataCollection = self.cdata_collection
-            if not isinstance(cdata_col, CDataCollection):
-                print("YIKES")
-            self._after_respawn_record = RespawnRecord(
-                db=self.db,
-                cdata_collection=self.cdata_collection,
-                **record
-            )
-        return self._after_respawn_record
+        return self.respawn_record_collection.retrieve_one(self.after_event_record_uuid)
 
     @property
-    def uid(self) -> int:
-        return self._before_respawn_record.uid
+    def player_uid(self) -> int:
+        return self.before_respawn_record.uid
+
+
+class RespawnGameEvent(RespawnEvent):
+
+    @property
+    def game_length(self) -> int:
+        """ Returns the length of the game in seconds """
+        after_record: RespawnRecord = self.after_respawn_record
+        before_record: RespawnRecord = self.before_respawn_record
+        return round((after_record.timestamp - before_record.timestamp) / 60)
+
+    @property
+    def player_name(self) -> str:
+        player = self.player_collection.get_tracked_player_by_uid(self.player_uid)
+        return player.name
+
+    @property
+    def timestamp(self) -> int:
+        return self.after_respawn_record.timestamp
+
+    @property
+    def xp_progress(self) -> int:
+        progress_per_level: int = 18000
+        after_record: RespawnRecord = self.after_respawn_record
+        before_record: RespawnRecord = self.before_respawn_record
+        level_progress: int = (
+                after_record.account_level - before_record.account_level
+        ) * progress_per_level
+        level_progress += (
+            after_record.account_progress_int - before_record.account_progress_int
+        ) * progress_per_level / 100
+        return int(level_progress)
+
+    @property
+    def legend(self) -> str:
+        return self.after_respawn_record.legend.value
+
+    @property
+    def trackers(self) -> List[CDataTrackerValue]:
+        game_trackers = list()
+        if len(self.after_respawn_record.tracker_values) != \
+                len(self.before_respawn_record.tracker_values):
+            raise CDataTrackerException
+        index = 0
+        tracker: CDataTrackerValue
+        for tracker in self.after_respawn_record.tracker_values:
+            before_tracker = self.before_respawn_record.tracker_values[index]
+            value_change: int = tracker.value - before_tracker.value
+            game_tracker: CDataTrackerValue = CDataTrackerValue(
+                cdata_tracker=tracker.cdata_tracker,
+                value=value_change
+            )
+            game_trackers.append(game_tracker)
+            index += 1
+        return game_trackers
 
 
 class RespawnEventCollection(BaseDBCollection):
 
     def __init__(self,
-                 db: Database,
-                 respawn_record_collection: RespawnRecordCollection
+                 db_collection: Collection,
+                 respawn_record_collection: RespawnRecordCollection,
+                 cdata_collection: CDataCollection,
+                 player_collection: PlayerCollection
                  ):
-        super().__init__(db)
+        super().__init__(db_collection)
         self.respawn_record_collection = respawn_record_collection
+        self.cdata_collection = cdata_collection
+        self.player_collection = player_collection
 
-    @property
-    def collection(self) -> Collection:
-        return self.db.respawn_event
+    def obj_from_record(self, record: dict) -> RespawnEvent:
+        return RespawnEvent(
+            db_collection=self.db_collection,
+            respawn_record_collection=self.respawn_record_collection,
+            cdata_collection=self.cdata_collection,
+            player_collection=self.player_collection,
+            **record
+        )
 
+    @lru_cache
     def retrieve_one_record(self, uuid: UUID) -> dict:
         """ Guaranteed to return one record """
         record = self.find_one({'uuid': uuid})
@@ -109,14 +150,50 @@ class RespawnEventCollection(BaseDBCollection):
             raise RespawnEventException("Record not found for uuid: %s", uuid)
         return record
 
-    def retrieve_many(self, criteria: dict = None) -> List[RespawnEvent]:
+    @lru_cache
+    def retrieve_one(self, uuid: UUID) -> RespawnEvent:
+        return self.obj_from_record(self.retrieve_one_record(uuid))
+
+    @lru_cache
+    def retrieve_many(self) -> List[RespawnEvent]:
         retrieved_records: List[RespawnEvent] = list()
-        for record in self.find_many(criteria):
+        for record in self.find_many():
             retrieved_records.append(
-                RespawnEvent(
-                    db=self.db,
-                    respawn_record_collection=self.respawn_record_collection,
-                    **record)
+                self.obj_from_record(record)
+                )
+        return retrieved_records
+
+    @cached_property
+    def respawn_game_event_collection(self):
+        return RespawnGameEventCollection(
+            db_collection=self.db_collection,
+            respawn_record_collection=self.respawn_record_collection,
+            cdata_collection=self.cdata_collection,
+            player_collection=self.player_collection
+        )
+
+
+class RespawnGameEventCollection(RespawnEventCollection):
+
+    def obj_from_record(self, record: dict) -> RespawnGameEvent:
+        return RespawnGameEvent(
+            db_collection=self.db_collection,
+            respawn_record_collection=self.respawn_record_collection,
+            cdata_collection=self.cdata_collection,
+            player_collection=self.player_collection,
+            **record
+        )
+
+    @lru_cache
+    def retrieve_one(self, uuid: UUID) -> RespawnGameEvent:
+        return self.obj_from_record(self.retrieve_one_record(uuid))
+
+    @lru_cache
+    def retrieve_many(self) -> List[RespawnGameEvent]:
+        retrieved_records: List[RespawnGameEvent] = list()
+        for record in self.find_many():
+            retrieved_records.append(
+                self.obj_from_record(record)
             )
         return retrieved_records
 
@@ -144,21 +221,23 @@ def add_uuid_to_respawn_event():
 def get_games():
     """ print each game"""
     from apex_db_helper import ApexDBHelper
-    db = ApexDBHelper().database
-    cdata_collection: CDataCollection = CDataCollection(
-        db=db
-    )
-    respawn_record_collection: RespawnRecordCollection = RespawnRecordCollection(
-        db=db,
-        cdata_collection=cdata_collection
-    )
-    rs_event_collection: RespawnEventCollection = RespawnEventCollection(
-        db=db,
-        respawn_record_collection=respawn_record_collection
-    )
-    sample_game = rs_event_collection.retrieve_many()[0]
-    print(f"eventType: {sample_game.event_type}")
-    print(f"player: {sample_game.player}")
+    db_helper = ApexDBHelper()
+    for sample_game in db_helper.respawn_game_event_collection.retrieve_many():
+        print(f"eventType: {sample_game.event_type}")
+        print(f"player_uid: {sample_game.player_uid}")
+        print(f"player_name: {sample_game.player_name}")
+        print(f"timestamp: {sample_game.timestamp}")
+        print(f"game_length: {sample_game.game_length}")
+        print(f"xp_progress: {sample_game.xp_progress}")
+        print(f"legend: {sample_game.legend}")
+        tracker: CDataTrackerValue
+        for tracker in sample_game.trackers:
+            tracker_detail: CDataTracker = tracker.cdata_tracker
+            print(f"{tracker_detail.tracker_grouping.value}: {tracker.value}")
+        print("===========================")
+        print(sample_game.json())
+
+    print(len(db_helper.respawn_game_event_collection.retrieve_many()))
 
 
 if __name__ == '__main__':
