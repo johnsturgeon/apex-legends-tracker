@@ -8,10 +8,12 @@ import pymongo.database
 from pymongo.collection import Collection
 
 from models import EventCollection, GameEvent, Config, PlayerCollection, ConfigCollection
-from models import SeasonCollection, RespawnCollection, RespawnIngestionTaskCollection
+from models import SeasonCollection, RespawnRecordCollection, RespawnIngestionTaskCollection
+from models import CDataCollection
 
 # pylint: disable=import-error
 from instance.config import get_config
+from respawn_event import RespawnEventCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
 
@@ -34,13 +36,28 @@ class ApexDBHelper:  # noqa E0302
             tracker_info_data=self.load_data('tracker_info.json')
         )
         self.player_collection: PlayerCollection = PlayerCollection(self.database)
-        self.respawn_collection: RespawnCollection = RespawnCollection(self.database)
         self.respawn_ingestion_task_collection: RespawnIngestionTaskCollection =\
             RespawnIngestionTaskCollection(self.database)
         self.season_collection: SeasonCollection = SeasonCollection(self.load_data('season.json'))
         self.config: Config = ConfigCollection(self.load_data('config.json')).config
         self.logger = config.logger(__name__)
         self._latest_event_timestamp: int = 0
+
+        # below are 'new' collection objects
+        self.cdata_collection: CDataCollection = CDataCollection(self.database.respawn_cdata)
+        self.respawn_record_collection: RespawnRecordCollection = RespawnRecordCollection(
+            db_collection=self.database.respawn_record,
+            cdata_collection=self.cdata_collection,
+            player_collection=self.player_collection
+        )
+        self.respawn_event_collection: RespawnEventCollection = RespawnEventCollection(
+            db_collection=self.database.respawn_event,
+            cdata_collection=self.cdata_collection,
+            respawn_record_collection=self.respawn_record_collection,
+            player_collection=self.player_collection
+        )
+        self.respawn_game_event_collection = \
+            self.respawn_event_collection.respawn_game_event_collection
 
     @staticmethod
     def load_data(filename: str) -> dict:
