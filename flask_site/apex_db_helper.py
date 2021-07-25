@@ -13,7 +13,6 @@ from models import CDataCollection
 
 # pylint: disable=import-error
 from instance.config import get_config
-from respawn_event import RespawnEventCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
 
@@ -50,14 +49,6 @@ class ApexDBHelper:  # noqa E0302
             cdata_collection=self.cdata_collection,
             player_collection=self.player_collection
         )
-        self.respawn_event_collection: RespawnEventCollection = RespawnEventCollection(
-            db_collection=self.database.respawn_event,
-            cdata_collection=self.cdata_collection,
-            respawn_record_collection=self.respawn_record_collection,
-            player_collection=self.player_collection
-        )
-        self.respawn_game_event_collection = \
-            self.respawn_event_collection.respawn_game_event_collection
 
     @staticmethod
     def load_data(filename: str) -> dict:

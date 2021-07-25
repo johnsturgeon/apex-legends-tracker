@@ -9,7 +9,7 @@ from typing import List
 # pylint: disable=import-error
 from pydantic import BaseModel
 
-from base_db_model import BaseDBModel, BaseDBCollection
+from models.base_db_model import BaseDBModel, BaseDBCollection
 from instance.config import get_config
 
 config = get_config(os.getenv('FLASK_ENV'))
