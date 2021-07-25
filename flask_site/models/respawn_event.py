@@ -13,7 +13,7 @@ from pydantic import PrivateAttr
 # pylint: disable=import-error
 from instance.config import get_config
 from models import RespawnRecord, RespawnRecordCollection, CDataCollection, PlayerCollection
-from models.respawn_cdata import CDataTracker, CDataTrackerValue
+from models.respawn_cdata import CDataTrackerValue
 from models.base_db_model import BaseDBModel, BaseDBCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
@@ -230,24 +230,24 @@ def add_uuid_to_respawn_event():
 def get_games():
     """ print each game"""
     # pylint: disable=import-outside-toplevel
-    from apex_db_helper import ApexDBHelper
-    db_helper = ApexDBHelper()
-    for sample_game in db_helper.respawn_game_event_collection.retrieve_many():
-        print(f"eventType: {sample_game.event_type}")
-        print(f"player_uid: {sample_game.player_uid}")
-        print(f"player_name: {sample_game.player_name}")
-        print(f"timestamp: {sample_game.timestamp}")
-        print(f"game_length: {sample_game.game_length}")
-        print(f"xp_progress: {sample_game.xp_progress}")
-        print(f"legend: {sample_game.legend}")
-        tracker: CDataTrackerValue
-        for tracker in sample_game.trackers:
-            tracker_detail: CDataTracker = tracker.cdata_tracker
-            print(f"{tracker_detail.tracker_grouping.value}: {tracker.value}")
-        print("===========================")
-        print(sample_game.json())
-
-    print(len(db_helper.respawn_game_event_collection.retrieve_many()))
+    # from apex_db_helper import ApexDBHelper
+    # db_helper = ApexDBHelper()
+    # for sample_game in db_helper.respawn_game_event_collection.retrieve_many():
+    #     print(f"eventType: {sample_game.event_type}")
+    #     print(f"player_uid: {sample_game.player_uid}")
+    #     print(f"player_name: {sample_game.player_name}")
+    #     print(f"timestamp: {sample_game.timestamp}")
+    #     print(f"game_length: {sample_game.game_length}")
+    #     print(f"xp_progress: {sample_game.xp_progress}")
+    #     print(f"legend: {sample_game.legend}")
+    #     tracker: CDataTrackerValue
+    #     for tracker in sample_game.trackers:
+    #         tracker_detail: CDataTracker = tracker.cdata_tracker
+    #         print(f"{tracker_detail.tracker_grouping.value}: {tracker.value}")
+    #     print("===========================")
+    #     print(sample_game.json())
+    #
+    # print(len(db_helper.respawn_game_event_collection.retrieve_many()))
 
 
 if __name__ == '__main__':
