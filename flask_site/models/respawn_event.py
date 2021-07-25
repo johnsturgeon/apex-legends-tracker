@@ -10,11 +10,11 @@ from uuid import UUID, uuid4
 from pymongo.collection import Collection
 from pydantic import PrivateAttr
 
-from base_db_model import BaseDBModel, BaseDBCollection
 # pylint: disable=import-error
 from instance.config import get_config
 from models import RespawnRecord, RespawnRecordCollection, CDataCollection, PlayerCollection
-from respawn_cdata import CDataTracker, CDataTrackerValue
+from models.respawn_cdata import CDataTracker, CDataTrackerValue
+from models.base_db_model import BaseDBModel, BaseDBCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
 

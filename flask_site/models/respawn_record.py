@@ -11,9 +11,9 @@ from pymongo.collection import Collection
 from pydantic import Field, PrivateAttr
 
 # pylint: disable=import-error
-from base_db_model import BaseDBModel, BaseDBCollection
 from instance.config import get_config
-from respawn_cdata import CData, CDataTrackerValue
+from models.base_db_model import BaseDBModel, BaseDBCollection
+from models.respawn_cdata import CData, CDataTrackerValue
 from models import CDataCollection, PlayerCollection
 
 config = get_config(os.getenv('FLASK_ENV'))
