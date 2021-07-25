@@ -55,6 +55,7 @@ class CData(BaseDBModel):
     c_data: int
     name: str
     key: str
+    legend: str
     category: CDataCategory
 
     @property

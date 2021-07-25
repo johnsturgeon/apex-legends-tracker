@@ -18,12 +18,11 @@ class BaseDBModel(BaseModel, ABC):
     def save(self):
         """ Saves the record to the DB (update if it exists) """
         # pylint: disable=no-member
-        res = self.db_collection.update_one(
+        self.db_collection.update_one(
             filter=self.unique_key,
             update={"$set": self.dict()},
             upsert=True
         )
-        print(res)
 
     @property
     @abstractmethod

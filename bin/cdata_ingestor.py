@@ -15,21 +15,18 @@ db_helper = ApexDBHelper()
 def get_category(key: str) -> Optional[CDataCategory]:
     """ Returns the category for the cdata key """
     return_category: Optional[CDataCategory] = None
-
-    if key.startswith('gcard_tracker_'):
-        return_category = CDataCategory.TRACKER
-    if key.startswith('character_intro_quip_'):
-        return_category = CDataCategory.INTRO_QUIP
-    if key.startswith('gcard_badge_'):
-        return_category = CDataCategory.BADGE
-    if key.startswith('character_skin_'):
-        return_category = CDataCategory.CHARACTER_SKIN
-    if key.startswith('gcard_frame_'):
-        return_category = CDataCategory.CHARACTER_FRAME
-    if key.startswith('gcard_stance_'):
-        return_category = CDataCategory.CHARACTER_STANCE
-    if key.startswith('character_'):
-        return_category = CDataCategory.CHARACTER
+    categories = {
+        'gcard_tracker_': CDataCategory.TRACKER,
+        'character_intro_quip_': CDataCategory.INTRO_QUIP,
+        'gcard_badge_': CDataCategory.BADGE,
+        'character_skin_': CDataCategory.CHARACTER_SKIN,
+        'gcard_frame_': CDataCategory.CHARACTER_FRAME,
+        'gcard_stance_': CDataCategory.CHARACTER_STANCE,
+        'character_': CDataCategory.CHARACTER
+    }
+    for category_key, value in categories.items():
+        if key.startswith(category_key):
+            return value
 
     return return_category
 
@@ -37,25 +34,29 @@ def get_category(key: str) -> Optional[CDataCategory]:
 def get_tracker_grouping(key: str) -> CDataTrackerGrouping:
     """ Returns the grouping for a given tracker key """
     return_grouping: CDataTrackerGrouping = CDataTrackerGrouping.UNGROUPED
-    if '_kills' in key:
-        return_grouping = CDataTrackerGrouping.KILLS
-    if '_damage' in key:
-        return_grouping = CDataTrackerGrouping.DAMAGE
-    if key.endswith('_win') or \
-            key.endswith('_wins') or \
-            '_win_' in key or \
-            '_wins_' in key:
-        return_grouping = CDataTrackerGrouping.WINS
-    if key.endswith('_headshots'):
-        return_grouping = CDataTrackerGrouping.HEADSHOTS
-    if key.endswith('_executions'):
-        return_grouping = CDataTrackerGrouping.EXECUTIONS
-    if key.endswith('_revives'):
-        return_grouping = CDataTrackerGrouping.REVIVES
-    if key.endswith('_games_played'):
-        return_grouping = CDataTrackerGrouping.GAMES_PLAYED
-    if key.endswith('_top_3'):
-        return_grouping = CDataTrackerGrouping.TOP_3
+
+    is_in = {
+        '_kills': CDataTrackerGrouping.KILLS,
+        '_damage': CDataTrackerGrouping.DAMAGE,
+        '_win_': CDataTrackerGrouping.WINS,
+        '_wins_': CDataTrackerGrouping.WINS
+    }
+    for category_key, value in is_in.items():
+        if category_key in key:
+            return_grouping = value
+    if return_grouping == CDataTrackerGrouping.UNGROUPED:
+        endswith = {
+            '_win': CDataTrackerGrouping.WINS,
+            '_wins': CDataTrackerGrouping.WINS,
+            '_headshots': CDataTrackerGrouping.HEADSHOTS,
+            '_executions': CDataTrackerGrouping.EXECUTIONS,
+            '_revives': CDataTrackerGrouping.REVIVES,
+            '_games_played': CDataTrackerGrouping.GAMES_PLAYED,
+            '_top_3': CDataTrackerGrouping.TOP_3
+        }
+        for category_key, value in endswith.items():
+            if key.endswith(category_key):
+                return_grouping = value
 
     return return_grouping
 
@@ -64,6 +65,7 @@ def get_tracker_mode(key: str) -> CDataTrackerMode:
     """ Returns tracker mode (arenas or battle royale) """
     if '_arenas_' in key:
         return CDataTrackerMode.ARENAS
+
     return CDataTrackerMode.BATTLE_ROYALE
 
 
@@ -71,43 +73,30 @@ def get_tracker_mode(key: str) -> CDataTrackerMode:
 def get_legend(key: str) -> RespawnLegend:
     """ Returns the RespawnLegend given the key string """
     return_legend: RespawnLegend = RespawnLegend.EMPTY
+    legends = {
+        '_bangalore_': RespawnLegend.BANGALORE,
+        '_bloodhound_': RespawnLegend.BLOODHOUND,
+        '_caustic_': RespawnLegend.CAUSTIC,
+        '_crypto_': RespawnLegend.CRYPTO,
+        '_fuse_': RespawnLegend.FUSE,
+        '_gibraltar_': RespawnLegend.GIBRALTAR,
+        '_horizon_': RespawnLegend.HORIZON,
+        '_lifeline_': RespawnLegend.LIFELINE,
+        '_loba_': RespawnLegend.LOBA,
+        '_mirage_': RespawnLegend.MIRAGE,
+        '_octane_': RespawnLegend.OCTANE,
+        '_pathfinder_': RespawnLegend.PATHFINDER,
+        '_rampart_': RespawnLegend.RAMPART,
+        '_revenant_': RespawnLegend.REVENANT,
+        '_seer_': RespawnLegend.SEER,
+        '_valkyrie_': RespawnLegend.VALKYRIE,
+        '_wattson_': RespawnLegend.WATTSON,
+        '_wraith_': RespawnLegend.WRAITH,
+    }
+    for legend_key, value in legends.items():
+        if legend_key in key:
+            return_legend = value
 
-    if "_bangalore_" in key:
-        return_legend = RespawnLegend.BANGALORE
-    if "_bloodhound_" in key:
-        return_legend = RespawnLegend.BLOODHOUND
-    if "_caustic_" in key:
-        return_legend = RespawnLegend.CAUSTIC
-    if "_crypto_" in key:
-        return_legend = RespawnLegend.CRYPTO
-    if "_fuse_" in key:
-        return_legend = RespawnLegend.FUSE
-    if "_gibraltar_" in key:
-        return_legend = RespawnLegend.GIBRALTAR
-    if "_horizon_" in key:
-        return_legend = RespawnLegend.HORIZON
-    if "_lifeline_" in key:
-        return_legend = RespawnLegend.LIFELINE
-    if "_loba_" in key:
-        return_legend = RespawnLegend.LOBA
-    if "_mirage_" in key:
-        return_legend = RespawnLegend.MIRAGE
-    if "_octane_" in key:
-        return_legend = RespawnLegend.OCTANE
-    if "_pathfinder_" in key:
-        return_legend = RespawnLegend.PATHFINDER
-    if "_rampart_" in key:
-        return_legend = RespawnLegend.RAMPART
-    if "_revenant_" in key:
-        return_legend = RespawnLegend.REVENANT
-    if "_seer_" in key:
-        return_legend = RespawnLegend.SEER
-    if "_valkyrie_" in key:
-        return_legend = RespawnLegend.VALKYRIE
-    if "_wattson_" in key:
-        return_legend = RespawnLegend.WATTSON
-    if "_wraith_" in key:
-        return_legend = RespawnLegend.WRAITH
     return return_legend
 
 
