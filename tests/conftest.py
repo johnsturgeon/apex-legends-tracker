@@ -52,3 +52,9 @@ def season_list():
 def config_dict():
     with open(get_full_filepath('config.json')) as json_file:
         yield json.load(json_file)
+
+
+@pytest.fixture()
+def cdata():
+    with open(get_full_filepath('respawn_cdata.json')) as json_file:
+        yield json.load(json_file)
