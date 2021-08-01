@@ -55,6 +55,7 @@ class RespawnRecord(BaseDBModel):
     uid: int
     hardware: str
     name: str
+    privacy: str
     ban_reason: int = Field(alias='banReason')
     ban_seconds: int = Field(alias='banSeconds')
     rank_score: int = Field(alias='rankScore')
@@ -100,27 +101,29 @@ class RespawnRecord(BaseDBModel):
 
     @property
     def tracker_values(self) -> List[CDataTrackerValue]:
-        if not self._cdata_trackers:
-            # pylint: disable=no-member
-            self._cdata_trackers = list()
-            self._cdata_trackers.append(CDataTrackerValue(
-                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
-                    self.banner_tracker1
-                ),
-                value=RespawnRecord.fixed_value(self.banner_tracker1_value)
-            ))
-            self._cdata_trackers.append(CDataTrackerValue(
-                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
-                    self.banner_tracker2
-                ),
-                value=RespawnRecord.fixed_value(self.banner_tracker2_value)
-            ))
-            self._cdata_trackers.append(CDataTrackerValue(
-                cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
-                    self.banner_tracker3
-                ),
-                value=RespawnRecord.fixed_value(self.banner_tracker3_value)
-            ))
+        if self._cdata_trackers:
+            return self._cdata_trackers
+
+        # pylint: disable=no-member
+        self._cdata_trackers = list()
+        self._cdata_trackers.append(CDataTrackerValue(
+            cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                self.banner_tracker1
+            ),
+            value=RespawnRecord.fixed_value(self.banner_tracker1_value)
+        ))
+        self._cdata_trackers.append(CDataTrackerValue(
+            cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                self.banner_tracker2
+            ),
+            value=RespawnRecord.fixed_value(self.banner_tracker2_value)
+        ))
+        self._cdata_trackers.append(CDataTrackerValue(
+            cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
+                self.banner_tracker3
+            ),
+            value=RespawnRecord.fixed_value(self.banner_tracker3_value)
+        ))
         return self._cdata_trackers
 
     @property

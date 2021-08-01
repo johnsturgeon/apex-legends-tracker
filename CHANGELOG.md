@@ -4,6 +4,10 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] - 2021-08-01
+### Added
+- Added privacy to `respawn_record`
+
 ## [1.4.4] - 2021-07-25
 ### Added
 - Adding new ingestion scripts for respawn data
