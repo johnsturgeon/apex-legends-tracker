@@ -1,3 +1,4 @@
+""" Unit test for the respawn_cdata model """
 from models.respawn_cdata import CData
 from apex_db_helper import ApexDBHelper
 
@@ -12,4 +13,3 @@ def test_cdata_legend(cdata):
         assert cdata_obj.dict() != record
         del record['_id']
         assert cdata_obj.dict() == record
-
