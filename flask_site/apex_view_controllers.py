@@ -459,7 +459,9 @@ class BattlePassViewController:
         self.battlepass_data['days_in_season'] = days_in_season
         self.battlepass_data['days_progressed'] = days_progressed
         level_per_day_rate = battlepass_max / days_in_season
-        self.battlepass_data['goal_levels'] = level_per_day_rate * days_progressed
+        # clamp goal level so we don't divide by zero
+        goal_level: float = max(1.0, float(level_per_day_rate * days_progressed))
+        self.battlepass_data['goal_levels'] = goal_level
 
     def players_sorted_by_key(self, key: str) -> List[Player]:
         """ Wrapper for utility function"""
