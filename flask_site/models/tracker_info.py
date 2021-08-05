@@ -29,7 +29,7 @@ class TrackerInfoCollection:
         tracker: dict
         for tracker in tracker_info_data['trackers']:
             if tracker['mode'] not in ['BR', 'Arena']:
-                return
+                continue
             self.tracker_info_list.append(TrackerInfo(**tracker))
 
     def category_for_key(self, key: str) -> str:
