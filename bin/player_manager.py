@@ -1,7 +1,9 @@
 """ methods for retrieving and saving player data """
 import os
 from threading import Thread
+from time import sleep
 from typing import List
+import numpy as np
 
 from apex_api_helper import ApexAPIHelper
 from apex_db_helper import ApexDBHelper
@@ -31,10 +33,14 @@ def thread_method_with_player(method_name, list_of_players: List[Player]):
         threaded_method = Thread(target=method_name, args=(player,))
         threads.append(threaded_method)
     thread: Thread
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
+    split_list = np.array_split(threads, 2)
+    for thread_list in split_list:
+        for thread in thread_list:
+            thread.start()
+        for thread in thread_list:
+            thread.join()
+        sleep(2)
+    sleep(2)
 
 
 def save_one_player_data(player: Player):
