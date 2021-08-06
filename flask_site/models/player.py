@@ -76,7 +76,7 @@ class PlayerCollection:
         assert global_info
         realtime = basic_player_data.get('realtime')
         assert realtime
-        battlepass_level = global_info['battlepass'].get('level')
+        battlepass_level = global_info['battlepass']['history'].get('season10')
         if battlepass_level is None:
             battlepass_level = -1
         player_data = {
