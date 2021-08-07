@@ -14,21 +14,21 @@
         <div class="date_picker" style="flex-grow:1; justify-content: space-between">
             <div class="leaderboard_header">
                 {% if clan == 'DADS' %}
-                    <a href="{{ url_for('leaderboard')}}">See sweaty childless players</a>
+                    <a href="{{ url_for('leaderboard', day=day)}}">See sweaty childless players</a>
                 {% else %}
-                    <a href="{{ url_for('leaderboard', clan='DADS')}}">Hide sweaty childless players</a>
+                    <a href="{{ url_for('leaderboard', day=day, clan='DADS')}}">Hide sweaty childless players</a>
                 {% endif %}
             </div>
             <div style="display: flex; flex-direction: row">
                 <div>
-                    <a href="{{ url_for('leaderboard', day=prev_day) }}"><!--
+                    <a href="{{ url_for('leaderboard', day=prev_day, clan=clan) }}"><!--
                      --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
                  --></a>
                 </div>
                 <div><a href="#" id="date_picker">{{ day }}</a></div>
                 {% if next_day %}
                     <div>
-                        <a href="{{ url_for('leaderboard', day=next_day) }}">
+                        <a href="{{ url_for('leaderboard', day=next_day, clan=clan) }}">
                             <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
                         </a>
                     </div>
