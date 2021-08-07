@@ -4,6 +4,18 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2021-08-07
+### Fixed
+- Fixed an issue with the leaderboard where clicking on the 'filter sweaty' link reset the day to today
+
+## [1.5.1] - 2021-08-06
+### Fixed
+- Fixed battlepass issue
+
+## [1.5.0] - 2021-08-06
+### Added
+- Added filter on leaderboard to filter out non DADS
+
 ## [1.4.10] - 2021-08-06
 ## Fixed
 - Fixed battlepass to JUST show season 10
