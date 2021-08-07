@@ -279,6 +279,7 @@ def get_player_for_view(player_uid: str) -> Tuple[Player, bool]:
 def leaderboard():
     """ New leaderboard! """
     day = request.args.get('day')
+    clan = request.args.get('clan')
     date_to_use, prev_day, next_day, new_day = get_arrow_date_prev_next_date_to_use(day)
     starting_timestamp = date_to_use.floor('day').int_timestamp
     ending_timestamp = date_to_use.shift(days=+1).floor('day').int_timestamp
@@ -287,10 +288,12 @@ def leaderboard():
         db_helper=apex_db_helper,
         start_timestamp=starting_timestamp,
         end_timestamp=ending_timestamp,
+        clan=clan
     )
     return render_template(
         'leaderboard.html',
         day=new_day,
+        clan=clan,
         prev_day=prev_day,
         next_day=next_day,
         view_controller=view_controller,

@@ -17,6 +17,7 @@ class Player(BaseModel):
     level: int
     battlepass_level: int
     discord_id: int
+    clan: str
     games_played: Optional[int] = None
     kills_avg: Optional[float] = None
     kills_total: Optional[int] = None
@@ -87,9 +88,11 @@ class PlayerCollection:
             'is_online': realtime['isOnline'],
             'selected_legend': realtime['selectedLegend'],
             'battlepass_level': battlepass_level,
-            'discord_id': 0
+            'discord_id': 0,
+            'clan': 'NOT_SET'
         }
         db_player = self.get_tracked_player_by_uid(player_data['uid'])
         if db_player:
             player_data['discord_id'] = db_player.discord_id
+            player_data['clan'] = db_player.clan
         return Player(**player_data)
