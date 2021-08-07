@@ -12,23 +12,22 @@ from models import SeasonCollection, RespawnRecordCollection, RespawnIngestionTa
 from models import CDataCollection
 
 # pylint: disable=import-error
-from instance.config import get_config
-
-config = get_config(os.getenv('FLASK_ENV'))
+from instance.config import get_config, Config as InstanceConfig
 
 # pylint: disable=too-many-instance-attributes
 class ApexDBHelper:  # noqa E0302
     """ Class for retrieving / saving data to the Apex Mongo DB """
 
     def __init__(self):
+        self.configuration: InstanceConfig = get_config(os.getenv('FLASK_ENV'))
         self.client: MongoClient = MongoClient(
-            host=config.MONGO_HOST,
-            username=config.MONGO_USERNAME,
-            password=config.MONGO_PASSWORD,
-            authSource=config.MONGO_DB
+            host=self.configuration.MONGO_HOST,
+            username=self.configuration.MONGO_USERNAME,
+            password=self.configuration.MONGO_PASSWORD,
+            authSource=self.configuration.MONGO_DB
         )
 
-        self.database: pymongo.database.Database = self.client.apex_legends
+        self.database: pymongo.database.Database = self.client[self.configuration.MONGO_DB]
         self.basic_player_collection: Collection = self.database.basic_player
         self.event_collection: EventCollection = EventCollection(
             self.database,
@@ -39,7 +38,7 @@ class ApexDBHelper:  # noqa E0302
             RespawnIngestionTaskCollection(self.database)
         self.season_collection: SeasonCollection = SeasonCollection(self.load_data('season.json'))
         self.config: Config = ConfigCollection(self.load_data('config.json')).config
-        self.logger = config.logger(__name__)
+        self.logger = self.configuration.logger(__name__)
         self._latest_event_timestamp: int = 0
 
         # below are 'new' collection objects

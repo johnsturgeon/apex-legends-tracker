@@ -11,24 +11,34 @@
             </div>
             <div class="clear"></div>
         {% endif %}
-        <div class="date_picker">
-            <div>
-                <a href="{{ url_for('leaderboard', day=prev_day) }}"><!--
-                 --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
-             --></a>
+        <div class="date_picker" style="flex-grow:1; justify-content: space-between">
+            <div class="leaderboard_header">
+                {% if clan == 'DADS' %}
+                    <a href="{{ url_for('leaderboard')}}">See sweaty childless players</a>
+                {% else %}
+                    <a href="{{ url_for('leaderboard', clan='DADS')}}">Hide sweaty childless players</a>
+                {% endif %}
             </div>
-            <div><a href="#" id="date_picker">{{ day }}</a></div>
-            {% if next_day %}
+            <div style="display: flex; flex-direction: row">
                 <div>
-                    <a href="{{ url_for('leaderboard', day=next_day) }}">
-                        <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
-                    </a>
+                    <a href="{{ url_for('leaderboard', day=prev_day) }}"><!--
+                     --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
+                 --></a>
                 </div>
-            {% else %}
-                <div>
-                    <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
-                </div>
-            {% endif %}
+                <div><a href="#" id="date_picker">{{ day }}</a></div>
+                {% if next_day %}
+                    <div>
+                        <a href="{{ url_for('leaderboard', day=next_day) }}">
+                            <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                        </a>
+                    </div>
+                {% else %}
+                    <div>
+                        <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                    </div>
+                {% endif %}
+            </div>
+            <div class="leaderboard_header"></div>
         </div>
         <div class="clear line"></div>
         <div class="leaderboard_panel">

@@ -357,6 +357,15 @@ DIV.leaderboard_row > DIV {
     border: solid 1px blue;
     text-align: left;
 }
+
+DIV.leaderboard_header {
+    flex: 0 0 150pt;
+}
+
+DIV.leaderboard_header > A {
+    padding-left: 4pt;
+    font-size: 12pt;
+}
 DIV.day_detail .win {
     border: solid 1px green;
     background-color: #024f02;

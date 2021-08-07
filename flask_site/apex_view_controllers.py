@@ -164,16 +164,18 @@ class DayByDayViewController(BaseGameViewController):
 
 class LeaderboardViewController(IndexViewController):
     """ Class for showing the leaderboard for kills, wins, damage """
-    def __init__(self, db_helper: ApexDBHelper, start_timestamp: int, end_timestamp: int):
+    def __init__(self, db_helper: ApexDBHelper, start_timestamp: int, end_timestamp: int, clan):
         super().__init__(db_helper, start_timestamp, end_timestamp, game_mode="BR")
         self.leader_player_list: List[Player] = list()
         category_list = ['damage_total', 'kills_total', 'xp_total', 'wins']
         for player in self.tracked_players:
-            if player.games_played:
-                player.damage_total = self.category_total('damage', uid=player.uid)
-                player.kills_total = self.category_total('kills', uid=player.uid)
-                player.xp_total = self.category_total('xp_progress', uid=player.uid)
-                self.leader_player_list.append(player)
+            if not player.games_played or (clan and player.clan != clan):
+                continue
+            player.damage_total = self.category_total('damage', uid=player.uid)
+            player.kills_total = self.category_total('kills', uid=player.uid)
+            player.xp_total = self.category_total('xp_progress', uid=player.uid)
+            self.leader_player_list.append(player)
+
         for player in self.leader_player_list:
             player.point_total = 0
             for category in category_list:
