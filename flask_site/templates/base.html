@@ -7,6 +7,8 @@
     <meta property="og:title" content="{{ page_title }}" />
     <meta property="og:image" content="{{ url_for('static', filename='images/preview_image.png') }}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}?{{ "" | append_version_number }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='date_picker.css') }}?{{ "" | append_version_number }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='grid.css') }}?{{ "" | append_version_number }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}?{{ "" | append_version_number }}">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -33,7 +35,7 @@
     </script>
 </head>
 <body>
-<div class="base_container">
+<div class="base_grid_container">
     <div class="hero">
         <div id="masthead">
             <div class="container">

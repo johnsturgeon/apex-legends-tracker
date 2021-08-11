@@ -215,6 +215,14 @@ class DayDetailViewController:
 
     def __init__(self, db_helper: ApexDBHelper, player: Player, day: Arrow):
         self.player = player
+        starting_timestamp = day.floor('day').int_timestamp
+        ending_timestamp = day.shift(days=+1).floor('day').int_timestamp
+        self.leaderboard_view_controller: LeaderboardViewController = LeaderboardViewController(
+            db_helper=db_helper,
+            start_timestamp=starting_timestamp,
+            end_timestamp=ending_timestamp,
+            clan=None
+        )
         start_day = day.format('YYYY-MM-DD')
         end_day = day.shift(days=+1).format('YYYY-MM-DD')
         self.all_games: List[GameEvent] = db_helper.event_collection.get_games(
@@ -284,6 +292,47 @@ class DayDetailViewController:
         total_time = self.category_total('game_length')
         hours, minutes = divmod(total_time, 60)
         return f"{hours}h {minutes}m"
+
+    def leaderboard_points(self) -> int:
+        """ Returns the player's point total for the day """
+        for player in self.leaderboard_view_controller.players_sorted_by_key('point_total'):
+            if player.name == self.player.name:
+                return player.point_total
+        return 0
+
+    def leaderboard_place(self) -> str:
+        """ Returns the string of the placement on the leaderboard """
+        def make_ordinal(num) -> str:
+            """
+            Convert an integer into its ordinal representation::
+
+                make_ordinal(0)   => '0th'
+                make_ordinal(3)   => '3rd'
+                make_ordinal(122) => '122nd'
+                make_ordinal(213) => '213th'
+            """
+            num = int(num)
+            suffix = ['th', 'st', 'nd', 'rd', 'th'][min(num % 10, 4)]
+            if 11 <= (num % 100) <= 13:
+                suffix = 'th'
+            return str(num) + suffix
+
+        index: int = 0
+        place: int = 0
+        tie: str = ""
+        previous_player_points: int = -1
+        for player in self.leaderboard_view_controller.players_sorted_by_key('point_total'):
+            index += 1
+            if player.point_total != previous_player_points:
+                place = index
+                tie = ""
+            else:
+                tie = "t-"
+            if player.name == self.player.name:
+                break
+            previous_player_points = player.point_total
+
+        return tie + make_ordinal(place)
 
 
 class ProfileViewController:

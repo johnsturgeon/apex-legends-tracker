@@ -4,6 +4,13 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2021-08-11
+## Added
+- Added 'leaderboard' totals to the 'day detail' page
+
+## Changed
+- Changed the layout of most of the pages to use CSS grid instead of flex box
+
 ## [1.5.2] - 2021-08-07
 ### Fixed
 - Fixed an issue with the leaderboard where clicking on the 'filter sweaty' link reset the day to today
