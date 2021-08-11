@@ -1,0 +1,265 @@
+:root {
+    --background-color-alpha: rgba(84, 39, 39, 0.6);
+    --background-color: rgba(84, 39, 39, 1);
+    --text-color: wheat;
+    --day_detail_grid_length: 8;
+    --border-line: solid 0.5pt var(--text-color)
+}
+
+/*General Purpose*/
+
+.legend_thumb {
+    width: 32px;
+    height: auto;
+    filter: invert(100%);
+    vertical-align: middle;
+}
+
+.base_grid_container {
+    background-color: var(--background-color-alpha);
+    padding: 10pt 0 10pt 0;
+}
+
+.base_grid_container > DIV {
+    margin: 10pt;
+    padding: 10pt;
+    background-color: var(--background-color-alpha);
+    box-shadow: 3px 3px 12pt -3pt #111;
+    border-radius: 12px;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+/*.clear {*/
+/*    flex-basis: 100%;*/
+/*    height: 0;*/
+/*}*/
+
+/*Index*/
+
+.index_body .player_grid {
+    display: grid;
+    grid-template-columns: [name-start] auto [games-start] auto [wins-start] auto [kills-start] auto [damage-start] auto;
+    column-gap: 14pt;
+    row-gap: 6pt;
+}
+.index_body .online {
+    background: rgba(181, 181, 181, 0.13);
+    border: solid 5px rgba(84, 39, 39, 0);
+    border-radius: 6pt;
+    margin-left:-5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.index_body .online_small_font {
+    vertical-align: middle;
+    font-family: "Arial", serif;
+    font-size: 9pt
+}
+
+/*Leader Board*/
+.leaderboard_panels {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+}
+
+.leaderboard_header {
+    text-align: center;
+    border-radius: 5pt;
+    width: 175pt;
+    margin: 6pt auto;
+    padding: 4pt 0;
+    background-color: rgba(245, 222, 179, 0.24);
+}
+
+.leaderboard_body .center {
+    margin-left: auto;
+    margin-right: auto;
+    width: 165pt;
+    margin-bottom: 10pt;
+}
+
+.leaderboard_panel {
+    border: solid 1px var(--text-color);
+    border-radius: 4pt;
+    padding: 5pt;
+    justify-self: center;
+}
+
+.leaderboard_panel TH {
+    text-align: center;
+    font-weight: normal;
+    text-decoration: underline;
+    font-size: 14pt;
+}
+
+.leaderboard_panel TH:first-child {
+    text-align: left;
+    padding-left: 4pt;
+}
+
+.leaderboard_panel TD {
+    text-align: right;
+    font-size: 14pt;
+    padding: 1pt 4pt;
+}
+
+.leaderboard_panel TD:first-child {
+    text-align: left;
+}
+
+.leaderboard_panel CAPTION {
+    font-size: 18pt;
+    font-weight: bold;
+    border-radius: 3pt  ;
+    background-color: var(--text-color);
+    color: var(--background-color)
+
+}
+
+.leaderboard_body .line {
+    margin: 5pt 0;
+    border-top: solid 1pt var(--text-color);
+}
+
+/*Day by Day*/
+.day_by_day {
+    display: grid;
+    grid-template-columns:
+            [legend-thumb-start] 30pt
+            [wbr-start] auto
+            [games-start] minmax(100pt, auto)
+            [kills-start] minmax(100pt, auto)
+            [wins-start] minmax(100pt, auto)
+            [damage-start] minmax(100pt, auto)
+            [xp-start] minmax(100pt, auto)
+    ;
+    grid-row-gap: 8pt;
+    grid-column-gap: 14pt;
+    overflow-x: scroll;
+    font-size: 12pt;
+}
+
+.day_by_day::-webkit-scrollbar {
+    display: none;
+}
+
+.day_by_day_other_user {
+    text-align: center;
+}
+
+.day_by_day .date_heading {
+    grid-column: span 6;
+    text-align: left;
+    font-weight: bold;
+    font-size: 18pt;
+}
+.day_by_day .day_detail_link {
+    font-size: 12pt;
+    text-align: right;
+}
+.day_by_day  DIV {
+    white-space: nowrap;
+}
+.day_by_day .day_totals {
+    grid-column: span 2;
+}
+.day_by_day .line {
+    border: var(--border-line);
+    height: 0;
+    grid-column: span 7
+}
+
+/*Day Detail*/
+
+.day_detail {
+    overflow: hidden;
+}
+.day_detail .one_day_totals {
+    display: grid;
+    grid-template-columns: repeat(var(--day_detail_grid_length), auto);
+    border-bottom: solid .5pt var(--text-color);
+    padding-bottom: 6pt;
+    margin-bottom: 6pt;
+    white-space: nowrap;
+}
+
+.day_detail .day_total_stat {
+    border-left: solid 1.5pt var(--text-color);
+    padding: 0 6pt;
+    font-size: 12pt;
+    margin: 4pt 4pt;
+}
+
+.day_total_stat > DIV:first-child {
+    color: rgba(245, 222, 179, 0.69);
+}
+.day_total_stat > DIV:nth-child(2) {
+    font-size: 16pt;
+    font-weight: bold;
+    color: #f8f0e0;
+}
+.day_total_stat > DIV:nth-child(3) {
+    font-size: 10pt;
+    color: rgba(245, 222, 179, 0.49);
+}
+
+.one_day_totals .label {
+    grid-column: span var(--day_detail_grid_length);
+}
+
+.plain_grid {
+    --grid_length: 5;
+    --grid-background-color:rgba(0, 0, 0, 0.2);
+}
+
+.rp_grid {
+    --grid_length: 6;
+    --grid-background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(26, 26, 26, 0.95)), url(static/images/ranked_tiers.png);
+
+}
+.gr_heading .winner {
+    grid-column: span var(--grid_length);
+    text-align: center;
+    padding-bottom: 8pt;
+}
+
+.game_results .date {
+    grid-column: span 2;
+}
+.winner > IMG {
+    width: 150pt;
+}
+
+.day_detail .game_result_container {
+    border-radius: 6pt;
+    padding: 8pt;
+    border: solid 1px var(--text-color);
+    background-color: var(--grid-background-color);
+    margin-bottom: 6pt;
+    background-image: var(--grid-background-image);
+}
+
+.game_result_container .game_results {
+    display: grid;
+    grid-template-columns: 30pt repeat(calc(var(--grid_length) - 1), auto);
+}
+
+.game_results > DIV {
+    margin-top: 5pt;
+    margin-right: 8pt;
+}
+
+.game_result_container .gr_heading {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    font-family: 'Chakra Petch', serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14pt;
+    padding-bottom: 5pt;
+    border-bottom: var(--border-line);
+}

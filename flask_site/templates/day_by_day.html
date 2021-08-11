@@ -3,6 +3,7 @@
 {% set player = view_controller.player %}
 {% set session_player = session.get('player') %}
 {% block content %}
+    <div class="day_by_day_other_user">Day by Day Summary {% if is_not_me%}({{ player.name }}){% endif %}</div>
     {% for day in view_controller.days_played()%}
         <div class="day_by_day">
             {% set num_games_played=view_controller.games_played(day=day) | length -%}
@@ -13,20 +14,10 @@
             {% set avg_damage=view_controller.category_average(day=day, category='damage') | round(0) | int -%}
             {% set xp=view_controller.category_total(day=day, category='xp_progress') -%}
             {% set avg_xp=view_controller.category_average(day=day, category='xp_progress') | round(0) | int %}
-            {% if is_not_me and loop.index == 1%}
-                <div class="day_by_day_head">
-                    <div class="item small_padding">{{ player.name }}</div>
-                </div>
-                <div class="clear"></div>
-            {% endif %}
-            <div class="day_by_day_head">
-                <div class="day_detail_link"><a href="{{ url_for('day_detail', day=day, player_uid=player.uid) }}">Day Detail</a></div>
-                <div class="item small_padding">{{ day }}</div>
-                <div></div>
-            </div>
-            <div class="clear line"></div>
-            <div class="day_by_day_thumb"></div>
-            <div>Day Totals</div>
+            <div class="date_heading">{{ day }}</div>
+            <div class="day_detail_link"><a href="{{ url_for('day_detail', day=day, player_uid=player.uid) }}">See Day Detail</a></div>
+            <div class="line"></div>
+            <div class="day_totals">Day Totals</div>
             <div>Games Played: {{ num_games_played }}</div>
             <div>Kills: {{ kills }}<br><i>{{ avg_kills }} / game</i></div>
             <div>Wins: {{ wins }}</div>
@@ -36,7 +27,7 @@
             <div>
                 XP: {{ xp }}<br><i>{{ avg_xp }} / game</i>
             </div>
-            <div class="clear line"></div>
+            <div class="line"></div>
             {% for legend in view_controller.get_legends_played(day=day) %}
                 {% set legend_games=view_controller.games_played(day=day, legend=legend) | length -%}
                 {% set legend_kills=view_controller.category_total(day=day, category='kills', legend=legend) -%}
@@ -56,7 +47,6 @@
                 {{ macros.progress_container("Wins", legend_wins, wins) }}
                 {{ macros.progress_container("Damage", legend_damage, damage) }}
                 {{ macros.progress_container("XP", legend_xp, xp) }}
-                <div class="clear"></div>
             {% endfor %}
         </div>
     {% endfor %}

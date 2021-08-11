@@ -9,56 +9,55 @@
 {% endif %}
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
-
-    <div class="index">
-        <div class="date_picker">
-            <div>
-                <a href="{{ url_for('index', day=prev_day, sort_key=sort_key) }}"><!--
-                 --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
-             --></a>
+    <div class="index_body">
+        <div class="date_picker_row">
+            <div class="date_picker_item">
+                <div>
+                    <a href="{{ url_for('index', day=prev_day, sort_key=sort_key) }}"><!--
+                         --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
+                     --></a>
+                </div>
+                <div><a href="#" id="date_picker">{{ day }}</a></div>
+                {% if next_day %}
+                    <div>
+                        <a href="{{ url_for('index', day=next_day, sort_key=sort_key) }}">
+                            <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                        </a>
+                    </div>
+                {% else %}
+                    <div>
+                        <img alt="Next day arrow image" class="prev_next_arrow disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                    </div>
+                {% endif %}
             </div>
-            <div><a href="#" id="date_picker">{{ day }}</a></div>
-            {% if next_day %}
-                <div>
-                    <a href="{{ url_for('index', day=next_day, sort_key=sort_key) }}">
-                        <img alt="Next day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
-                    </a>
-                </div>
-            {% else %}
-                <div>
-                    <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
-                </div>
-            {% endif %}
         </div>
-        <div class="clear"></div>
-        <div class="sortable" id="name">Player</div>
-        <div class="sortable" id="games_played">Total Games</div>
-        <div class="sortable" id="wins">Total Wins</div>
-        <div class="sortable" id="kills_avg">Kills / Game</div>
-        <div class="sortable" id="damage_avg">Damage / Game</div>
-        <div class="clear"></div>
-        {% for player in index_view_controller.players_sorted_by_key(key=sort_key) %}
-            {% set uid = player['uid'] %}
-            {% set is_online = player['is_online'] %}
-            {% set games_played = player['games_played'] %}
-            {% set kills_avg = player['kills_avg'] | round(2) %}
-            {% set wins = player['wins'] %}
-            {% set damage = player['damage_avg'] | round(0) | int -%}
-            <div><!-- this is a row -->
-                <div class="{% if is_online %}online{% endif %}">
-                    <span><a href="{{ url_for('day_detail', day=day, player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
-                    <span class="{% if is_online %}online_small_font{% endif %}">
+        <div class="player_grid">
+            <div class="sortable" id="name">Player</div>
+            <div class="sortable" id="games_played">Total Games</div>
+            <div class="sortable" id="wins">Total Wins</div>
+            <div class="sortable" id="kills_avg">Kills / Game</div>
+            <div class="sortable" id="damage_avg">Damage / Game</div>
+            {% for player in index_view_controller.players_sorted_by_key(key=sort_key) %}
+                {% set uid = player['uid'] %}
+                {% set is_online = player['is_online'] %}
+                {% set games_played = player['games_played'] %}
+                {% set kills_avg = player['kills_avg'] | round(2) %}
+                {% set wins = player['wins'] %}
+                {% set damage = player['damage_avg'] | round(0) | int -%}
+                <div><!-- this is a row -->
+                    <div class="{% if is_online %}online{% endif %}">
+                        <span><a href="{{ url_for('day_detail', day=day, player_uid=player["uid"] ) }}">{{ player["name"] }}</a><br></span>
+                        <span class="{% if is_online %}online_small_font{% endif %}">
                         {% if is_online %}online{% endif %}
                     </span>
+                    </div>
                 </div>
-            </div>
-            {{ macros.progress_container("", games_played, max_games, show_total=False) }}
-            {{ macros.progress_container("", wins, max_wins, highlight_max=True, show_total=False) }}
-            {{ macros.progress_container("", kills_avg, max_avg_kills, highlight_max=True, show_total=False) }}
-            {{ macros.progress_container("", damage, max_avg_damage, highlight_max=True, show_total=False) }}
-            <div class="clear"></div>
-        {% endfor %}
-    </div>
+                {{ macros.progress_container("", games_played, max_games, show_total=False) }}
+                {{ macros.progress_container("", wins, max_wins, highlight_max=True, show_total=False) }}
+                {{ macros.progress_container("", kills_avg, max_avg_kills, highlight_max=True, show_total=False) }}
+                {{ macros.progress_container("", damage, max_avg_damage, highlight_max=True, show_total=False) }}
+            {% endfor %}
+        </div>
     {% if not next_day %}
         <script>
             const seconds = 1000
@@ -87,4 +86,5 @@
 
         });
     </script>
+    </div>
 {% endblock %}

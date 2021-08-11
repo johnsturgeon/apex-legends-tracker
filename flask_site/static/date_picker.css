@@ -1,0 +1,60 @@
+.date_picker_row {
+    border-bottom: solid .5pt var(--text-color);
+    padding-bottom: 3pt;
+    margin-bottom: 5pt;
+}
+
+.date_picker_item {
+    margin-left: auto;
+    margin-right: auto;
+    width: 180pt;
+    display: grid;
+    grid-template-columns: 26pt auto 26pt;
+}
+
+.date_picker_item > DIV:nth-child(2) {
+    font-size: 20pt;
+    text-align: center;
+}
+
+.prev_next_arrow {
+    height: 26pt;
+}
+
+.disabled {
+    opacity: 40%;
+}
+
+:root {
+    --litepicker-container-months-color-bg: var(--text-color);
+    --litepicker-container-months-box-shadow-color: #3e3e3e;
+    --litepicker-footer-color-bg: #fafafa;
+    --litepicker-footer-box-shadow-color: #ddd;
+    --litepicker-tooltip-color-bg: #fff;
+    --litepicker-month-header-color: var(--background-color);
+    --litepicker-button-prev-month-color: #bca69d;
+    --litepicker-button-next-month-color: var(--litepicker-button-prev-month-color);
+    --litepicker-button-prev-month-color-hover: var(--background-color);
+    --litepicker-button-next-month-color-hover: var(--background-color);
+    --litepicker-month-width: calc(var(--litepicker-day-width) * 7);
+    --litepicker-month-weekday-color: rgba(0, 0, 0, 0.35);
+    --litepicker-month-week-number-color: #9e9e9e;
+    --litepicker-day-width: 38px;
+    --litepicker-day-color: var(--background-color);
+    --litepicker-day-color-hover: rgba(0, 0, 0, 0.5);
+    --litepicker-is-today-color: rgb(255, 109, 0);
+    --litepicker-is-in-range-color: #bbdefb;
+    --litepicker-is-locked-color: #9e9e9e;
+    --litepicker-is-start-color: #fff;
+    --litepicker-is-start-color-bg: #2196f3;
+    --litepicker-is-end-color: #fff;
+    --litepicker-is-end-color-bg: #2196f3;
+    --litepicker-button-cancel-color: #fff;
+    --litepicker-button-cancel-color-bg: #9e9e9e;
+    --litepicker-button-apply-color: #fff;
+    --litepicker-button-apply-color-bg: #2196f3;
+    --litepicker-button-reset-color: #909090;
+    --litepicker-button-reset-color-hover: #2196f3;
+    --litepicker-highlighted-day-color: wheat;
+    --litepicker-highlighted-day-color-bg: #542727;
+}

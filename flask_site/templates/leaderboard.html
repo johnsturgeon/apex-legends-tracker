@@ -3,27 +3,13 @@
 {% set session_player = session.get('player') %}
 {% block content %}
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
-
-    <div class="day_detail">
-        {% if is_not_me %}
-            <div class="day_detail_head">
-                <div class="item small_padding">{{ player.name }}</div>
-            </div>
-            <div class="clear"></div>
-        {% endif %}
-        <div class="date_picker" style="flex-grow:1; justify-content: space-between">
-            <div class="leaderboard_header">
-                {% if clan == 'DADS' %}
-                    <a href="{{ url_for('leaderboard', day=day)}}">See sweaty childless players</a>
-                {% else %}
-                    <a href="{{ url_for('leaderboard', day=day, clan='DADS')}}">Hide sweaty childless players</a>
-                {% endif %}
-            </div>
-            <div style="display: flex; flex-direction: row">
+    <div class="leaderboard_body">
+        <div class="date_picker_row">
+            <div class="date_picker_item">
                 <div>
                     <a href="{{ url_for('leaderboard', day=prev_day, clan=clan) }}"><!--
-                     --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
-                 --></a>
+                         --><img alt="Previous day arrow image" class="prev_next_arrow" src="{{ url_for('static', filename='images/prev_arrow.svg') }}"><!--
+                     --></a>
                 </div>
                 <div><a href="#" id="date_picker">{{ day }}</a></div>
                 {% if next_day %}
@@ -34,14 +20,19 @@
                     </div>
                 {% else %}
                     <div>
-                        <img alt="Next day arrow image" class="prev_next_arrow_disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
+                        <img alt="Next day arrow image" class="prev_next_arrow disabled" src="{{ url_for('static', filename='images/next_arrow.svg') }}">
                     </div>
                 {% endif %}
             </div>
-            <div class="leaderboard_header"></div>
         </div>
-        <div class="clear line"></div>
-        <div class="leaderboard_panel">
+        <div class="leaderboard_header">
+            {% if clan == 'DADS' %}
+                <a href="{{ url_for('leaderboard', day=day)}}">See sweaty childless players</a>
+            {% else %}
+                <a href="{{ url_for('leaderboard', day=day, clan='DADS')}}">Hide sweaty childless players</a>
+            {% endif %}
+        </div>
+        <div class="leaderboard_panel center">
             <table><caption>Totals</caption>
                 <thead>
                 <tr>
@@ -74,66 +65,68 @@
                 {% endfor %}
             </table>
         </div>
-        <div class="clear line"></div>
-        <div class="leaderboard_panel">
-            <table><caption>Kills</caption>
-                <thead>
-                <tr>
-                    <th>Player</th><th>Kills</th><th>Points</th>
-                </tr>
-                </thead>
-                {% for player in view_controller.players_sorted_by_key('kills_total') %}
-                    {% set points = view_controller.points_for_category('kills_total', player.uid) %}
+        <div class="gap"></div>
+        <div class="leaderboard_panels">
+            <div class="leaderboard_panel">
+                <table><caption>Kills</caption>
+                    <thead>
                     <tr>
-                        <td>{{ player.name }}</td><td>{{ player.kills_total }}</td><td>{{ points }}</td>
+                        <th>Player</th><th>Kills</th><th>Points</th>
                     </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="leaderboard_panel">
-            <table><caption>Damage</caption>
-                <thead>
-                <tr>
-                    <th>Player</th><th>Damage</th><th>Points</th>
-                </tr>
-                </thead>
-                {% for player in view_controller.players_sorted_by_key('damage_total') %}
-                    {% set points = view_controller.points_for_category('damage_total', player.uid) %}
+                    </thead>
+                    {% for player in view_controller.players_sorted_by_key('kills_total') %}
+                        {% set points = view_controller.points_for_category('kills_total', player.uid) %}
+                        <tr>
+                            <td>{{ player.name }}</td><td>{{ player.kills_total }}</td><td>{{ points }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="leaderboard_panel">
+                <table><caption>Damage</caption>
+                    <thead>
                     <tr>
-                        <td>{{ player.name }}</td><td>{{ player.damage_total }}</td><td>{{ points }}</td>
+                        <th>Player</th><th>Damage</th><th>Points</th>
                     </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="leaderboard_panel">
-            <table><caption>Wins</caption>
-                <thead>
-                <tr>
-                    <th>Player</th><th>Wins</th><th>Points</th>
-                </tr>
-                </thead>
-                {% for player in view_controller.players_sorted_by_key('wins') %}
-                    {% set points = view_controller.points_for_category('wins', player.uid) %}
+                    </thead>
+                    {% for player in view_controller.players_sorted_by_key('damage_total') %}
+                        {% set points = view_controller.points_for_category('damage_total', player.uid) %}
+                        <tr>
+                            <td>{{ player.name }}</td><td>{{ player.damage_total }}</td><td>{{ points }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="leaderboard_panel">
+                <table><caption>Wins</caption>
+                    <thead>
                     <tr>
-                        <td>{{ player.name }}</td><td>{{ player.wins }}</td><td>{{ points }}</td>
+                        <th>Player</th><th>Wins</th><th>Points</th>
                     </tr>
-                {% endfor %}
-            </table>
-        </div>
-        <div class="leaderboard_panel">
-            <table><caption>XP</caption>
-                <thead>
-                <tr>
-                    <th>Player</th><th>XP</th><th>Points</th>
-                </tr>
-                </thead>
-                {% for player in view_controller.players_sorted_by_key('xp_total') %}
-                    {% set points = view_controller.points_for_category('xp_total', player.uid) %}
+                    </thead>
+                    {% for player in view_controller.players_sorted_by_key('wins') %}
+                        {% set points = view_controller.points_for_category('wins', player.uid) %}
+                        <tr>
+                            <td>{{ player.name }}</td><td>{{ player.wins }}</td><td>{{ points }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="leaderboard_panel">
+                <table><caption>XP</caption>
+                    <thead>
                     <tr>
-                        <td>{{ player.name }}</td><td>{{ player.xp_total }}</td><td>{{ points }}</td>
+                        <th>Player</th><th>XP</th><th>Points</th>
                     </tr>
-                {% endfor %}
-            </table>
+                    </thead>
+                    {% for player in view_controller.players_sorted_by_key('xp_total') %}
+                        {% set points = view_controller.points_for_category('xp_total', player.uid) %}
+                        <tr>
+                            <td>{{ player.name }}</td><td>{{ player.xp_total }}</td><td>{{ points }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
     </div>
     {% if not next_day %}
