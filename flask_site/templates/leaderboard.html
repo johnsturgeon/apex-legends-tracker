@@ -32,38 +32,40 @@
                 <a href="{{ url_for('leaderboard', day=day, clan='DADS')}}">Hide sweaty childless players</a>
             {% endif %}
         </div>
-        <div class="leaderboard_panel center">
-            <table><caption>Totals</caption>
-                <thead>
-                <tr>
-                    <th>Player</th><th>Total Points</th>
-                </tr>
-                </thead>
-                {% for player in view_controller.players_sorted_by_key('point_total') %}
-                    {% set points = player.point_total %}
+        <div class="center">
+            <div class="leaderboard_panel">
+                <table><caption>Totals</caption>
+                    <thead>
                     <tr>
-                        <td>
-                            <div class="tooltip">{{ player.name }}{% if player.is_online %} <span class="online_ball">🟢</span>{% endif %}
-                                <div class="tooltiptext">
-                                    <table>
-
-                                        <tr>
-                                            <td>Games: </td><td>{{ player.games_played }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>PPG: </td><td>{{ (points / player.games_played) | round(2) }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>WBR: </td><td>{{ (player.xp_total / player.games_played / 100) | round(2) }}</td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </td>
-                        <td>{{ points }}</td>
+                        <th>Player</th><th>Total Points</th>
                     </tr>
-                {% endfor %}
-            </table>
+                    </thead>
+                    {% for player in view_controller.players_sorted_by_key('point_total') %}
+                        {% set points = player.point_total %}
+                        <tr>
+                            <td>
+                                <div class="tooltip">{{ player.name }}{% if player.is_online %} <span class="online_ball">🟢</span>{% endif %}
+                                    <div class="tooltiptext">
+                                        <table>
+
+                                            <tr>
+                                                <td>Games: </td><td>{{ player.games_played }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>PPG: </td><td>{{ (points / player.games_played) | round(2) }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>WBR: </td><td>{{ (player.xp_total / player.games_played / 100) | round(2) }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ points }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
         </div>
         <div class="gap"></div>
         <div class="leaderboard_panels">
