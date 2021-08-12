@@ -99,6 +99,11 @@ class GameEvent(BaseEvent):
             self._formatted_time = arrow.get(self.timestamp).to('US/Pacific').format('h:mma')
         return self._formatted_time
 
+    @property
+    def is_ranked_game(self) -> bool:
+        """ Returns true if the ranked score change != 0 """
+        return self.category_total('rank_score_change') != 0
+
     def category_total(self, category) -> int:
         """ safely returns the category total - 0 if none exists """
         if hasattr(self, category):
