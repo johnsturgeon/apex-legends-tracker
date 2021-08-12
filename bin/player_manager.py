@@ -2,7 +2,7 @@
 import os
 from threading import Thread
 from time import sleep
-from typing import List
+from typing import List, Optional
 import numpy as np
 
 from apex_api_helper import ApexAPIHelper
@@ -12,6 +12,8 @@ from apex_legends_api import ALPlatform, ALAction, ALHTTPExceptionFromResponse
 from models import Player
 # pylint: disable=import-error
 from instance.config import get_config
+from player import BadDictException
+
 config = get_config(os.getenv('FLASK_ENV'))
 
 apex_api_helper = ApexAPIHelper()
@@ -71,8 +73,25 @@ def save_one_player_data(player: Player):
         basic_player_data = basic_player_data_list[0]
         logger.debug("Saving Basic Player Data: %s", basic_player_data)
         apex_db_helper.save_basic_player_data(player_data=basic_player_data)
-        player = apex_db_helper.player_collection.player_data_from_basic_player(basic_player_data)
-        apex_db_helper.player_collection.save_player(player)
+        player: Player = get_player(basic_player_data)
+        if player:
+            apex_db_helper.player_collection.save_player(player)
+
+
+def get_player(basic_player_data: dict) -> Optional[Player]:
+    """ Safely retrieves one player """
+    player: Optional[Player] = None
+    try:
+        player = apex_db_helper.player_collection.player_data_from_basic_player(
+            basic_player_data
+        )
+    except BadDictException as bad_dict:
+        logger.error(
+            "Bad Dict Exception: %s with %s",
+            bad_dict.message,
+            bad_dict.bad_dictionary
+        )
+    return player
 
 
 def save_one_player_event_data(player: Player):
@@ -103,8 +122,9 @@ def update_player_collection_from_api():
     tracked_players = apex_api_helper.basic_players_from_api
     player_data: dict
     for player_data in tracked_players:
-        player: Player = apex_db_helper.player_collection.player_data_from_basic_player(player_data)
-        apex_db_helper.player_collection.save_player(player=player)
+        player: Player = get_player(player_data)
+        if player:
+            apex_db_helper.player_collection.save_player(player=player)
 
 
 def is_anyone_online() -> bool:
