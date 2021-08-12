@@ -34,6 +34,7 @@ class Player(BaseModel):
     damage_total: Optional[int] = None
     xp_total: Optional[int] = None
     point_total: Optional[int] = None
+    minute_total: Optional[int] = None
 
     def dict(self, **kwargs):
         return super().dict(

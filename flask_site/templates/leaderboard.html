@@ -33,102 +33,14 @@
             {% endif %}
         </div>
         <div class="center">
-            <div class="leaderboard_panel">
-                <table><caption>Totals</caption>
-                    <thead>
-                    <tr>
-                        <th>Player</th><th>Total Points</th>
-                    </tr>
-                    </thead>
-                    {% for player in view_controller.players_sorted_by_key('point_total') %}
-                        {% set points = player.point_total %}
-                        <tr>
-                            <td>
-                                <div class="tooltip">{{ player.name }}{% if player.is_online %} <span class="online_ball">🟢</span>{% endif %}
-                                    <div class="tooltiptext">
-                                        <table>
-
-                                            <tr>
-                                                <td>Games: </td><td>{{ player.games_played }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>PPG: </td><td>{{ (points / player.games_played) | round(2) }}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>WBR: </td><td>{{ (player.xp_total / player.games_played / 100) | round(2) }}</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>{{ points }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
+            {{ macros.leaderboard_totals(view_controller) }}
         </div>
         <div class="gap"></div>
         <div class="leaderboard_panels">
-            <div class="leaderboard_panel">
-                <table><caption>Kills</caption>
-                    <thead>
-                    <tr>
-                        <th>Player</th><th>Kills</th><th>Points</th>
-                    </tr>
-                    </thead>
-                    {% for player in view_controller.players_sorted_by_key('kills_total') %}
-                        {% set points = view_controller.points_for_category('kills_total', player.uid) %}
-                        <tr>
-                            <td>{{ player.name }}</td><td>{{ player.kills_total }}</td><td>{{ points }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            <div class="leaderboard_panel">
-                <table><caption>Damage</caption>
-                    <thead>
-                    <tr>
-                        <th>Player</th><th>Damage</th><th>Points</th>
-                    </tr>
-                    </thead>
-                    {% for player in view_controller.players_sorted_by_key('damage_total') %}
-                        {% set points = view_controller.points_for_category('damage_total', player.uid) %}
-                        <tr>
-                            <td>{{ player.name }}</td><td>{{ player.damage_total }}</td><td>{{ points }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            <div class="leaderboard_panel">
-                <table><caption>Wins</caption>
-                    <thead>
-                    <tr>
-                        <th>Player</th><th>Wins</th><th>Points</th>
-                    </tr>
-                    </thead>
-                    {% for player in view_controller.players_sorted_by_key('wins') %}
-                        {% set points = view_controller.points_for_category('wins', player.uid) %}
-                        <tr>
-                            <td>{{ player.name }}</td><td>{{ player.wins }}</td><td>{{ points }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
-            <div class="leaderboard_panel">
-                <table><caption>XP</caption>
-                    <thead>
-                    <tr>
-                        <th>Player</th><th>XP</th><th>Points</th>
-                    </tr>
-                    </thead>
-                    {% for player in view_controller.players_sorted_by_key('xp_total') %}
-                        {% set points = view_controller.points_for_category('xp_total', player.uid) %}
-                        <tr>
-                            <td>{{ player.name }}</td><td>{{ player.xp_total }}</td><td>{{ points }}</td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
+            {{ macros.leaderboard_panel(view_controller, 'Kills', 'kills_total') }}
+            {{ macros.leaderboard_panel(view_controller, 'Damage', 'damage_total') }}
+            {{ macros.leaderboard_panel(view_controller, 'Wins', 'wins') }}
+            {{ macros.leaderboard_panel(view_controller, 'XP', 'xp_total') }}
         </div>
     </div>
     {% if not next_day %}

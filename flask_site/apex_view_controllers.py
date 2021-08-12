@@ -174,6 +174,7 @@ class LeaderboardViewController(IndexViewController):
             player.damage_total = self.category_total('damage', uid=player.uid)
             player.kills_total = self.category_total('kills', uid=player.uid)
             player.xp_total = self.category_total('xp_progress', uid=player.uid)
+            player.minute_total = self.category_total('game_length', uid=player.uid)
             self.leader_player_list.append(player)
 
         for player in self.leader_player_list:
@@ -229,6 +230,7 @@ class DayDetailViewController:
             start_end_day=(start_day, end_day), sort=pymongo.DESCENDING
         )
         self.games: List[GameEvent] = filter_game_list(self.all_games, uid=player.uid)
+        self.player.minute_total = self.category_total('game_length')
 
     def category_total(self, category: str) -> int:
         """ Returns the category total """
@@ -247,7 +249,7 @@ class DayDetailViewController:
     def avg_time_played(self):
         """ Returns the average time played in minutes / seconds """
         return_string: str = ""
-        total_time = self.category_total('game_length')
+        total_time = self.player.minute_total
         if len(self.games) > 0:
             avg_minutes: float = total_time / len(self.games)
             avg_seconds = avg_minutes * 60
@@ -290,50 +292,51 @@ class DayDetailViewController:
 
     def total_time_played(self) -> str:
         """ Returns a formatted string for the total time played """
-        total_time = self.category_total('game_length')
+        total_time = self.player.minute_total
         hours, minutes = divmod(total_time, 60)
         return f"{hours}h {minutes}m"
 
-    def leaderboard_points(self) -> int:
+    def leaderboard_points(self, key: str = 'point_total') -> int:
         """ Returns the player's point total for the day """
-        for player in self.leaderboard_view_controller.players_sorted_by_key('point_total'):
+        for player in self.leaderboard_view_controller.players_sorted_by_key(key):
             if player.name == self.player.name:
                 return player.point_total
         return 0
 
     def leaderboard_place(self) -> str:
-        """ Returns the string of the placement on the leaderboard """
-        def make_ordinal(num) -> str:
-            """
-            Convert an integer into its ordinal representation::
+        """
+        Convert an integer into its ordinal representation::
+            make_ordinal(0)   => '0th'
+            make_ordinal(3)   => '3rd'
+            make_ordinal(122) => '122nd'
+            make_ordinal(213) => '213th'
+        """
+        num = self.leaderboard_position()
+        suffix = ['th', 'st', 'nd', 'rd', 'th'][min(num % 10, 4)]
+        if 11 <= (num % 100) <= 13:
+            suffix = 'th'
+        return str(num) + suffix
 
-                make_ordinal(0)   => '0th'
-                make_ordinal(3)   => '3rd'
-                make_ordinal(122) => '122nd'
-                make_ordinal(213) => '213th'
-            """
-            num = int(num)
-            suffix = ['th', 'st', 'nd', 'rd', 'th'][min(num % 10, 4)]
-            if 11 <= (num % 100) <= 13:
-                suffix = 'th'
-            return str(num) + suffix
+    def leaderboard_position(self, key: str = 'point_total') -> int:
+        """ Returns the string of the placement on the leaderboard """
 
         index: int = 0
         place: int = 0
-        tie: str = ""
-        previous_player_points: int = -1
-        for player in self.leaderboard_view_controller.players_sorted_by_key('point_total'):
+        previous_key_total: int = -1
+        for player in self.leaderboard_view_controller.players_sorted_by_key(key):
             index += 1
-            if player.point_total != previous_player_points:
+            key_total: int = int(getattr(player, key))
+            if key_total != previous_key_total:
                 place = index
-                tie = ""
-            else:
-                tie = "t-"
             if player.name == self.player.name:
                 break
-            previous_player_points = player.point_total
+            previous_key_total = key_total
 
-        return tie + make_ordinal(place)
+        return place
+
+    def leaderboard_player_count(self) -> int:
+        """ Returns the number of players on the leaderboard """
+        return len(self.leaderboard_view_controller.leader_player_list)
 
 
 class ProfileViewController:

@@ -6,15 +6,26 @@
     <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js"></script>
     <div class="day_by_day_other_user">Single Day Detail {% if is_not_me%}({{ player.name }}){% endif %}</div>
     <div class="day_detail">
+        {% set leaderboard_player_count=view_controller.leaderboard_player_count() %}
         {% set num_games_played=(view_controller.games|length) -%}
+        {% set games_position=view_controller.leaderboard_position('games_played') %}
         {% set total_kills=view_controller.category_total(category='kills') -%}
         {% set avg_kills=view_controller.category_average(category='kills') | round(2) -%}
+        {% set kill_position=view_controller.leaderboard_position('kills_total') %}
         {% set total_minutes=view_controller.category_total(category='game_length') %}
         {% set avg_minutes=view_controller.category_average(category='game_length') | round(1)  %}
+        {% set minute_position=view_controller.leaderboard_position('minute_total') %}
         {% set total_wins=view_controller.category_total(category='wins') -%}
+        {% if total_wins %}
+            {% set wins_position=view_controller.leaderboard_position('wins') %}
+        {% else %}
+            {% set wins_position=leaderboard_player_count %}
+        {% endif %}
         {% set total_damage=view_controller.category_total(category='damage') -%}
+        {% set damage_position=view_controller.leaderboard_position('damage_total') %}
         {% set avg_damage=view_controller.category_average(category='damage') | round(0) | int -%}
         {% set total_xp=view_controller.category_total(category='xp_progress') -%}
+        {% set xp_position=view_controller.leaderboard_position('xp_total') %}
         {% set avg_xp=view_controller.category_average(category='xp_progress') | round(0) | int %}
         {% set total_rp=view_controller.category_total(category='rank_score_change') %}
         {% set avg_rp=view_controller.category_average(category='rank_score_change') | round(1)%}
@@ -24,7 +35,7 @@
         {% set max_minutes=view_controller.category_max(category='game_length') %}
         {% set max_rp=view_controller.category_max(category='rank_score_change') %}
         {% set leaderboard_points=view_controller.leaderboard_points() %}
-        {% set leaderboard_place=view_controller.leaderboard_place() %}
+        {% set leaderboard_position=view_controller.leaderboard_position() %}
         {% if num_games_played > 0 %}
             {% set leader_ppg=(leaderboard_points/num_games_played) | round(1) %}
             {% set avg_wbr=(total_xp / num_games_played / 100) | round(2) %}
@@ -58,35 +69,42 @@
         {% if not games %}
             <div>No games played today</div>
         {% else %}
-            <div class="one_day_totals">
+            <div class="one_day_totals" data-leaderboard="#lb_totals">
                 <div class="label">Day Totals</div>
-                <div class="day_total_stat">
+                <div class="day_total_stat" data-leaderboard="#lb_games">
                     <div>Games</div>
                     <div>{{ num_games_played }}</div>
+                    <div>#{{ games_position }} of {{ leaderboard_player_count }}</div>
                 </div>
-                <div class="day_total_stat">
-                    <div>Leaderboard</div>
-                    <div>{{ leaderboard_points }} ({{ leaderboard_place }})</div>
+                <div class="day_total_stat" data-leaderboard="#lb_totals">
+                    <div>Leaderboard Pts</div>
+                    <div>{{ leaderboard_points }}</div>
+                    <div>#{{ leaderboard_position }} of {{ leaderboard_player_count }}</div>
                 </div>
-                <div class="day_total_stat">
+                <div class="day_total_stat" data-leaderboard="#lb_kills">
                     <div>Kills</div>
                     <div>{{ total_kills }}</div>
+                    <div>#{{ kill_position }} of {{ leaderboard_player_count }}</div>
                 </div>
-                <div class="day_total_stat">
+                <div class="day_total_stat" data-leaderboard="#lb_damage">
                     <div>Damage</div>
                     <div>{{ total_damage }}</div>
+                    <div>#{{ damage_position }} of {{ leaderboard_player_count }}</div>
                 </div>
-                <div class="day_total_stat">
+                <div class="day_total_stat" data-leaderboard="#lb_wins">
                     <div>Wins</div>
                     <div>{{ total_wins }}</div>
+                    <div>#{{ wins_position }} of {{ leaderboard_player_count }}</div>
                 </div>
-                <div class="day_total_stat">
+                <div class="day_total_stat" data-leaderboard="#lb_minutes">
                     <div>Time Played</div>
                     <div>{{ view_controller.total_time_played() }}</div>
+                    <div>#{{ minute_position }} of {{ leaderboard_player_count }}</div>
                 </div>
-                <div class="day_total_stat">
+                <div class="day_total_stat" data-leaderboard="#lb_xp">
                     <div>XP</div>
                     <div>{{ total_xp }}</div>
+                    <div>#{{ xp_position }} of {{ leaderboard_player_count }}</div>
                 </div>
                 {% if total_rp %}
                     <div class="day_total_stat">
@@ -222,6 +240,28 @@
             });
 
         });
+        $(".day_total_stat").click( function(event) {
+            const element = $(this).data('leaderboard')
+            if($(element).is(":visible")) {
+                $(element).hide()
+                return
+            }
+            $(".leaderboard_popover").hide();
+            $(element).css({position: "absolute", top: event.pageY, left: event.pageX}).show();
+            event.stopPropagation()
+        });
+        $(document).on('keyup', function(e) {
+            if (e.key === "Escape") $(".leaderboard_popover").hide();
+        });
+        $('body').on('click', function(_) {
+            $(".leaderboard_popover").hide();
+        });
     </script>
-
+    <div class="leaderboard_popover" id="lb_totals">{{ macros.leaderboard_totals(view_controller.leaderboard_view_controller) }}</div>
+    <div class="leaderboard_popover" id="lb_kills">{{ macros.leaderboard_panel(view_controller.leaderboard_view_controller, 'Kills', 'kills_total') }}</div>
+    <div class="leaderboard_popover" id="lb_games">{{ macros.leaderboard_panel(view_controller.leaderboard_view_controller, 'Games', 'games_played', False) }}</div>
+    <div class="leaderboard_popover" id="lb_minutes">{{ macros.leaderboard_panel(view_controller.leaderboard_view_controller, 'Minutes', 'minute_total', False) }}</div>
+    <div class="leaderboard_popover" id="lb_damage">{{ macros.leaderboard_panel(view_controller.leaderboard_view_controller, 'Damage', 'damage_total') }}</div>
+    <div class="leaderboard_popover" id="lb_wins">{{ macros.leaderboard_panel(view_controller.leaderboard_view_controller, 'Wins', 'wins') }}</div>
+    <div class="leaderboard_popover" id="lb_xp">{{ macros.leaderboard_panel(view_controller.leaderboard_view_controller, 'XP', 'xp_total') }}</div>
 {% endblock %}
