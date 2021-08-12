@@ -1,9 +1,17 @@
 """ Dataclass to represent player collection """
-from typing import Optional, List
+from typing import Optional, List, Any
 
 import pymongo.database
 
 from pydantic import BaseModel
+
+
+class BadDictException(Exception):
+    """ Custom error message raised when I get a bad dictionary """
+    def __init__(self, bad_dict: Any, message: str = None) -> None:
+        self.bad_dictionary = str(bad_dict)
+        self.message = message
+        super().__init__(message)
 
 
 # pylint: disable=too-many-instance-attributes
@@ -74,8 +82,16 @@ class PlayerCollection:
     def player_data_from_basic_player(self, basic_player_data: dict) -> Player:
         """ Returns a player dict from basic player data """
         global_info = basic_player_data.get('global')
-        assert global_info
+        if not global_info:
+            raise BadDictException(
+                bad_dict=basic_player_data,
+                message="Expected Global Info in dictionary")
         realtime = basic_player_data.get('realtime')
+        if not realtime:
+            raise BadDictException(
+                bad_dict=basic_player_data,
+                message="Expected RealTime in dictionary"
+            )
         assert realtime
         battlepass_level = global_info['battlepass']['history'].get('season10')
         if battlepass_level is None:
