@@ -1,6 +1,6 @@
 :root {
     --background-color-alpha: rgba(84, 39, 39, 0.6);
-    --background-color: rgba(84, 39, 39, 1);
+    --background-color: rgba(84, 39, 39, 0.87);
     --text-color: wheat;
     --day_detail_grid_length: 8;
     --border-line: solid 0.5pt var(--text-color)
@@ -193,6 +193,14 @@
     margin: 4pt 4pt;
 }
 
+.day_total_stat:hover {
+    background-color: rgba(245, 222, 179, 0.1);
+}
+
+.one_day_totals > a {
+    text-decoration: none;
+}
+
 .day_total_stat > DIV:first-child {
     color: rgba(245, 222, 179, 0.69);
 }
@@ -261,4 +269,9 @@
     font-size: 14pt;
     padding-bottom: 5pt;
     border-bottom: var(--border-line);
+}
+.leaderboard_popover {
+    display: none;
+    background-color: rgb(84, 39, 39) !important;
+    z-index: 100;
 }

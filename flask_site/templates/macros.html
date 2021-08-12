@@ -22,6 +22,7 @@
         <div class="progress-bar" style="width:{{ percent }}%"></div>
     </div>
 {% endmacro %}
+
 {% macro left_right_style(label, count, total, highlight_max=False, show_total=True, label_color=None, total_color=None) -%}
     {% set should_highlight = False %}
     {% if highlight_max and (count == total) %}
@@ -49,4 +50,58 @@
     <div class="version">
         {{ "Version: " | append_version_number }}
     </div>
+{% endmacro %}
+
+{% macro leaderboard_panel(leaderboard_view_controller, caption, category, show_points=True) %}
+<div class="leaderboard_panel">
+    <table><caption>{{ caption }}</caption>
+        <thead>
+        <tr>
+            <th>Player</th><th>{{ caption }}</th>{% if show_points %}<th>Points</th>{% endif %}
+        </tr>
+        </thead>
+        {% for player in leaderboard_view_controller.players_sorted_by_key(category) %}
+            {% set points = leaderboard_view_controller.points_for_category(category, player.uid) %}
+            <tr>
+                <td>{{ player.name }}</td><td>{{ player[category] }}</td>{% if show_points %}<td>{{ points }}</td>{% endif %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endmacro %}
+
+{% macro leaderboard_totals(leaderboard_view_controller) %}
+<div class="leaderboard_panel">
+    <table><caption>Totals</caption>
+        <thead>
+        <tr>
+            <th>Player</th><th>Total Points</th>
+        </tr>
+        </thead>
+        {% for player in leaderboard_view_controller.players_sorted_by_key('point_total') %}
+            {% set points = player.point_total %}
+            <tr>
+                <td>
+                    <div class="tooltip">{{ player.name }}{% if player.is_online %} <span class="online_ball">🟢</span>{% endif %}
+                        <div class="tooltiptext">
+                            <table>
+
+                                <tr>
+                                    <td>Games: </td><td>{{ player.games_played }}</td>
+                                </tr>
+                                <tr>
+                                    <td>PPG: </td><td>{{ (points / player.games_played) | round(2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>WBR: </td><td>{{ (player.xp_total / player.games_played / 100) | round(2) }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ points }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endmacro %}
