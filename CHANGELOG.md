@@ -4,39 +4,43 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.1] - 2021-08-12
+### Added
+- Added new icons for fuse, crypto, valkyrie, seer, and rampart
+
 ## [1.7.0] - 2021-08-12
-## Added
+### Added
 - Added totals / standings and popover to the day detail page
 
 ## [1.6.5] - 2021-08-12
-## Fixed
+### Fixed
 - Fix teammate XP shows as damage on day detail page
   Resolves #242
 
 ## [1.6.4] - 2021-08-12
-## Fixed
+### Fixed
 - Fixed import error for new exception
   Resolves #268
 
 ## [1.6.3] - 2021-08-12
-## Fixed
+### Fixed
 - Moved scrapper assertion to exception / logging
   Resolves #264
 
 ## [1.6.2] - 2021-08-12
-## Fixed
+### Fixed
 - Fix bug where people who played ranked games show up on player's boards that are not ranked games
   Resolves #265
 
 ## [1.6.1] - 2021-08-11
-## Fixed
+### Fixed
 - Small alignment issue with the leaderboard
 
 ## [1.6.0] - 2021-08-11
-## Added
+### Added
 - Added 'leaderboard' totals to the 'day detail' page
 
-## Changed
+### Changed
 - Changed the layout of most of the pages to use CSS grid instead of flex box
 
 ## [1.5.2] - 2021-08-07
@@ -52,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added filter on leaderboard to filter out non DADS
 
 ## [1.4.10] - 2021-08-06
-## Fixed
+### Fixed
 - Fixed battlepass to JUST show season 10
 
 ## [1.4.9] - 2021-08-06
