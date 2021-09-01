@@ -1,4 +1,5 @@
 # Files specific for this project
+logs/
 conf/settings.json
 flask_profiler.sql
 sync_database.py
