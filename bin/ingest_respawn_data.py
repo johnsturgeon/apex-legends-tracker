@@ -36,7 +36,7 @@ async def monitor_player(player: Player):
     )
     if not previous_record:
         ingestion_task_collection.fetch_error(player.name)
-        logger.error("Respawn record not found -- continuing")
+        logger.warning("Respawn record not found -- continuing")
 
     slowdown = 0.0
     delay = ONLINE_DELAY if previous_record and previous_record.online else OFFLINE_DELAY
@@ -62,7 +62,7 @@ async def monitor_player(player: Player):
             logger.warning(message)
         if not fetched_record:
             ingestion_task_collection.fetch_error(player.name)
-            logger.error("Respawn record not found -- continuing")
+            logger.warning("Respawn record not found -- continuing")
             continue
         ingestion_task_collection.fetched_record(player.name)
         save_record_if_changed(previous_record, fetched_record)
@@ -123,7 +123,7 @@ async def main():
     """ Returns a list of respawn players for given list of players """
     players: List[Player] = db_helper.player_collection.get_tracked_players()
     ingestion_task_collection.init_tasks(players)
-    task_list: List[Task] = list()
+    task_list: List[Task] = []
     logger.info("Starting the Respawn Ingestion script")
     for player in players:
         task = asyncio.create_task(monitor_player(player))

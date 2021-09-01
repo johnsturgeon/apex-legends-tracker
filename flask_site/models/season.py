@@ -60,7 +60,7 @@ class Season(BaseModel):
 
 class SeasonCollection:
     def __init__(self, season_dict: dict):
-        self.seasons: List[Season] = list()
+        self.seasons: List[Season] = []
         for season in season_dict['seasons']:
             self.seasons.append(Season(**season))
 

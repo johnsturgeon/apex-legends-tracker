@@ -50,7 +50,7 @@ class PlayerCollection:
 
     def get_tracked_players(self) -> list[Player]:
         """ Return a list of dictionaries containing each player's data"""
-        player_list: List[Player] = list()
+        player_list: List[Player] = []
         for player_data in self._collection.find():
             player_list.append(Player(**player_data))
         return player_list

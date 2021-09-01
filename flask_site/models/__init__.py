@@ -3,7 +3,7 @@
 from .config import Config, RankedDivisionInfo, ConfigCollection, RankTier, Division
 from .base_db_model import BaseDBModel
 from .event import GameEvent, EventCollection
-from .player import Player, PlayerCollection
+from .player import Player, PlayerCollection, BadDictException
 from .tracker_info import TrackerInfo, TrackerInfoCollection
 from .season import SeasonCollection, Season
 from .respawn_cdata import CDataCollection
@@ -11,6 +11,7 @@ from .respawn_record import RespawnRecordCollection, RespawnRecord, RespawnLegen
 from .respawn_ingestion_task import RespawnIngestionTaskCollection
 from .respawn_event import RespawnEvent
 __all__ = [
+    'BadDictException',
     'BaseDBModel',
     'Config',
     'ConfigCollection',

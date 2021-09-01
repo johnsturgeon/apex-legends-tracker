@@ -107,7 +107,7 @@ class RespawnGameEvent(RespawnEvent):
     @property
     def trackers(self) -> List[CDataTrackerValue]:
         """ Returns the three trackers regardless of value """
-        game_trackers = list()
+        game_trackers = []
         if len(self.after_respawn_record.tracker_values) != \
                 len(self.before_respawn_record.tracker_values):
             raise CDataTrackerException
@@ -163,7 +163,7 @@ class RespawnEventCollection(BaseDBCollection):
     @lru_cache
     def retrieve_many(self) -> List[RespawnEvent]:
         """ Retrieves a list of records """
-        retrieved_records: List[RespawnEvent] = list()
+        retrieved_records: List[RespawnEvent] = []
         for record in self.find_many():
             retrieved_records.append(
                 self.obj_from_record(record)
@@ -198,7 +198,7 @@ class RespawnGameEventCollection(RespawnEventCollection):
 
     @lru_cache
     def retrieve_many(self) -> List[RespawnGameEvent]:
-        retrieved_records: List[RespawnGameEvent] = list()
+        retrieved_records: List[RespawnGameEvent] = []
         for record in self.find_many():
             retrieved_records.append(
                 self.obj_from_record(record)
