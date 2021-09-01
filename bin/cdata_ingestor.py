@@ -5,7 +5,7 @@ import requests
 
 from models.respawn_cdata import CDataCategory, CDataTrackerGrouping, CDataTrackerMode
 from models.respawn_cdata import CData, CDataTracker
-from models.respawn_record import RespawnLegend
+from models import RespawnLegend
 
 from apex_db_helper import ApexDBHelper
 
@@ -116,7 +116,7 @@ def ingest_cdata():
         for item in cdata:
             key: str = cdata[item][1]
             name: str = cdata[item][0]
-            new_item: dict = dict()
+            new_item: dict = {}
             new_item['c_data']: int = int(item)
             new_item['name']: str = name
             new_item['key']: str = key

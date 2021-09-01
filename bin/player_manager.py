@@ -10,7 +10,7 @@ from apex_db_helper import ApexDBHelper
 from apex_legends_api import ALPlatform, ALAction, ALHTTPExceptionFromResponse
 
 from models import Player
-from models.player import BadDictException
+from models import BadDictException
 # pylint: disable=import-error
 from instance.config import get_config
 

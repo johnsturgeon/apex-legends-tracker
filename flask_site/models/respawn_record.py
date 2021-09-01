@@ -85,7 +85,7 @@ class RespawnRecord(BaseDBModel):
     party_full: int = Field(alias='partyFull')
     party_in_match: int = Field(alias='partyInMatch')
 
-    _cdata_trackers: List[CDataTrackerValue] = PrivateAttr(default=list())
+    _cdata_trackers: List[CDataTrackerValue] = PrivateAttr(default=[])
 
     class Config:
         allow_population_by_field_name = True
@@ -105,7 +105,7 @@ class RespawnRecord(BaseDBModel):
             return self._cdata_trackers
 
         # pylint: disable=no-member
-        self._cdata_trackers = list()
+        self._cdata_trackers = []
         self._cdata_trackers.append(CDataTrackerValue(
             cdata_tracker=self.cdata_collection.tracker_collection.retrieve_one(
                 self.banner_tracker1
@@ -171,8 +171,8 @@ class RespawnRecordCollection(BaseDBCollection):
                       gt_timestamp: int = None,
                       lt_timestamp: int = None,
                       name: str = None) -> List[RespawnRecord]:
-        retrieved_records: List[RespawnRecord] = list()
-        criteria: dict = dict()
+        retrieved_records: List[RespawnRecord] = []
+        criteria: dict = {}
         if gt_timestamp:
             criteria.update({
                 'timestamp': {'$gt': gt_timestamp}

@@ -123,7 +123,7 @@ async def main():
     """ Returns a list of respawn players for given list of players """
     players: List[Player] = db_helper.player_collection.get_tracked_players()
     ingestion_task_collection.init_tasks(players)
-    task_list: List[Task] = list()
+    task_list: List[Task] = []
     logger.info("Starting the Respawn Ingestion script")
     for player in players:
         task = asyncio.create_task(monitor_player(player))

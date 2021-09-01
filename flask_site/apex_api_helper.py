@@ -24,7 +24,7 @@ class ApexAPIHelper:
     @property
     def basic_players_from_api(self) -> List[dict]:
         """ Return a list of dictionaries containing each player's data"""
-        list_of_players: list = list()
+        list_of_players: list = []
         # This is the 'events' api, but it does indeed return back a list of players by UID
         player_list = self.api.events('GoshDarnedHero', ALPlatform.PC, ALAction.INFO)
         for player in player_list[0]['data']:

@@ -55,7 +55,7 @@ class ApexDBHelper:  # noqa E0302
         file_path = os.path.dirname(os.path.abspath(__file__))
         filepath = os.path.abspath(file_path + "/models/static_data/" + filename)
 
-        with open(filepath) as json_file:
+        with open(filepath, encoding='utf-8') as json_file:
             return json.load(json_file)
 
     def save_basic_player_data(self, player_data: dict):

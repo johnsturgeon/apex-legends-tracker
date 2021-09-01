@@ -88,7 +88,7 @@ class CDataCollection(BaseDBCollection):
     @cached_property
     def all_records(self) -> dict:
         """ Returns a cached dict of all c_data records """
-        cached_records: dict = dict()
+        cached_records: dict = {}
         for record in self.db_collection.find():
             cached_records[record['c_data']] = record
         return cached_records
@@ -108,7 +108,7 @@ class CDataCollection(BaseDBCollection):
     @lru_cache
     def retrieve_many(self) -> List[CData]:
         """ Fetch records from the db, and return them as model objects """
-        retrieved_records: List[CData] = list()
+        retrieved_records: List[CData] = []
         record_list = list(self.all_records.values())
         for record in record_list:
             retrieved_records.append(self.obj_from_record(record))

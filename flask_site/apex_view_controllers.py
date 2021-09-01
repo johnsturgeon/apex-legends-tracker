@@ -36,7 +36,7 @@ class BaseGameViewController:
         game_list: List[GameEvent] = db_helper.event_collection.get_games(
             additional_filter=query_filter
         )
-        self._game_list: List[GameEvent] = list()
+        self._game_list: List[GameEvent] = []
         for game in game_list:
             if game_mode and game_mode != game.game_mode:
                 continue
@@ -166,7 +166,7 @@ class LeaderboardViewController(IndexViewController):
     """ Class for showing the leaderboard for kills, wins, damage """
     def __init__(self, db_helper: ApexDBHelper, start_timestamp: int, end_timestamp: int, clan):
         super().__init__(db_helper, start_timestamp, end_timestamp, game_mode="BR")
-        self.leader_player_list: List[Player] = list()
+        self.leader_player_list: List[Player] = []
         category_list = ['damage_total', 'kills_total', 'xp_total', 'wins']
         for player in self.tracked_players:
             if not player.games_played or (clan and player.clan != clan):
@@ -278,7 +278,7 @@ class DayDetailViewController:
 
     def find_games_near_mine(self, in_game: GameEvent) -> List[GameEvent]:
         """Find games that might be people I played with """
-        games_found: List[GameEvent] = list()
+        games_found: List[GameEvent] = []
         gt_padding = 10
         gl_padding = 1
         gt_range = range(in_game.timestamp-gt_padding, in_game.timestamp+gt_padding+1)
@@ -363,9 +363,9 @@ class ProfileViewController:
     def get_ranked_plot_data(self) -> Tuple[list, list, list]:
         """ Return ranked event lists """
         rank_dict: dict = self.create_ranked_dict()
-        x_array: list = list()
-        y_array: list = list()
-        text_array: list = list()
+        x_array: list = []
+        y_array: list = []
+        text_array: list = []
         rank_info: RankedGameDay
         prev_rank: int = 0
         distance_to_next: int = 0
@@ -503,7 +503,7 @@ class BattlePassViewController:
         self.tracked_players: List[Player] = db_helper.player_collection.get_tracked_players()
         self.config: Config = db_helper.config
         self.season: Season = db_helper.season_collection.get_current_season()
-        self.battlepass_data: dict = dict()
+        self.battlepass_data: dict = {}
         start_date = arrow.get(self.season.start_date)
         end_date = arrow.get(self.season.end_date)
         today = arrow.now('US/Pacific')
@@ -528,7 +528,7 @@ class ClaimProfileViewController:
     def __init__(self, db_helper: ApexDBHelper):
         self.player_collection = db_helper.player_collection
         player: Player
-        self.tracked_players: List[Player] = list()
+        self.tracked_players: List[Player] = []
         for player in self.player_collection.get_tracked_players():
             if not player.discord_id:
                 self.tracked_players.append(player)

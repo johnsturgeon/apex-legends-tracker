@@ -22,7 +22,7 @@ def is_game_event(previous_record: RespawnRecord, current_record: RespawnRecord)
 def main():
     """ Gets all unprocessed records and decides what to do with them """
     # to_process: List[RespawnRecord] = db_helper.respawn_record_collection.get_records()
-    # games: List[RespawnEvent] = list()
+    # games: List[RespawnEvent] = []
     # if to_process:
     #     previous_record: RespawnRecord = to_process.pop(0)
     #     game_start_uuid: Optional[UUID] = None

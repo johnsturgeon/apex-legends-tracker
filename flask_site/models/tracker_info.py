@@ -25,7 +25,7 @@ class TrackerInfo (BaseModel):
 class TrackerInfoCollection:
     """ Class for aggregate tracker info methods"""
     def __init__(self, tracker_info_data: dict):
-        self.tracker_info_list: List[TrackerInfo] = list()
+        self.tracker_info_list: List[TrackerInfo] = []
         tracker: dict
         for tracker in tracker_info_data['trackers']:
             if tracker['mode'] not in ['BR', 'Arena']:
