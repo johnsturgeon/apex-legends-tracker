@@ -22,8 +22,8 @@ def save_all_player_data_with_delay(loop_delay: int):
 
 if __name__ == "__main__":
 
-    MIN_LOOP_DELAY = 5
-    MAX_LOOP_DELAY = 50
+    MIN_LOOP_DELAY = 30
+    MAX_LOOP_DELAY = 90
     LOOP_DELAY: int = MIN_LOOP_DELAY if player_manager.is_anyone_online() else MAX_LOOP_DELAY
     PREVIOUS_LOOP_DELAY = LOOP_DELAY
     logger.info("Starting up the monitor")
