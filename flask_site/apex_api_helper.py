@@ -58,7 +58,7 @@ class ApexAPIHelper:
                 response: Response = await client.get(url)
             except (ReadTimeout, ConnectTimeout) as timeout_error:
                 logger = config.logger(os.path.basename(__file__))
-                logger.error(
+                logger.warning(
                     "Timeout fetching respawn data for %s-- continuing: %s", player_uid,
                     timeout_error
                 )

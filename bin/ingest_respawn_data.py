@@ -36,7 +36,7 @@ async def monitor_player(player: Player):
     )
     if not previous_record:
         ingestion_task_collection.fetch_error(player.name)
-        logger.error("Respawn record not found -- continuing")
+        logger.warning("Respawn record not found -- continuing")
 
     slowdown = 0.0
     delay = ONLINE_DELAY if previous_record and previous_record.online else OFFLINE_DELAY
@@ -62,7 +62,7 @@ async def monitor_player(player: Player):
             logger.warning(message)
         if not fetched_record:
             ingestion_task_collection.fetch_error(player.name)
-            logger.error("Respawn record not found -- continuing")
+            logger.warning("Respawn record not found -- continuing")
             continue
         ingestion_task_collection.fetched_record(player.name)
         save_record_if_changed(previous_record, fetched_record)
