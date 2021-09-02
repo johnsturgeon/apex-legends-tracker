@@ -29,7 +29,7 @@ if __name__ == "__main__":
     logger.info("Starting up the monitor")
     while True:
         try:
-            requests.get("https://hc-ping.com/ac0f2dc2-5075-4a79-b644-16218967a293", timeout=10)
+            requests.get("https://hc-ping.com/ac0f2dc2-5075-4a79-b644-16218967a293", timeout=5)
         except requests.RequestException as error:
             # Log ping failure here...
             logger.error("Ping of healthchecks.io failed: %s", error)

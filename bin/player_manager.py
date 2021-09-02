@@ -1,5 +1,6 @@
 """ methods for retrieving and saving player data """
 import os
+import threading
 from threading import Thread
 from time import sleep
 from typing import List, Optional
@@ -25,14 +26,26 @@ def save_all_player_data():
     """ Loop through all players and save the data """
     list_of_players = apex_db_helper.player_collection.get_tracked_players()
     thread_method_with_player(save_one_player_data, list_of_players)
+    for thread in threading.enumerate():
+        if thread.isDaemon() or thread.name == "MainThread":
+            continue
+        logger.warning("Thread is hanging %s", thread)
     thread_method_with_player(save_one_player_event_data, list_of_players)
+    for thread in threading.enumerate():
+        if thread.isDaemon() or thread.name == "MainThread":
+            continue
+        logger.warning("Thread is hanging %s", thread)
 
 
 def thread_method_with_player(method_name, list_of_players: List[Player]):
     """ Executes a method name on a list of players (threaded) """
     threads: list = []
     for player in list_of_players:
-        threaded_method = Thread(target=method_name, args=(player,))
+        threaded_method = Thread(
+            name=f"{player.name}:{method_name.__name__}",
+            target=method_name,
+            args=(player,)
+        )
         threads.append(threaded_method)
     thread: Thread
     split_list = np.array_split(threads, 4)
@@ -40,8 +53,8 @@ def thread_method_with_player(method_name, list_of_players: List[Player]):
         for thread in thread_list:
             thread.start()
         for thread in thread_list:
-            thread.join()
-        sleep(2)
+            thread.join(timeout=3)
+        print(f"done with {len(thread_list)}")
 
 
 def save_one_player_data(player: Player):

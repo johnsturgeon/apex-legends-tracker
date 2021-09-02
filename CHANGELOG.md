@@ -4,6 +4,9 @@ Welcome to the 'Apex Legends Tracker' changelog
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.4] - 2021-09-02
+### Fixed
+- Fixed another issue with threads taking too long, log and continue.
 
 ## [1.7.3] - 2021-09-02
 ### Fixed
