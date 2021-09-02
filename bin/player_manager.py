@@ -2,7 +2,6 @@
 import os
 import threading
 from threading import Thread
-from time import sleep
 from typing import List, Optional
 import numpy as np
 
