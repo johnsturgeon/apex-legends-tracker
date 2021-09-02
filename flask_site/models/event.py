@@ -239,7 +239,14 @@ class EventCollection:
         uid = event_data['uid']
         timestamp = event_data['timestamp']
         event_type = event_data['eventType']
-        query_filter = {"uid": uid, "timestamp": timestamp, "eventType": event_type}
-        db_data = self._event_collection.find_one(query_filter)
-        if not db_data:
-            self._event_collection.insert_one(event_data)
+        key = {"uid": uid, "timestamp": timestamp, "eventType": event_type}
+        self._event_collection.update_one(
+            filter=key, update={"$set": event_data}, upsert=True
+        )
+
+    def get_latest_game_timestamp(self, uid: str) -> int:
+        """ returns the most recent timestamp """
+        record = list(self._event_collection.find({'uid': uid}).sort([('timestamp', -1)]).limit(1))
+        if len(record) == 1:
+            return int(record[0]['timestamp'])
+        return 0
