@@ -110,7 +110,9 @@ def save_one_player_event_data(player: Player):
         logger.warning("Connection Error Saving 'event'.\nError message: %s", con_error)
         return
     else:
-        latest_timestamp = apex_db_helper.event_collection.get_latest_game_timestamp(str(player.uid))
+        latest_timestamp = apex_db_helper.event_collection.get_latest_game_timestamp(
+            str(player.uid)
+        )
         for event_data in event_data_list:
             if event_data['timestamp'] > latest_timestamp:
                 logger.debug("Saving Player %s Data: %s", player, event_data)

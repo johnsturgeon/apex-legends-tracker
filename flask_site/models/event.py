@@ -250,4 +250,3 @@ class EventCollection:
         if len(record) == 1:
             return int(record[0]['timestamp'])
         return 0
-
