@@ -35,14 +35,13 @@ def thread_method_with_player(method_name, list_of_players: List[Player]):
         threaded_method = Thread(target=method_name, args=(player,))
         threads.append(threaded_method)
     thread: Thread
-    split_list = np.array_split(threads, 2)
+    split_list = np.array_split(threads, 4)
     for thread_list in split_list:
         for thread in thread_list:
             thread.start()
         for thread in thread_list:
             thread.join()
         sleep(2)
-    sleep(2)
 
 
 def save_one_player_data(player: Player):
@@ -111,9 +110,11 @@ def save_one_player_event_data(player: Player):
         logger.warning("Connection Error Saving 'event'.\nError message: %s", con_error)
         return
     else:
+        latest_timestamp = apex_db_helper.event_collection.get_latest_game_timestamp(str(player.uid))
         for event_data in event_data_list:
-            logger.debug("Saving Player %s Data: %s", player, event_data)
-            apex_db_helper.event_collection.save_event_dict(event_data=event_data)
+            if event_data['timestamp'] > latest_timestamp:
+                logger.debug("Saving Player %s Data: %s", player, event_data)
+                apex_db_helper.event_collection.save_event_dict(event_data=event_data)
 
 
 def update_player_collection_from_api():
