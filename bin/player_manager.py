@@ -53,7 +53,6 @@ def thread_method_with_player(method_name, list_of_players: List[Player]):
             thread.start()
         for thread in thread_list:
             thread.join(timeout=3)
-        print(f"done with {len(thread_list)}")
 
 
 def save_one_player_data(player: Player):
