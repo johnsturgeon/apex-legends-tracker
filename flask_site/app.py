@@ -162,7 +162,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    """ create the discord session """
+    """ get and pop the discord session """
     if session.get('player'):
         session.pop('player')
     session['clear_discord_id'] = "YES"

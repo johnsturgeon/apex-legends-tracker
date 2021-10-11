@@ -1,4 +1,5 @@
 """ A helper module for the apex legends API """
+import json
 import os
 from typing import List, Optional
 
@@ -64,7 +65,8 @@ class ApexAPIHelper:
                 )
                 return None
             if response.status_code == 200:
-                response_text = response.json()
+                response_text = "{" + response.content.decode().replace(",\n}", "\n}") + "}"
+                response_json = json.loads(response_text)
             elif response.status_code == 429:
                 logger = config.logger(os.path.basename(__file__))
                 logger.error("SLOW DOWN from respawn (detail to follow)")
@@ -74,4 +76,4 @@ class ApexAPIHelper:
             else:
                 raise ALHTTPExceptionFromResponse(response)
 
-        return response_text
+        return response_json
