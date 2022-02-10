@@ -183,7 +183,7 @@
                         {% set legend=game.legend_played %}
                         <div class="day_detail_thumb">
                             <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
-                                 src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
+                                 src="{{ url_for('static', filename='images/'+legend | replace(' ','_') | lower+'_icon.svg') }}">
                         </div>
                         {% if games_near_me %}
                             <div>{{ game.player }}</div>
@@ -206,7 +206,7 @@
                             {% set formatted_date=game.formatted_time %}
                             <div class="day_detail_thumb">
                                 <img class="legend_thumb" alt="{{ legend }} icon" title="{{ legend }}"
-                                     src="{{ url_for('static', filename='images/'+legend | lower+'_icon.svg') }}">
+                                     src="{{ url_for('static', filename='images/'+legend | replace(' ','_') | lower+'_icon.svg') }}">
                             </div>
                             <div>{{ game.player }}</div>
                             <div>Kills: {{ game.kills }}</div>

@@ -14,8 +14,8 @@ config = get_config('development')
 
 class RespawnIngestionTaskCollection:
     """ Collection object for inserting records into the db """
-    def __init__(self, db: pymongo.database.Database):
-        self._collection: pymongo.collection.Collection = db.respawn_ingestion_task
+    def __init__(self, database: pymongo.database.Database):
+        self._collection: pymongo.collection.Collection = database.respawn_ingestion_task
 
     def init_tasks(self, players: List[Player]):
         """ Clears the collection of previous records and creates new fresh ones """
