@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added Mad Maggie icon for Season 12
 - Fixed 'seasons.json' to have the current season information
+- Removed 'test_app' (it wasn't working anyway)
 
 ## [1.7.7] - 2021-10-11
 ### Fixed
