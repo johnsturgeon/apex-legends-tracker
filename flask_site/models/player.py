@@ -45,8 +45,8 @@ class Player(BaseModel):
 
 class PlayerCollection:
     """ Player Collection class """
-    def __init__(self, db: pymongo.database.Database):
-        self._collection = db.player
+    def __init__(self, database: pymongo.database.Database):
+        self._collection = database.player
 
     def get_tracked_players(self) -> list[Player]:
         """ Return a list of dictionaries containing each player's data"""
